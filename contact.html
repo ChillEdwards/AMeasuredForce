@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | A Measured Force</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="transition-overlay t-overlay-1"></div>
+  <div class="transition-overlay t-overlay-2"></div>
+  <div class="transition-overlay t-overlay-3"></div>
+  <div class="cursor" id="cursor"><div class="cursor-text">View</div></div>
+
+  <header class="header" id="header">
+    <div class="header-logo"><a href="index.html"><img src="assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
+    <div class="header-center-name"><a href="index.html">A Measured Force</a></div>
+    <nav class="header-nav"><a href="work.html">Work</a><a href="about.html">About</a><a href="contact.html" class="active">Contact</a></nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
+  </header>
+  <div class="mobile-nav" id="mobileNav"><nav><a href="index.html" class="mobile-nav-link">Home</a><a href="work.html" class="mobile-nav-link">Work</a><a href="about.html" class="mobile-nav-link">About</a><a href="contact.html" class="mobile-nav-link">Contact</a></nav></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="section-label">Contact</div>
+      <h1 class="page-hero-title">Let's <em>Talk</em></h1>
+      <p class="page-hero-sub">Ready to build something great? Tell us about your project.</p>
+    </section>
+
+    <section class="contact-page">
+      <div class="contact-page-grid">
+        <div class="contact-page-info">
+          <div class="contact-block">
+            <span class="contact-label-pill">Email</span>
+            <a href="mailto:jordan@jordancohen.design" class="contact-detail contact-detail-lg">jordan@jordancohen.design</a>
+          </div>
+          <div class="contact-block">
+            <span class="contact-label-pill">Phone</span>
+            <a href="tel:+13102590344" class="contact-detail contact-detail-lg">(310) 259-0344</a>
+          </div>
+          <div class="contact-block">
+            <span class="contact-label-pill">Location</span>
+            <span class="contact-detail contact-detail-lg">Los Angeles, CA</span>
+          </div>
+          <div class="contact-socials">
+            <a href="https://www.instagram.com" target="_blank" rel="noopener" class="contact-social-link">Instagram</a>
+            <a href="https://www.linkedin.com" target="_blank" rel="noopener" class="contact-social-link">LinkedIn</a>
+            <a href="https://www.tiktok.com" target="_blank" rel="noopener" class="contact-social-link">TikTok</a>
+          </div>
+        </div>
+        <div class="contact-page-form">
+          <form class="contact-form" id="contactForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required>
+              </div>
+              <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="company">Company / Organization</label>
+              <input type="text" id="company" name="company">
+            </div>
+            <div class="form-group">
+              <label for="message">How can we help?</label>
+              <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="form-submit">Get a Quote</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-row">
+      <div class="footer-left"><span>&copy; 2026 A Measured Force</span></div>
+      <div class="footer-center"><a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a><span class="footer-divider">|</span><a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a><span class="footer-divider">|</span><a href="https://www.tiktok.com" target="_blank" rel="noopener">TikTok</a></div>
+      <div class="footer-right"><a href="#">Privacy Policy</a></div>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>
