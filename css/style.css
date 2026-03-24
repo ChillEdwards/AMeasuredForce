@@ -182,12 +182,6 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   line-height: 1.05; letter-spacing: -0.02em;
 }
 .hero-headline em { color: var(--orange); }
-.hero-headline h1 .char {
-  transition: transform 0.4s cubic-bezier(0.25,1,0.5,1);
-}
-.hero-headline h1 .char:hover {
-  transform: scale(1.25);
-}
 .hero-meta {
   position: absolute; bottom: var(--pad); right: var(--pad);
   text-align: right;
@@ -975,20 +969,9 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   animation-delay: var(--char-delay, 0s);
 }
 
-/* Spinning chars — same float but with rotation */
-.split-chars.animated .char.char-spin {
-  animation: charSpin 2.2s cubic-bezier(0.25,1,0.5,1) forwards;
-  animation-delay: var(--char-delay, 0s);
-}
-
 @keyframes charFloat {
   0% { opacity: 0; transform: translateY(60px); }
   100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes charSpin {
-  0% { opacity: 0; transform: translateY(60px) rotate(180deg); }
-  100% { opacity: 1; transform: translateY(0) rotate(0deg); }
 }
 
 /* Split words - word-by-word animation */

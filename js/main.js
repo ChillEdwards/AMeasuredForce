@@ -28,12 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
           charIndex++;
         }
       } else if (node.nodeType === Node.ELEMENT_NODE) {
-        // Preserve <br> tags as-is
         if (node.tagName === 'BR') {
           el.appendChild(node.cloneNode());
           return;
         }
-        // Preserve child elements (like <em>) but split their text too
         const clone = node.cloneNode(false);
         const innerText = node.textContent;
         for (let i = 0; i < innerText.length; i++) {
@@ -110,12 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.split-words').forEach(el => splitWords(el));
   setupLineReveals();
 
-  // Add spin class to ~1 in 5 non-space characters for playful rotation
-  document.querySelectorAll('.split-chars .char').forEach((ch, i) => {
-    if (ch.textContent.trim() && i % 5 === 2) {
-      ch.classList.add('char-spin');
-    }
-  });
 
   /* ============ CUSTOM CURSOR ============ */
   const cursor = document.getElementById('cursor');
@@ -228,14 +220,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Trigger split-chars animation on headline
     if (headline) {
       headline.classList.add('animated');
-      // After animations finish, clear animation property so hover transforms work
-      headline.querySelectorAll('.char').forEach(ch => {
-        ch.addEventListener('animationend', () => {
-          ch.style.animation = 'none';
-          ch.style.opacity = '1';
-          ch.style.transform = 'translateY(0)';
+
+      // After all animations complete, enable hover grow
+      const allChars = headline.querySelectorAll('.char');
+      const lastChar = allChars[allChars.length - 1];
+      if (lastChar) {
+        lastChar.addEventListener('animationend', () => {
+          allChars.forEach(ch => {
+            ch.style.animation = 'none';
+            ch.style.opacity = '1';
+            ch.style.transform = '';
+          });
+          if (window._enableHeroGrow) window._enableHeroGrow();
         }, { once: true });
-      });
+      }
     }
 
     // Fade in meta with delay
@@ -248,6 +246,54 @@ document.addEventListener('DOMContentLoaded', () => {
         meta.style.transform = 'translateY(0)';
       }, 50);
     }
+  }
+
+  /* ============ HERO CHAR PROXIMITY GROW ============ */
+  // Letters near the cursor grow, creating a magnifying effect.
+  // Uses the .hero section as the mousemove target so the full
+  // area is covered, not just the text bounding box.
+  const heroSection = document.querySelector('.hero');
+  const heroH1 = document.querySelector('.hero-headline h1');
+  if (heroSection && heroH1) {
+    const radius = 150;
+    let growReady = false;
+
+    // Only enable grow after the float-up animation has fully completed
+    function enableGrow() { growReady = true; }
+
+    heroSection.addEventListener('mousemove', (e) => {
+      if (!growReady) return;
+      const allChars = heroH1.querySelectorAll('.char');
+      const mx = e.clientX;
+      const my = e.clientY;
+
+      allChars.forEach(ch => {
+        const rect = ch.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dist = Math.sqrt((mx - cx) ** 2 + (my - cy) ** 2);
+
+        if (dist < radius) {
+          const scale = 1 + 0.15 * (1 - dist / radius);
+          ch.style.transform = `scale(${scale})`;
+          ch.style.transition = 'transform 0.2s ease-out';
+        } else {
+          ch.style.transform = 'scale(1)';
+          ch.style.transition = 'transform 0.4s ease-out';
+        }
+      });
+    });
+
+    heroSection.addEventListener('mouseleave', () => {
+      if (!growReady) return;
+      heroH1.querySelectorAll('.char').forEach(ch => {
+        ch.style.transform = 'scale(1)';
+        ch.style.transition = 'transform 0.4s ease-out';
+      });
+    });
+
+    // Expose enableGrow so animateHero can call it after animations finish
+    window._enableHeroGrow = enableGrow;
   }
 
   // If no loader (back/forward navigation), animate hero immediately
