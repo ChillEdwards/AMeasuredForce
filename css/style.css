@@ -128,7 +128,7 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 }
 .header-logo { justify-self: start; }
 .header-logo a { display: flex; align-items: center; }
-.header-logo-img { height: 70px; width: auto; }
+.header-logo-img { height: 105px; width: auto; }
 .header-center-name { justify-self: center; }
 .header-center-name a {
   font-family: var(--font-sans); font-weight: 500;
@@ -189,6 +189,8 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   letter-spacing: 0.12em; color: var(--gray);
   display: flex; flex-direction: column; gap: 0.15rem;
 }
+.hero-meta .line-mask { display: block; }
+.hero-meta .line-inner { display: block; text-align: right; }
 
 /* ============ SECTION LABEL ============ */
 .section-label {
@@ -438,58 +440,85 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 }
 
 /* ============ WORKS SPLIT PAGE (375-style) ============ */
+/* ---- Works page: split layout ---- */
 .works-split {
-  display: grid; grid-template-columns: 1fr 1fr;
-  min-height: 100vh;
+  display: grid; grid-template-columns: 1.1fr 0.9fr;
+  height: 100vh; overflow: hidden;
 }
 .works-left {
-  position: sticky; top: 0; height: 100vh;
+  position: relative; height: 100vh;
   display: flex; flex-direction: column;
   justify-content: center;
   padding: 8rem var(--pad) 3rem;
-  border-right: 1px solid var(--border);
 }
 .works-left-title {
   font-family: var(--font-serif); font-weight: 400;
-  font-size: clamp(2rem, 3.5vw, 3.2rem);
-  line-height: 1.2; margin-bottom: 2rem;
+  font-size: clamp(2rem, 3.2vw, 3.5rem);
+  line-height: 1.1; letter-spacing: -0.01em;
 }
 .works-left-title em { color: var(--orange); }
-.works-left-sub {
-  font-size: 0.9rem; color: var(--gray);
-  line-height: 1.7; max-width: 400px;
-  margin-bottom: 3rem;
-}
-.works-count {
-  font-size: 0.7rem; text-transform: uppercase;
-  letter-spacing: 0.15em; color: var(--accent);
-  font-weight: 500;
-  border: 1px solid var(--accent); padding: 0.3rem 1rem;
-  border-radius: 100px; width: fit-content;
-}
+
+/* ---- Works right: scrolling image column ---- */
 .works-right {
-  padding: 8rem 0 0;
+  position: relative; height: 100vh;
   overflow: hidden;
 }
+
+/* Purple atmospheric glow — bottom */
+.works-right::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: -10%; right: -10%;
+  height: 120px;
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 100%,
+    rgba(120, 50, 180, 0.35) 0%,
+    rgba(120, 50, 180, 0.1) 50%,
+    transparent 100%
+  );
+  filter: blur(20px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Purple atmospheric glow — top */
+.works-right::before {
+  content: '';
+  position: absolute;
+  top: -20px; left: -10%; right: -10%;
+  height: 120px;
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 0%,
+    rgba(120, 50, 180, 0.35) 0%,
+    rgba(120, 50, 180, 0.1) 50%,
+    transparent 100%
+  );
+  filter: blur(20px);
+  pointer-events: none;
+  z-index: 2;
+}
+
 .works-scroll {
   display: flex; flex-direction: column;
   gap: 1.25rem;
-  padding: 0 var(--pad) 3rem;
+  padding: 0;
+  will-change: transform;
 }
+
+/* ---- Individual project cards ---- */
 .works-card {
   display: block; position: relative;
   overflow: hidden; cursor: none;
+  will-change: transform, filter;
+  transform-origin: center center;
+  backface-visibility: hidden;
 }
 .works-card img {
   width: 100%; aspect-ratio: 16/9;
   object-fit: cover;
-  transition: transform 0.7s cubic-bezier(0.16,1,0.3,1),
-              filter 0.7s ease;
   filter: brightness(0.85);
-}
-.works-card:hover img {
-  transform: scale(1.04);
-  filter: brightness(1);
+  will-change: transform, filter;
+  backface-visibility: hidden;
 }
 .works-card h3 {
   position: absolute; bottom: 1.25rem; left: 1.25rem;
@@ -497,6 +526,7 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   font-size: clamp(1.5rem, 2.5vw, 2.2rem);
   color: var(--white);
   text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+  transition: opacity 0.4s ease;
 }
 .works-card:hover h3 { color: var(--white); }
 
@@ -891,13 +921,49 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 
 /* ============ TEXT ANIMATIONS ============ */
 
-/* Split chars - individual character animation */
+/*
+ * Line-mask reveal system (Studio375-style)
+ * Each line is wrapped in .line-mask (overflow:hidden)
+ * containing .line-inner which slides up from below.
+ * Stagger is applied via CSS custom property --line-i
+ * set in JS. The motion is tight: short distance,
+ * smooth easing, slight opacity fade.
+ */
+
+/* Mask container: no overflow hidden needed with clip-path approach */
+.line-mask {
+  display: block;
+  position: relative;
+}
+
+/*
+ * The text line uses clip-path to reveal from bottom to top.
+ * The text never moves — only the clipping rectangle animates,
+ * so it feels like an unveiling, not a float.
+ * A very subtle translateY (8px) adds just enough settling motion.
+ */
+.line-inner {
+  display: block;
+  clip-path: inset(100% 0 0 0);
+  transform: translateY(8px);
+  transition:
+    clip-path 0.7s cubic-bezier(0.25, 1, 0.5, 1) calc(var(--line-i, 0) * 0.1s),
+    transform 0.7s cubic-bezier(0.25, 1, 0.5, 1) calc(var(--line-i, 0) * 0.1s);
+}
+
+/* Revealed: fully unclipped, settled into place */
+.line-inner.revealed {
+  clip-path: inset(0 0 0 0);
+  transform: translateY(0);
+}
+
+/* Split chars - individual character animation (kept for inner pages) */
 .split-chars .char {
   display: inline-block;
   opacity: 0;
   transform: translateY(100%);
-  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1),
-              transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  transition: opacity 0.6s cubic-bezier(0.25,1,0.5,1),
+              transform 0.6s cubic-bezier(0.25,1,0.5,1);
 }
 .split-chars.animated .char {
   opacity: 1;
@@ -908,25 +974,52 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 .split-words .word {
   display: inline-block;
   opacity: 0;
-  transform: translateY(100%);
-  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
-              transform 0.7s cubic-bezier(0.16,1,0.3,1);
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.25,1,0.5,1),
+              transform 0.7s cubic-bezier(0.25,1,0.5,1);
 }
 .split-words.animated .word {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Line reveal - slide up from mask */
+/* Line reveal - slide up from mask (services, approach cards, etc.) */
 .line-reveal {
   overflow: hidden;
 }
 .line-reveal-inner {
   transform: translateY(105%);
-  transition: transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  transition: transform 0.8s cubic-bezier(0.25,1,0.5,1);
 }
 .line-reveal.revealed .line-reveal-inner {
   transform: translateY(0);
+}
+
+/* Scroll-triggered line-mask reveals use same clip-path system */
+
+/* General scroll reveal for non-line-mask elements */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.25,1,0.5,1),
+              transform 0.7s cubic-bezier(0.25,1,0.5,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .line-inner,
+  .split-chars .char,
+  .split-words .word,
+  .line-reveal-inner,
+  .reveal {
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
 }
 
 /* ============ RESPONSIVE ============ */
@@ -941,20 +1034,22 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   .case-hero-content { grid-template-columns: 1fr; gap: 2rem; }
   .case-section { grid-template-columns: 1fr; gap: 1rem; }
   .case-results-grid { grid-template-columns: repeat(2, 1fr); }
-  .works-split { grid-template-columns: 1fr; }
+  .works-split { grid-template-columns: 1fr; height: auto; overflow: visible; }
   .works-left {
     position: relative; height: auto;
     padding: 8rem var(--pad) 3rem;
     border-right: none; border-bottom: 1px solid var(--border);
   }
-  .works-right { padding-top: 2rem; }
+  .works-right { padding-top: 2rem; height: auto; overflow: visible; }
+  .works-right::after { display: none; }
+  .works-scroll { transform: none !important; }
 }
 
 @media (max-width: 768px) {
   .header-nav { display: none; }
   .header-center-name { display: none; }
   .menu-toggle { display: block; }
-  .header-logo-img { height: 50px; }
+  .header-logo-img { height: 75px; }
   .header { padding: 1rem var(--pad); }
 
   .hero { padding: 6rem var(--pad) var(--pad); }
