@@ -23,11 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
           const span = document.createElement('span');
           span.className = 'char';
           span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
-          span.style.transitionDelay = (charIndex * 0.025) + 's';
+          span.style.setProperty('--char-delay', (charIndex * 0.08) + 's');
           el.appendChild(span);
           charIndex++;
         }
       } else if (node.nodeType === Node.ELEMENT_NODE) {
+        // Preserve <br> tags as-is
+        if (node.tagName === 'BR') {
+          el.appendChild(node.cloneNode());
+          return;
+        }
         // Preserve child elements (like <em>) but split their text too
         const clone = node.cloneNode(false);
         const innerText = node.textContent;
@@ -35,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const span = document.createElement('span');
           span.className = 'char';
           span.textContent = innerText[i] === ' ' ? '\u00A0' : innerText[i];
-          span.style.transitionDelay = (charIndex * 0.025) + 's';
+          span.style.setProperty('--char-delay', (charIndex * 0.08) + 's');
           clone.appendChild(span);
           charIndex++;
         }
@@ -105,6 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.split-words').forEach(el => splitWords(el));
   setupLineReveals();
 
+  // Add spin class to ~1 in 5 non-space characters for playful rotation
+  document.querySelectorAll('.split-chars .char').forEach((ch, i) => {
+    if (ch.textContent.trim() && i % 5 === 2) {
+      ch.classList.add('char-spin');
+    }
+  });
+
   /* ============ CUSTOM CURSOR ============ */
   const cursor = document.getElementById('cursor');
   let cursorX = 0, cursorY = 0, targetX = 0, targetY = 0;
@@ -170,19 +182,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = 'hidden';
 
     const loadInterval = setInterval(() => {
-      progress += Math.random() * 12 + 3;
+      progress += Math.random() * 8 + 2;
       if (progress >= 100) {
         progress = 100;
         clearInterval(loadInterval);
         setTimeout(() => {
           loader.classList.add('hidden');
           document.body.style.overflow = '';
-          animateHero();
-        }, 500);
+          // Delay hero animation so loader fully fades out first
+          setTimeout(() => animateHero(), 800);
+        }, 600);
       }
       if (loaderBar) loaderBar.style.width = progress + '%';
       if (loaderPercent) loaderPercent.textContent = Math.floor(progress) + '%';
-    }, 120);
+    }, 150);
   }
 
   /* ============ LINE-MASK REVEAL SYSTEM ============ */
@@ -215,6 +228,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Trigger split-chars animation on headline
     if (headline) {
       headline.classList.add('animated');
+      // After animations finish, clear animation property so hover transforms work
+      headline.querySelectorAll('.char').forEach(ch => {
+        ch.addEventListener('animationend', () => {
+          ch.style.animation = 'none';
+          ch.style.opacity = '1';
+          ch.style.transform = 'translateY(0)';
+        }, { once: true });
+      });
     }
 
     // Fade in meta with delay
