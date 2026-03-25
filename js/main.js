@@ -483,7 +483,15 @@ document.addEventListener('DOMContentLoaded', () => {
         worksRAF = requestAnimationFrame(tick);
       }
 
-      window.addEventListener('load', () => { measureSetHeight(); worksRAF = requestAnimationFrame(tick); });
+      // Start immediately if page already loaded (AJAX navigation), otherwise wait for load
+      if (document.readyState === 'complete') {
+        measureSetHeight();
+        worksRAF = requestAnimationFrame(tick);
+      } else {
+        window.addEventListener('load', () => { measureSetHeight(); worksRAF = requestAnimationFrame(tick); });
+      }
+      // Also kick off after a short delay to handle AJAX content swap timing
+      setTimeout(() => { measureSetHeight(); if (!worksRAF) worksRAF = requestAnimationFrame(tick); }, 100);
       window.addEventListener('resize', measureSetHeight);
     }
 
