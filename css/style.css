@@ -472,8 +472,8 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   height: 120px;
   background: radial-gradient(
     ellipse 80% 100% at 50% 100%,
-    rgba(120, 50, 180, 0.50) 0%,
-    rgba(120, 50, 180, 0.25) 50%,
+    rgba(120, 50, 180, 0.35) 0%,
+    rgba(120, 50, 180, 0.1) 50%,
     transparent 100%
   );
   filter: blur(20px);
@@ -489,8 +489,8 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   height: 120px;
   background: radial-gradient(
     ellipse 80% 100% at 50% 0%,
-    rgba(120, 50, 180, 0.50) 0%,
-    rgba(120, 50, 180, 0.25) 50%,
+    rgba(120, 50, 180, 0.35) 0%,
+    rgba(120, 50, 180, 0.1) 50%,
     transparent 100%
   );
   filter: blur(20px);
