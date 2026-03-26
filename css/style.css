@@ -5,6 +5,15 @@
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* ============ WEBGL SHADER BACKGROUND ============ */
+#shaderBg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
 :root {
   --black: #000000;
   --white: #ffffff;
@@ -20,10 +29,10 @@
   --pad: clamp(1.5rem, 4vw, 3.5rem);
 }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; background: #000; }
 
 body {
-  background: var(--black);
+  background: transparent;
   color: var(--white);
   font-family: var(--font-sans);
   font-weight: 300;
