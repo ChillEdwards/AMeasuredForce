@@ -125,21 +125,21 @@
 
       vec3 col = black;
       col = mix(col, darkGray, smoothstep(-1.0, -0.2, noise));
-      col = mix(col, orange * 0.12, zone1 * 0.8);
-      col = mix(col, cyan * 0.08, zone2 * 0.6);
-      col = mix(col, orange * 0.25, smoothstep(0.35, 0.55, noise) * 0.5);
+      col = mix(col, orange * 0.132, zone1 * 0.88);
+      col = mix(col, cyan * 0.088, zone2 * 0.66);
+      col = mix(col, orange * 0.275, smoothstep(0.35, 0.55, noise) * 0.55);
 
       /* Bright accents at noise peaks — very subtle */
       float peak = smoothstep(0.5, 0.7, noise);
-      col += cyan * 0.06 * peak;
-      col += orange * 0.04 * peak;
+      col += cyan * 0.066 * peak;
+      col += orange * 0.044 * peak;
 
       /* Vignette — darken edges */
       float vig = 1.0 - smoothstep(0.3, 1.4, length(vUv - 0.5) * 1.8);
-      col *= mix(0.5, 1.0, vig);
+      col *= mix(0.55, 1.0, vig);
 
       /* Mouse glow — subtle warm highlight near cursor */
-      float glow = smoothstep(0.6, 0.0, length(vUv - u_mouse)) * 0.06;
+      float glow = smoothstep(0.6, 0.0, length(vUv - u_mouse)) * 0.066;
       col += orange * glow;
 
       gl_FragColor = vec4(col, 1.0);
