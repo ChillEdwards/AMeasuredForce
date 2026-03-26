@@ -9,61 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
-  <style>
-    /* CLIF KID page-specific styles */
-    .ck-hero { position: relative; width: 100%; min-height: 100vh; display: flex; align-items: flex-end; }
-    .ck-hero-img { position: absolute; inset: 0; z-index: 0; }
-    .ck-hero-img img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-    .ck-hero-content { position: relative; z-index: 1; display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 var(--pad) 4rem; align-items: end; }
-    .ck-hero-tags { position: absolute; bottom: 1.5rem; left: var(--pad); z-index: 2; display: flex; gap: 0.5rem; }
-    .ck-hero-tags span { border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 0.3rem 0.85rem; border-radius: 100px; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; backdrop-filter: blur(4px); background: rgba(0,0,0,0.2); }
-
-    .ck-statement { max-width: 900px; margin: 0 auto; padding: 6rem var(--pad); text-align: center; }
-    .ck-statement h2 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.45; color: var(--white); font-style: italic; }
-
-    .ck-intro { max-width: 800px; margin: 0 auto; padding: 0 var(--pad) 5rem; text-align: center; }
-    .ck-intro-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 1.5rem; font-weight: 500; }
-    .ck-intro p { font-size: 1.05rem; line-height: 1.85; color: var(--gray-light); }
-
-    .ck-full { width: 100%; }
-    .ck-full img { width: 100%; height: auto; max-height: 85vh; object-fit: cover; display: block; }
-
-    .ck-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 1200px; margin: 0 auto; padding: 5rem var(--pad); align-items: start; }
-    .ck-cols p { font-size: 1rem; line-height: 1.85; color: var(--gray-light); margin-bottom: 1rem; }
-    .ck-cols img { width: 100%; height: auto; display: block; }
-    .ck-col-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 1rem; font-weight: 500; }
-
-    .ck-text { max-width: 650px; padding: 4rem var(--pad); }
-    .ck-text--right { margin-left: auto; margin-right: calc(var(--pad) + 5%); }
-    .ck-text--left { margin-right: auto; margin-left: calc(var(--pad) + 5%); }
-    .ck-text p { font-size: 1rem; line-height: 1.85; color: var(--gray-light); }
-    .ck-text-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 1rem; font-weight: 500; }
-
-    .ck-video { max-width: 1000px; margin: 0 auto; padding: 2rem var(--pad) 5rem; }
-    .ck-video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 4px; }
-    .ck-video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
-    .ck-thanks { padding: 6rem var(--pad); text-align: center; }
-    .ck-thanks h2 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1.1; color: var(--white); }
-
-    .ck-next { padding: 4rem var(--pad) 6rem; max-width: 1200px; margin: 0 auto; }
-    .ck-next-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--gray); margin-bottom: 2rem; }
-    .ck-next-card { display: block; position: relative; overflow: hidden; border-radius: 4px; }
-    .ck-next-card img { width: 100%; height: 50vh; object-fit: cover; display: block; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), filter 0.6s; filter: brightness(0.7); }
-    .ck-next-card:hover img { transform: scale(1.03); filter: brightness(0.5); }
-    .ck-next-card h2 { position: absolute; bottom: 2rem; left: 2rem; font-family: var(--font-serif); font-weight: 400; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; color: #fff; }
-    .ck-next-card .pill-btn { position: absolute; bottom: 2rem; right: 2rem; }
-
-    @media (max-width: 900px) {
-      .ck-hero-content { grid-template-columns: 1fr; gap: 2rem; }
-      .ck-cols { grid-template-columns: 1fr; }
-      .ck-text--right, .ck-text--left { margin: 0 auto; }
-    }
-    @media (max-width: 768px) {
-      .ck-hero { min-height: 70vh; }
-      .ck-next-card img { height: 35vh; }
-    }
-  </style>
 </head>
 <body>
   <!-- WebGL Shader Background -->
@@ -82,129 +27,114 @@
   </header>
   <div class="mobile-nav" id="mobileNav"><nav><a href="../index.html" class="mobile-nav-link">Home</a><a href="../work.html" class="mobile-nav-link">Work</a><a href="../about.html" class="mobile-nav-link">About</a><a href="../contact.html" class="mobile-nav-link">Contact</a></nav></div>
 
-  <!-- Video Lightbox -->
-  <div class="video-lightbox" id="videoLightbox">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Close video">&times;</button>
-    <div class="lightbox-inner">
-      <iframe id="lightboxVideo" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
-  </div>
-
   <main>
-
-    <!-- 1. Hero with metadata overlay -->
-    <section class="ck-hero">
-      <div class="ck-hero-img">
-        <img src="https://static.wixstatic.com/media/1f7c26_6d025a7a72c04f848e1735face0b2826~mv2.png/v1/fill/w_1920,h_1100,al_c,q_90/image.png" alt="CLIF KID Fuel Your First" loading="eager">
-      </div>
-      <div class="ck-hero-content">
-        <div>
-          <span class="case-label" style="color:var(--gray-light);">Client</span>
+    <section class="case-hero">
+      <div class="case-hero-content">
+        <div class="case-hero-left">
+          <span class="case-label">Client</span>
           <h1 class="case-title">CLIF KID</h1>
-          <button class="case-play-btn" id="playBtn" aria-label="Play video" style="margin-top:1.5rem;">
+          <button class="case-play-btn" id="playBtn" aria-label="Play video">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="3,0 20,10 3,20" fill="currentColor"/></svg>
             <span>Watch The Spot</span>
           </button>
         </div>
-        <div>
-          <div class="case-meta-block" style="margin-bottom:1.2rem;">
-            <span class="case-label" style="color:var(--gray-light);">Year</span>
-            <span class="case-value" style="color:#fff;">2021</span>
-          </div>
-          <div class="case-meta-block" style="margin-bottom:1.2rem;">
-            <span class="case-label" style="color:var(--gray-light);">Services</span>
-            <span class="case-value" style="color:#fff;">Content Production, Brand Storytelling, Campaign Strategy</span>
+        <div class="case-hero-right">
+          <div class="case-meta-block">
+            <span class="case-label">Services</span>
+            <span class="case-value">Content Production, Brand Storytelling, Campaign Strategy</span>
           </div>
           <div class="case-meta-block">
-            <span class="case-label" style="color:var(--gray-light);">Info</span>
-            <p class="case-value" style="color:rgba(255,255,255,0.85);">A cross-platform campaign combining athlete-led content and user-generated media to inspire children to embrace new experiences and outdoor activity.</p>
+            <span class="case-label">Location</span>
+            <span class="case-value">Venice, CA</span>
           </div>
+          <div class="case-meta-block">
+            <span class="case-label">Info</span>
+            <p class="case-value">A cross-platform campaign combining athlete-led content and user-generated media to inspire children to embrace new experiences and outdoor activity.</p>
+          </div>
+        </div>
+      </div>
+      <div class="case-hero-tags">
+        <span>Campaign</span><span>Content Production</span><span>Brand Storytelling</span><span>CPG</span>
+      </div>
+    </section>
+
+    <!-- Video Lightbox -->
+    <div class="video-lightbox" id="videoLightbox">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Close video">&times;</button>
+      <div class="lightbox-inner">
+        <iframe id="lightboxVideo" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <div class="case-hero-img">
+      <img src="https://static.wixstatic.com/media/1f7c26_6d025a7a72c04f848e1735face0b2826~mv2.png/v1/fill/w_1600,h_918,al_c,q_90/image.png" alt="CLIF KID">
+    </div>
+
+    <section class="case-body">
+      <div class="case-section">
+        <div class="case-section-label">Summary</div>
+        <div class="case-section-content">
+          <p>A Measured Force partnered with CLIF Kid to develop and execute Fuel Your First, a cross-platform campaign designed to inspire children to embrace new experiences and outdoor activity. The campaign combined brand storytelling, athlete-led content, and user-generated media to create an authentic and engaging narrative distributed across platforms including Scary Mommy, Fatherly, and The Dade.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <div class="case-section-label">Challenge</div>
+        <div class="case-section-content">
+          <p>CLIF Kid needed a campaign that would resonate with families and encourage children to explore new experiences following a period of limited activity and isolation. The challenge was to create content that felt authentic and inspiring while connecting the brand to real moments of growth, confidence, and adventure.</p>
+          <p>The campaign required a scalable content approach that could feature both a high-profile athlete and real families, while maintaining a consistent tone across multiple media platforms and distribution partners.</p>
+        </div>
+      </div>
+
+      <div class="case-full-img">
+        <img src="https://static.wixstatic.com/media/1f7c26_f65f43afe1dd4cddb281480ca2abafdf~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png" alt="Sky Brown air trick at Venice Skatepark" loading="lazy">
+      </div>
+
+      <div class="case-section">
+        <div class="case-section-label">Solution</div>
+        <div class="case-section-content">
+          <p>A Measured Force developed and executed Fuel Your First, a multi-platform campaign anchored by a series of short films. The campaign featured Olympic skateboarder Sky Brown, capturing her surfing and skating at Venice Skatepark, alongside user-generated content showcasing children experiencing activities such as climbing, camping, and surfing for the first time.</p>
+          <p>AMF led all aspects of production, including concept development, casting, on-set direction, and post-production, ensuring a cohesive narrative across all content. The campaign was distributed across major digital media platforms, combining professional storytelling with authentic, documentary-style content to connect with families and reinforce CLIF Kid's brand message.</p>
+        </div>
+      </div>
+
+      <div class="case-full-img">
+        <img src="https://static.wixstatic.com/media/1f7c26_71a53e5f1a574d16a833be7f8b0c1c0a~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png" alt="Sky Brown with ZBar on skateboard" loading="lazy">
+      </div>
+
+      <div class="case-full-img">
+        <img src="https://static.wixstatic.com/media/1f7c26_ef736fff4193473087c59fa5c446c6ec~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png" alt="Sky Brown air trick" loading="lazy">
+      </div>
+
+      <div class="case-full-img">
+        <img src="https://static.wixstatic.com/media/1f7c26_04e58837d4884ae98533433ec901339a~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png" alt="CLIF ZBar product" loading="lazy">
+      </div>
+
+      <div class="case-full-img">
+        <img src="https://static.wixstatic.com/media/1f7c26_9ca13556ae0043cfb979d1c2f08bcd87~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png" alt="Sky Brown holding ZBar" loading="lazy">
+      </div>
+
+      <div class="case-results">
+        <h3>Impact</h3>
+        <div class="case-results-grid">
+          <div class="case-result">National multi-platform campaign</div>
+          <div class="case-result">Olympic athlete-led storytelling</div>
+          <div class="case-result">Cross-platform media distribution</div>
+          <div class="case-result">Original short-form video series</div>
+          <div class="case-result">Integration of user-generated content</div>
+          <div class="case-result">Authentic brand storytelling at scale</div>
         </div>
       </div>
     </section>
 
-    <!-- 2. Statement -->
-    <div class="ck-statement">
-      <h2>Inspiring a generation to get outside, explore, and fuel their firsts — told through the lens of Olympic skateboarder Sky Brown and real families across America.</h2>
-    </div>
-
-    <!-- 3. Intro -->
-    <div class="ck-intro">
-      <div class="ck-intro-label">Campaign &amp; Content Production</div>
-      <p>A Measured Force partnered with CLIF Kid to develop and execute Fuel Your First, a cross-platform campaign designed to inspire children to embrace new experiences and outdoor activity. The campaign combined brand storytelling, athlete-led content, and user-generated media to create an authentic and engaging narrative distributed across platforms including Scary Mommy, Fatherly, and The Dade.</p>
-    </div>
-
-    <!-- 4. Full-bleed image — Sky Brown air trick -->
-    <div class="ck-full">
-      <img src="https://static.wixstatic.com/media/1f7c26_f65f43afe1dd4cddb281480ca2abafdf~mv2.png/v1/fill/w_1920,h_2000,al_c,q_90/image.png" alt="Sky Brown air trick at Venice Skatepark" loading="lazy">
-    </div>
-
-    <!-- 5. Two-column — Challenge + Sky Brown with ZBar -->
-    <div class="ck-cols">
-      <div>
-        <div class="ck-col-label">Challenge</div>
-        <p>CLIF Kid needed a campaign that would resonate with families and encourage children to explore new experiences following a period of limited activity and isolation. The challenge was to create content that felt authentic and inspiring while connecting the brand to real moments of growth, confidence, and adventure.</p>
-        <p>The campaign required a scalable content approach that could feature both a high-profile athlete and real families, while maintaining a consistent tone across multiple media platforms and distribution partners.</p>
-      </div>
-      <div>
-        <img src="https://static.wixstatic.com/media/1f7c26_71a53e5f1a574d16a833be7f8b0c1c0a~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png" alt="Sky Brown with ZBar on skateboard" loading="lazy">
-      </div>
-    </div>
-
-    <!-- 6. Full-bleed — Sky Brown air trick 2 -->
-    <div class="ck-full">
-      <img src="https://static.wixstatic.com/media/1f7c26_ef736fff4193473087c59fa5c446c6ec~mv2.png/v1/fill/w_1920,h_2000,al_c,q_90/image.png" alt="Sky Brown air trick" loading="lazy">
-    </div>
-
-    <!-- 7. Text block — Solution (right-aligned) -->
-    <div class="ck-text ck-text--right">
-      <div class="ck-text-label">Solution</div>
-      <p>A Measured Force developed and executed Fuel Your First, a multi-platform campaign anchored by a series of short films. The campaign featured Olympic skateboarder Sky Brown, capturing her surfing and skating at Venice Skatepark, alongside user-generated content showcasing children experiencing activities such as climbing, camping, and surfing for the first time.</p>
-    </div>
-
-    <!-- 8. Full-bleed — ZBar product -->
-    <div class="ck-full">
-      <img src="https://static.wixstatic.com/media/1f7c26_04e58837d4884ae98533433ec901339a~mv2.png/v1/fill/w_1920,h_2000,al_c,q_90/image.png" alt="CLIF ZBar product" loading="lazy">
-    </div>
-
-    <!-- 9. Text block — Production (left-aligned) -->
-    <div class="ck-text ck-text--left">
-      <div class="ck-text-label">Production</div>
-      <p>AMF led all aspects of production, including concept development, casting, on-set direction, and post-production, ensuring a cohesive narrative across all content. The campaign was distributed across major digital media platforms, combining professional storytelling with authentic, documentary-style content to connect with families and reinforce CLIF Kid's brand message.</p>
-    </div>
-
-    <!-- 10. Full-bleed — Sky Brown holding ZBar -->
-    <div class="ck-full">
-      <img src="https://static.wixstatic.com/media/1f7c26_9ca13556ae0043cfb979d1c2f08bcd87~mv2.png/v1/fill/w_1920,h_2000,al_c,q_90/image.png" alt="Sky Brown holding ZBar" loading="lazy">
-    </div>
-
-    <!-- 11. Video section -->
-    <div class="ck-text" style="max-width:800px; margin:0 auto;">
-      <div class="ck-text-label">Video</div>
-      <p>The hero spot featuring Sky Brown at Venice Skatepark became the anchor of the Fuel Your First campaign — distributed nationally across Scary Mommy, Fatherly, and The Dade.</p>
-    </div>
-    <div class="ck-video">
-      <div class="ck-video-wrap">
-        <iframe src="https://www.youtube.com/embed/SLl51d_PnaY?rel=0" title="CLIF KID — Fuel Your First ft. Sky Brown" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-    </div>
-
-    <!-- 12. Thanks -->
-    <section class="ck-thanks">
-      <h2>Thanks for watching</h2>
-    </section>
-
-    <!-- 13. Next Project -->
-    <section class="ck-next">
-      <div class="ck-next-label">Next Project</div>
-      <a href="therasurf.html" class="ck-next-card">
-        <img src="https://static.wixstatic.com/media/c837a6_8acabb3e926d482bb78f3b47c7007b4d~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="THERAsurf" loading="lazy">
+    <section class="case-next">
+      <span class="case-label">Next Project</span>
+      <a href="therasurf.html" class="case-next-link">
         <h2>THERAsurf</h2>
         <span class="pill-btn">View Project</span>
       </a>
     </section>
 
-    <!-- 14. Contact CTA -->
     <section class="contact" id="contact">
       <div class="contact-cta">
         <div class="contact-dot"></div>
