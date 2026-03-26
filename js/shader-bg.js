@@ -112,35 +112,35 @@
 
       float noise = n1 * 0.5 + n2 * 0.3 + n3 * 0.2;
 
-      /* Brand colors */
+      /* Brand colors — cool palette */
       vec3 black    = vec3(0.0, 0.0, 0.0);
-      vec3 darkGray = vec3(0.04, 0.04, 0.05);
-      vec3 orange   = vec3(0.91, 0.38, 0.10);  /* #E8611A */
-      vec3 cyan     = vec3(0.0, 0.79, 0.86);   /* #00C9DB */
+      vec3 darkGray = vec3(0.03, 0.03, 0.06);
+      vec3 blue     = vec3(0.15, 0.25, 0.85);  /* deep blue */
+      vec3 purple   = vec3(0.45, 0.15, 0.75);  /* violet */
 
       /* Map noise to color regions */
-      float zone1 = smoothstep(-0.4, 0.1, noise);   /* dark to orange glow */
-      float zone2 = smoothstep(0.0, 0.5, noise);     /* orange to cyan accent */
-      float zone3 = smoothstep(0.3, 0.7, noise);     /* cyan highlight */
+      float zone1 = smoothstep(-0.4, 0.1, noise);   /* dark to blue glow */
+      float zone2 = smoothstep(0.0, 0.5, noise);     /* blue to purple accent */
+      float zone3 = smoothstep(0.3, 0.7, noise);     /* purple highlight */
 
       vec3 col = black;
       col = mix(col, darkGray, smoothstep(-1.0, -0.2, noise));
-      col = mix(col, orange * 0.132, zone1 * 0.88);
-      col = mix(col, cyan * 0.088, zone2 * 0.66);
-      col = mix(col, orange * 0.275, smoothstep(0.35, 0.55, noise) * 0.55);
+      col = mix(col, blue * 0.16, zone1 * 0.97);
+      col = mix(col, purple * 0.11, zone2 * 0.73);
+      col = mix(col, blue * 0.30, smoothstep(0.35, 0.55, noise) * 0.60);
 
       /* Bright accents at noise peaks — very subtle */
       float peak = smoothstep(0.5, 0.7, noise);
-      col += cyan * 0.066 * peak;
-      col += orange * 0.044 * peak;
+      col += purple * 0.073 * peak;
+      col += blue * 0.048 * peak;
 
       /* Vignette — darken edges */
       float vig = 1.0 - smoothstep(0.3, 1.4, length(vUv - 0.5) * 1.8);
-      col *= mix(0.55, 1.0, vig);
+      col *= mix(0.60, 1.0, vig);
 
-      /* Mouse glow — subtle warm highlight near cursor */
-      float glow = smoothstep(0.6, 0.0, length(vUv - u_mouse)) * 0.066;
-      col += orange * glow;
+      /* Mouse glow — subtle cool highlight near cursor */
+      float glow = smoothstep(0.6, 0.0, length(vUv - u_mouse)) * 0.073;
+      col += purple * glow;
 
       gl_FragColor = vec4(col, 1.0);
     }
