@@ -663,21 +663,21 @@ img { display: block; }
 
 /* ============ CASE STUDY PAGES — 375-style ============ */
 
-/* Cover image — full-bleed, first element */
-.case-cover {
-  width: 100%; padding-top: 5rem;
-}
-.case-cover img {
-  width: 100%; height: 75vh;
-  object-fit: cover; display: block;
-}
-
-/* Metadata — split layout below cover */
+/* Metadata — split layout, first section below header */
 .case-meta {
   display: grid; grid-template-columns: 1.2fr 1fr;
   gap: 4rem; max-width: 1200px; margin: 0 auto;
-  padding: 5rem var(--pad) 4rem;
-  align-items: start;
+  padding: 12rem var(--pad) 4rem;
+  align-items: end; min-height: 70vh;
+}
+
+/* Cover image — full-bleed, below metadata */
+.case-cover {
+  width: 100%;
+}
+.case-cover img {
+  width: 100%; height: 80vh;
+  object-fit: cover; display: block;
 }
 .case-meta-left {}
 .case-label {
@@ -787,17 +787,22 @@ img { display: block; }
 /* Spacer */
 .case-spacer { height: 4rem; }
 
-/* Tags row */
+/* Tags — overlaid on cover image */
+.case-cover-wrap {
+  position: relative;
+}
 .case-tags {
+  position: absolute; bottom: 2rem; left: var(--pad);
   display: flex; gap: 0.5rem; flex-wrap: wrap;
-  max-width: 1200px; margin: 0 auto;
-  padding: 0 var(--pad) 2rem;
+  z-index: 2;
 }
 .case-tags span {
-  border: 1px solid var(--border-med); color: var(--gray-light);
+  border: 1px solid rgba(255,255,255,0.5); color: var(--white);
   padding: 0.3rem 0.85rem; border-radius: 100px;
   font-size: 0.65rem; text-transform: uppercase;
   letter-spacing: 0.08em; font-weight: 400;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.2);
 }
 
 /* Thanks / closing line */
@@ -1174,7 +1179,7 @@ img { display: block; }
   .featured-text { bottom: 2rem; }
 
   .case-cover img { height: 50vh; }
-  .case-meta { padding: 3rem var(--pad); }
+  .case-meta { padding: 8rem var(--pad) 3rem; min-height: auto; }
   .case-cols { padding: 3rem var(--pad); }
   .case-quote { padding: 3rem var(--pad); }
   .case-thanks { padding: 5rem var(--pad); }
