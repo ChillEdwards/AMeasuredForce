@@ -752,6 +752,43 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   transition: border-color 0.3s, background 0.3s;
 }
 .case-result:hover { border-color: var(--accent); background: rgba(43,58,140,0.08); }
+/* Play button */
+.case-play-btn {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  margin-top: 2rem; padding: 0.75rem 1.5rem;
+  background: transparent; border: 1px solid var(--border-light);
+  color: var(--white); font-family: var(--font-sans);
+  font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: 0.12em; font-weight: 500;
+  border-radius: 100px; cursor: none;
+  transition: background 0.3s, border-color 0.3s;
+  max-width: 1200px;
+}
+.case-play-btn:hover { background: var(--orange); border-color: var(--orange); }
+.case-play-btn svg { width: 14px; height: 14px; }
+
+/* Video Lightbox */
+.video-lightbox {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.92);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.video-lightbox.active { opacity: 1; pointer-events: all; }
+.lightbox-inner {
+  width: 85vw; max-width: 1100px;
+  aspect-ratio: 16 / 9;
+}
+.lightbox-inner iframe { width: 100%; height: 100%; border-radius: 4px; }
+.lightbox-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  background: none; border: none; color: var(--white);
+  font-size: 2rem; cursor: none; line-height: 1;
+  transition: color 0.3s;
+}
+.lightbox-close:hover { color: var(--orange); }
+
 .case-next {
   padding: 6rem var(--pad);
   border-top: 1px solid var(--border);

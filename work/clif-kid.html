@@ -52,7 +52,19 @@
       <div class="case-hero-tags">
         <span>Campaign</span><span>Content Production</span><span>Brand Storytelling</span><span>CPG</span>
       </div>
+      <button class="case-play-btn" id="playBtn" aria-label="Play video">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="3,0 20,10 3,20" fill="currentColor"/></svg>
+        <span>Watch The Spot</span>
+      </button>
     </section>
+
+    <!-- Video Lightbox -->
+    <div class="video-lightbox" id="videoLightbox">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Close video">&times;</button>
+      <div class="lightbox-inner">
+        <iframe id="lightboxVideo" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
 
     <div class="case-hero-img">
       <img src="https://static.wixstatic.com/media/1f7c26_6d025a7a72c04f848e1735face0b2826~mv2.png/v1/fill/w_1600,h_918,al_c,q_90/image.png" alt="CLIF KID">
@@ -125,5 +137,34 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="../js/shader-bg.js"></script>
   <script src="../js/main.js"></script>
+  <script>
+    (function() {
+      const btn = document.getElementById('playBtn');
+      const lightbox = document.getElementById('videoLightbox');
+      const closeBtn = document.getElementById('lightboxClose');
+      const iframe = document.getElementById('lightboxVideo');
+      const videoUrl = 'https://www.youtube.com/embed/SLl51d_PnaY?autoplay=1&rel=0';
+
+      btn.addEventListener('click', () => {
+        iframe.src = videoUrl;
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+
+      function closeLightbox() {
+        lightbox.classList.remove('active');
+        iframe.src = '';
+        document.body.style.overflow = '';
+      }
+
+      closeBtn.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+      });
+    })();
+  </script>
 </body>
 </html>
