@@ -165,31 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.remove('transitioning');
   });
 
-  /* ============ LOADER (homepage only) ============ */
-  const loader = document.getElementById('loader');
-  if (loader) {
-    const loaderBar = document.getElementById('loaderBar');
-    const loaderPercent = document.getElementById('loaderPercent');
-    let progress = 0;
-    document.body.style.overflow = 'hidden';
-
-    const loadInterval = setInterval(() => {
-      progress += Math.random() * 8 + 2;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(loadInterval);
-        setTimeout(() => {
-          loader.classList.add('hidden');
-          document.body.style.overflow = '';
-          // Delay hero animation so loader fully fades out first
-          setTimeout(() => animateHero(), 800);
-        }, 600);
-      }
-      if (loaderBar) loaderBar.style.width = progress + '%';
-      if (loaderPercent) loaderPercent.textContent = Math.floor(progress) + '%';
-    }, 150);
-  }
-
   /* ============ LINE-MASK REVEAL SYSTEM ============ */
   /*
    * Assigns stagger index (--line-i) to each .line-inner,
@@ -296,12 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window._enableHeroGrow = enableGrow;
   }
 
-  // If no loader (back/forward navigation), animate hero immediately
-  if (!loader) {
-    const heroHeadline = document.querySelector('.hero-headline h1.split-chars');
-    if (heroHeadline) {
-      setTimeout(() => animateHero(), 100);
-    }
+  // Animate hero on initial load.
+  const heroHeadline = document.querySelector('.hero-headline h1.split-chars');
+  if (heroHeadline) {
+    setTimeout(() => animateHero(), 100);
   }
 
   /* ============ PAGE HERO ANIMATION (inner pages) ============ */
@@ -310,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const studioHero = document.querySelector('.studio-hero');
   const heroEl = pageHero || caseHero;
 
-  if (heroEl && !loader) {
+  if (heroEl) {
     const children = heroEl.querySelectorAll(
       '.section-label, .page-hero-title, .page-hero-sub, .case-label, .case-title, .case-hero-right, .case-hero-tags'
     );
@@ -328,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Studio hero — badge fades in, then chars animate
-  if (studioHero && !loader) {
+  if (studioHero) {
     const badge = studioHero.querySelector('.studio-badge');
     const heading = studioHero.querySelector('.studio-heading');
 
@@ -641,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ============ WORKS SPLIT — entrance animations ============ */
   const worksLeft = document.querySelector('.works-left');
-  if (worksLeft && !loader) {
+  if (worksLeft) {
     const els = worksLeft.querySelectorAll('.section-label, .works-left-title, .works-left-sub, .works-count');
     els.forEach((el, i) => {
       el.style.opacity = '0';

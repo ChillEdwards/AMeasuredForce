@@ -101,31 +101,6 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 .cursor.hovering-work .cursor-text { font-size: 0.65rem; }
 @media (pointer: coarse) { .cursor { display: none; } }
 
-/* ============ LOADER ============ */
-.loader {
-  position: fixed; inset: 0; z-index: 9998;
-  background: var(--black);
-  display: flex; align-items: flex-end; justify-content: space-between;
-  padding: var(--pad);
-  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), visibility 0.8s;
-}
-.loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-.loader-text {
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 4vw, 3rem);
-  font-style: italic; color: var(--white);
-}
-.loader-percent {
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 4vw, 3rem);
-  color: var(--white);
-}
-.loader-bar {
-  position: absolute; bottom: 0; left: 0;
-  height: 3px; background: var(--orange);
-  width: 0; transition: width 0.2s ease;
-}
-
 /* ============ HEADER ============ */
 .header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
