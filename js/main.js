@@ -677,15 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ============ HEADER SCROLL ============ */
-  const header = document.getElementById('header');
-  if (header) {
-    window.addEventListener('scroll', () => {
-      header.style.background = 'transparent';
-      header.style.backdropFilter = 'none';
-      header.style.webkitBackdropFilter = 'none';
-      header.style.mixBlendMode = 'difference';
-    }, { passive: true });
-  }
+  // Header sits on paper background; no scroll-state changes needed.
 
   /* ============ SMOOTH ANCHORS ============ */
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {

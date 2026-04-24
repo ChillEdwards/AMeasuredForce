@@ -15,25 +15,37 @@
 }
 
 :root {
-  --black: #000000;
-  --white: #ffffff;
-  --orange: #E8611A;
-  --accent: #FF6B1A;
-  --gray: #808080;
-  --gray-light: #aaaaaa;
-  --border: rgba(255,255,255,0.08);
-  --border-med: rgba(255,255,255,0.15);
-  --border-light: rgba(255,255,255,0.25);
+  /* Semantic palette — warm neutral, light-dominant. */
+  --paper:       #EFEBE5;
+  --bone:        #E6E1D9;
+  --ink:         #171512;
+  --ash:         #6B6862;
+  --stone:       #A09C94;
+  --line:        rgba(23,21,18,0.10);
+  --line-med:    rgba(23,21,18,0.18);
+  --line-strong: rgba(23,21,18,0.28);
+
+  /* Legacy aliases mapped to the new palette (no accent color in use). */
+  --black:        var(--ink);
+  --white:        var(--ink);
+  --orange:       var(--ink);
+  --accent:       var(--ink);
+  --gray:         var(--ash);
+  --gray-light:   var(--ash);
+  --border:       var(--line);
+  --border-med:   var(--line-med);
+  --border-light: var(--line-strong);
+
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Inter', -apple-system, sans-serif;
   --pad: clamp(1.5rem, 4vw, 3.5rem);
 }
 
-html { scroll-behavior: smooth; font-size: 16px; background: #000; }
+html { scroll-behavior: smooth; font-size: 16px; background: var(--paper); }
 
 body {
   background: transparent;
-  color: var(--white);
+  color: var(--ink);
   font-family: var(--font-sans);
   font-weight: 300;
   line-height: 1.6;
@@ -44,12 +56,12 @@ body {
 
 @media (pointer: coarse) { body { cursor: auto; } }
 
-a { color: var(--white); text-decoration: none; transition: color 0.3s; cursor: none; }
-a:hover { color: var(--orange); }
+a { color: var(--ink); text-decoration: none; transition: opacity 0.3s; cursor: none; }
+a:hover { opacity: 0.6; }
 
 em { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
 
-::selection { background: var(--orange); color: var(--white); }
+::selection { background: var(--ink); color: var(--paper); }
 img { display: block; }
 
 /* ============ PAGE TRANSITIONS ============ */
@@ -107,8 +119,7 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   display: grid; grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 1.5rem var(--pad);
-  mix-blend-mode: difference;
-  transition: background 0.4s, backdrop-filter 0.4s, mix-blend-mode 0.4s;
+  transition: background 0.4s, backdrop-filter 0.4s;
 }
 .header-logo { justify-self: start; }
 .header-logo a { display: flex; align-items: center; }
@@ -126,18 +137,18 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 
 .menu-toggle {
   display: none; background: none;
-  border: 1px solid rgba(255,255,255,0.3);
-  color: var(--white); padding: 0.4rem 1.2rem;
+  border: 1px solid var(--line-strong);
+  color: var(--ink); padding: 0.4rem 1.2rem;
   border-radius: 100px; font-size: 0.75rem;
   font-family: var(--font-sans); letter-spacing: 0.08em;
   text-transform: uppercase; cursor: none;
 }
-.menu-toggle:hover { border-color: var(--white); }
+.menu-toggle:hover { border-color: var(--ink); }
 
 /* ============ MOBILE NAV ============ */
 .mobile-nav {
   position: fixed; inset: 0; z-index: 99;
-  background: var(--black);
+  background: var(--paper);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; visibility: hidden;
   transition: opacity 0.5s, visibility 0.5s;
@@ -211,7 +222,7 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   margin-top: 1rem; color: var(--white);
   transition: border-color 0.3s, background 0.3s, color 0.3s;
 }
-.pill-btn:hover { border-color: var(--accent); background: var(--accent); color: var(--white); }
+.pill-btn:hover { border-color: var(--ink); background: var(--ink); color: var(--paper); }
 
 /* ============ STATS ============ */
 .stats {
@@ -261,14 +272,14 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 .featured-num {
   display: block;
   font-size: 0.7rem; letter-spacing: 0.15em;
-  color: var(--white); opacity: 0.7;
+  color: #fff; opacity: 0.7;
   margin-bottom: 0.75rem;
 }
 .featured-name {
   font-family: var(--font-serif); font-weight: 400;
   font-size: clamp(3rem, 7vw, 6rem);
   line-height: 1.05; letter-spacing: -0.02em;
-  color: var(--white);
+  color: #fff;
   text-shadow: 0 2px 40px rgba(0,0,0,0.5);
 }
 .featured-tags {
@@ -279,7 +290,7 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   border: 2px solid rgba(255,255,255,0.6);
   padding: 0.2rem 0.7rem; border-radius: 20px;
   font-size: 0.65rem; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--white);
+  letter-spacing: 0.08em; color: #fff;
   backdrop-filter: blur(4px);
   background: rgba(255,255,255,0.05);
 }
@@ -304,15 +315,15 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;
   transition: background 0.3s, color 0.3s;
 }
-.service-col:hover .service-pill { background: var(--accent); color: var(--white); }
+.service-col:hover .service-pill { background: var(--ink); color: var(--paper); }
 .service-col-title { margin-bottom: 1.5rem; }
 .service-col ul { list-style: none; }
 .service-col li {
-  padding: 0.55rem 0; font-size: 0.9rem; color: var(--gray);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 0.55rem 0; font-size: 0.9rem; color: var(--ash);
+  border-bottom: 1px solid var(--line);
   transition: color 0.3s, padding-left 0.3s;
 }
-.service-col li:hover { color: var(--white); padding-left: 0.5rem; }
+.service-col li:hover { color: var(--ink); padding-left: 0.5rem; }
 
 /* ============ PROCESS ============ */
 .process { padding: 10rem var(--pad); border-top: 1px solid var(--border); }
@@ -456,8 +467,8 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   height: 120px;
   background: radial-gradient(
     ellipse 80% 100% at 50% 100%,
-    rgba(120, 50, 180, 0.35) 0%,
-    rgba(120, 50, 180, 0.1) 50%,
+    rgba(23, 21, 18, 0.12) 0%,
+    rgba(23, 21, 18, 0.04) 50%,
     transparent 100%
   );
   filter: blur(20px);
@@ -473,8 +484,8 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   height: 120px;
   background: radial-gradient(
     ellipse 80% 100% at 50% 0%,
-    rgba(120, 50, 180, 0.35) 0%,
-    rgba(120, 50, 180, 0.1) 50%,
+    rgba(23, 21, 18, 0.12) 0%,
+    rgba(23, 21, 18, 0.04) 50%,
     transparent 100%
   );
   filter: blur(20px);
@@ -508,11 +519,11 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   position: absolute; bottom: 1.25rem; left: 1.25rem;
   font-family: var(--font-serif); font-weight: 400;
   font-size: clamp(1.5rem, 2.5vw, 2.2rem);
-  color: var(--white);
+  color: #fff;
   text-shadow: 0 2px 20px rgba(0,0,0,0.6);
   transition: opacity 0.4s ease;
 }
-.works-card:hover h3 { color: var(--white); }
+.works-card:hover h3 { color: #fff; }
 
 /* ============ ABOUT DETAIL ============ */
 .about-detail {
@@ -611,7 +622,7 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   font-weight: 500;
   transition: border-color 0.3s, background 0.3s, color 0.3s;
 }
-.contact-social-link:hover { background: var(--accent); color: var(--white); border-color: var(--accent); }
+.contact-social-link:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .contact-form { display: flex; flex-direction: column; gap: 1.5rem; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
@@ -637,14 +648,14 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 .form-group textarea:focus { border-color: var(--orange); }
 .form-submit {
   align-self: flex-start;
-  background: var(--orange); color: var(--white);
+  background: var(--ink); color: var(--paper);
   border: none; padding: 0.9rem 2.5rem;
   font-family: var(--font-sans); font-size: 0.75rem;
   text-transform: uppercase; letter-spacing: 0.12em;
   font-weight: 500; cursor: none;
   transition: background 0.3s, transform 0.3s;
 }
-.form-submit:hover { background: var(--accent); transform: translateY(-2px); }
+.form-submit:hover { background: var(--ash); transform: translateY(-2px); }
 
 /* ============ CASE STUDY PAGES ============ */
 .case-hero { padding: 10rem var(--pad) 3rem; }
@@ -672,7 +683,7 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 /* Blurred background image cell */
 .img-blur-cell {
   position: relative; overflow: hidden; width: 100%;
-  background: #000;
+  background: var(--bone);
 }
 .img-blur-bg {
   position: absolute; inset: -60px; z-index: 0;
@@ -760,13 +771,13 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   border-radius: 100px; cursor: none;
   transition: background 0.3s, color 0.3s;
 }
-.case-play-btn:hover { background: var(--orange); color: var(--white); }
+.case-play-btn:hover { background: var(--ink); color: var(--paper); }
 .case-play-btn svg { width: 14px; height: 14px; }
 
 /* Video Lightbox */
 .video-lightbox {
   position: fixed; inset: 0; z-index: 10000;
-  background: rgba(0,0,0,0.92);
+  background: rgba(23, 21, 18, 0.92);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
   transition: opacity 0.4s ease;
@@ -868,8 +879,8 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   color: var(--white);
 }
 .studio-pill:hover {
-  background: var(--accent); border-color: var(--accent);
-  color: var(--black);
+  background: var(--ink); border-color: var(--ink);
+  color: var(--paper);
 }
 
 /* Agency Description */
