@@ -81,11 +81,11 @@
       { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0,                         z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
     ],
     about: [
-      { src: '/assets/reliefs/athena.glb',     size: 6.5, flat: 0.22, x:  1.5, y: -1.5,                         z:  0.25, rz: Math.PI + 0.06, rx:  0.20, ry: Math.PI },
-      { src: '/assets/reliefs/horse-head.glb', size: 5.0, flat: 0.22, x:  3.0, y: -VIEWPORT_WORLD_H * 2.0 + 1.0, z:  0.25, rz: Math.PI + 0.06, rx:  0.20, ry: 0.0 },
+      { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0,                         z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI },
+      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 3.5 + 2.0, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
     ],
     work: [
-      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.22, x: -1.5, y: -1.0,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
+      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.22, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
     ],
   };
 
@@ -170,6 +170,21 @@
   const cursorLight = new THREE.PointLight(0xffffff, 1.1, 2.0, 1.6);
   cursorLight.position.set(0, 0, WALL_LIGHT_Z);
   scene.add(cursorLight);
+
+  // "Lights off" mode — when the page is inverted, kill ambient/hemi so the
+  // cursor becomes the only light source (flashlight in a dark room). The
+  // cursor light's range is bumped so it still illuminates the reliefs clearly.
+  const LIGHT_DEFAULTS = { ambient: ambient.intensity, hemi: hemi.intensity, cursorDist: cursorLight.distance };
+  function applyInvertedLights() {
+    const inv = document.documentElement.classList.contains('inverted');
+    ambient.intensity = inv ? 0.02 : LIGHT_DEFAULTS.ambient;
+    hemi.intensity    = inv ? 0.02 : LIGHT_DEFAULTS.hemi;
+    cursorLight.distance = inv ? 3.2 : LIGHT_DEFAULTS.cursorDist;
+  }
+  applyInvertedLights();
+  new MutationObserver(applyInvertedLights).observe(document.documentElement, {
+    attributes: true, attributeFilter: ['class']
+  });
 
   /* ---- Cursor tracking ---- */
   const mouse = new THREE.Vector2(0, 0);

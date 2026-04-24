@@ -22,7 +22,7 @@
   <header class="header" id="header">
     <div class="header-logo"><a href="index.html"><img src="assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
     <div class="header-center-name"><a href="index.html">A Measured Force</a></div>
-    <nav class="header-nav"><a href="work.html">Work</a><a href="about.html" class="active">About</a><a href="contact.html">Contact</a></nav>
+    <nav class="header-nav"><a href="work.html">Work</a><a href="about.html" class="active">About</a><a href="contact.html">Contact</a><button class="invert-dot" id="invertDot" aria-label="Invert colors"></button></nav>
     <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
   </header>
   <div class="mobile-nav" id="mobileNav"><nav><a href="index.html" class="mobile-nav-link">Home</a><a href="work.html" class="mobile-nav-link">Work</a><a href="about.html" class="mobile-nav-link">About</a><a href="contact.html" class="mobile-nav-link">Contact</a></nav></div>
@@ -87,24 +87,35 @@
       </div>
     </section>
 
-    <!-- Client Logos Grid -->
-    <section class="studio-logos">
-      <span class="studio-logos-label">Trusted By</span>
-      <div class="studio-logos-grid">
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_ff7b6fad73be4d59b8b411745a237d02~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_756f20086d6943a9b3467147d144999b~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_f8f9d6d310d14edbb6b3945948159f71~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_4d21c38a884b4a9dbbb878cf99288766~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_2d6bd9256b0b407dbdd6a08ca5d15f5d~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_e8f2bd5dcd59458fb78900204d878d80~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_83c0d854c1a24c89afaa7a9c14496c5b~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_72701083ef4c4441aaf559a3ee6c75c1~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_d42d9821b83e469c899f1d5c6bb52880~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_99ab2363f7cb42eba0baba73ff55b0ee~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_7f38aecd46ca41ad8e3d11bb25ee99fe~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
-        <div class="logo-cell"><img src="https://static.wixstatic.com/media/1f7c26_36b46890dc294822b956a5b23949343f~mv2.png/v1/fill/w_195,h_195,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy"></div>
+    <!-- Client Logos -->
+    <div class="logo-ticker">
+      <div class="logo-ticker-inner">
+        <img src="https://static.wixstatic.com/media/1f7c26_ff7b6fad73be4d59b8b411745a237d02~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_756f20086d6943a9b3467147d144999b~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_f8f9d6d310d14edbb6b3945948159f71~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_4d21c38a884b4a9dbbb878cf99288766~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_2d6bd9256b0b407dbdd6a08ca5d15f5d~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_e8f2bd5dcd59458fb78900204d878d80~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_83c0d854c1a24c89afaa7a9c14496c5b~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_72701083ef4c4441aaf559a3ee6c75c1~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_d42d9821b83e469c899f1d5c6bb52880~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_99ab2363f7cb42eba0baba73ff55b0ee~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_7f38aecd46ca41ad8e3d11bb25ee99fe~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_36b46890dc294822b956a5b23949343f~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_ff7b6fad73be4d59b8b411745a237d02~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_756f20086d6943a9b3467147d144999b~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_f8f9d6d310d14edbb6b3945948159f71~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_4d21c38a884b4a9dbbb878cf99288766~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_2d6bd9256b0b407dbdd6a08ca5d15f5d~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_e8f2bd5dcd59458fb78900204d878d80~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_83c0d854c1a24c89afaa7a9c14496c5b~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_72701083ef4c4441aaf559a3ee6c75c1~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_d42d9821b83e469c899f1d5c6bb52880~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_99ab2363f7cb42eba0baba73ff55b0ee~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_7f38aecd46ca41ad8e3d11bb25ee99fe~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
+        <img src="https://static.wixstatic.com/media/1f7c26_36b46890dc294822b956a5b23949343f~mv2.png/v1/fit/w_160,h_80,al_c,q_85,enc_avif,quality_auto/logo.png" alt="Client" loading="lazy">
       </div>
-    </section>
+    </div>
 
     <!-- Stats -->
     <section class="stats">
@@ -116,11 +127,15 @@
       </div>
     </section>
 
-    <!-- CTA -->
+    <!-- Contact CTA -->
     <section class="contact" id="contact">
+      <div class="contact-info-row">
+        <div class="contact-block"><span class="contact-label-pill">Call Us</span><a href="tel:+13102590344" class="contact-detail">(310) 259-0344</a></div>
+        <div class="contact-block"><span class="contact-label-pill">Meet Us</span><span class="contact-detail">Los Angeles, CA</span></div>
+      </div>
       <div class="contact-cta">
         <div class="contact-dot"></div>
-        <h2 class="split-words">Want to work together?<br><a href="contact.html" class="email-link">Get in touch</a></h2>
+        <h2>Ready to get started?<br>Drop us a line at <a href="mailto:info@ameasuredforce.com" class="email-link">info@ameasuredforce.com</a></h2>
       </div>
     </section>
   </main>

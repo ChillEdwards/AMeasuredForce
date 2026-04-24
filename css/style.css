@@ -131,9 +131,35 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   text-transform: uppercase; color: var(--white);
 }
 .header-center-name a:hover { color: var(--white); opacity: 0.7; }
-.header-nav { justify-self: end; display: flex; gap: 2.5rem; }
+.header-nav { justify-self: end; display: flex; gap: 2.5rem; align-items: center; }
 .header-nav a { font-size: 0.8rem; font-weight: 400; letter-spacing: 0.04em; }
 .header-nav a.active { opacity: 0.4; }
+
+/* Invert-colors toggle: a morphing blob that flips the whole page on click */
+.invert-dot {
+  width: 14px; height: 14px;
+  background: var(--ink);
+  border: none; padding: 0; cursor: pointer;
+  border-radius: 50%;
+  animation: invertBlob 7s ease-in-out infinite;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.invert-dot:hover { transform: scale(1.25); }
+@keyframes invertBlob {
+  0%, 100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+  25%      { border-radius: 58% 42% 55% 45% / 52% 48% 52% 48%; }
+  50%      { border-radius: 45% 55% 48% 52% / 60% 40% 60% 40%; }
+  75%      { border-radius: 52% 48% 40% 60% / 45% 55% 45% 55%; }
+}
+
+/* Invert the whole site when active. The canvas and work photos are counter-
+   inverted so they stay untouched — pure invert(1) self-cancels cleanly. */
+html.inverted { filter: invert(1); }
+html.inverted #shaderBg,
+html.inverted .featured-bg { filter: invert(1) !important; }
+/* .works-card img already has filter: brightness(0.85); preserve it here. */
+html.inverted .works-card img { filter: brightness(0.85) invert(1) !important; }
 
 .menu-toggle {
   display: none; background: none;

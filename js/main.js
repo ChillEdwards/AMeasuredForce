@@ -693,6 +693,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ============ INVERT COLORS TOGGLE ============ */
+  const invertDot = document.getElementById('invertDot');
+  if (invertDot) {
+    invertDot.addEventListener('click', () => {
+      document.documentElement.classList.toggle('inverted');
+    });
+  }
+
   /* ============ CONTACT FORM ============ */
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {
