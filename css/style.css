@@ -227,8 +227,6 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 /* ============ STATS ============ */
 .stats {
   padding: 6rem var(--pad);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
 }
 .stats-grid {
   display: grid; grid-template-columns: repeat(4, 1fr);
@@ -373,7 +371,7 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 }
 
 /* ============ CONTACT ============ */
-.contact { padding: 10rem var(--pad) 6rem; border-top: 1px solid var(--border); }
+.contact { padding: 10rem var(--pad) 6rem; }
 .contact-info-row { display: flex; gap: 6rem; margin-bottom: 6rem; }
 .contact-block { display: flex; flex-direction: column; gap: 0.6rem; }
 .contact-label-pill {
@@ -886,7 +884,6 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 /* Agency Description */
 .studio-about {
   padding: 10rem var(--pad) 6rem;
-  border-top: 1px solid var(--border);
 }
 .studio-about-main {
   max-width: 1100px; margin-bottom: 6rem;
@@ -914,7 +911,6 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 /* Client Logo Grid */
 .studio-logos {
   padding: 6rem var(--pad);
-  border-top: 1px solid var(--border);
 }
 .studio-logos-label {
   display: block;
@@ -948,7 +944,6 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 /* Studio Approach */
 .studio-approach {
   padding: 10rem var(--pad);
-  border-top: 1px solid var(--border);
 }
 .studio-section-heading {
   font-family: var(--font-serif); font-weight: 400;
@@ -969,7 +964,6 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 /* Studio Services */
 .studio-services {
   padding: 10rem var(--pad);
-  border-top: 1px solid var(--border);
 }
 
 /* ============ TEXT ANIMATIONS ============ */

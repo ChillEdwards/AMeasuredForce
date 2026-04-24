@@ -80,6 +80,13 @@
     contact: [
       { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0,                         z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
     ],
+    about: [
+      { src: '/assets/reliefs/athena.glb',     size: 6.5, flat: 0.22, x:  1.5, y: -1.5,                         z:  0.25, rz: Math.PI + 0.06, rx:  0.20, ry: Math.PI },
+      { src: '/assets/reliefs/horse-head.glb', size: 5.0, flat: 0.22, x:  3.0, y: -VIEWPORT_WORLD_H * 2.0 + 1.0, z:  0.25, rz: Math.PI + 0.06, rx:  0.20, ry: 0.0 },
+    ],
+    work: [
+      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.22, x: -1.5, y: -1.0,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
+    ],
   };
 
   // Center, scale, and flatten one loaded GLB scene into a mesh that sits
@@ -133,6 +140,8 @@
   let pageKey = null;
   if (path === '/' || /\/index\.html?$/.test(path) || path === '/index') pageKey = 'home';
   else if (/\/contact\.html?$/.test(path)) pageKey = 'contact';
+  else if (/\/about\.html?$/.test(path)) pageKey = 'about';
+  else if (/\/work\.html?$/.test(path)) pageKey = 'work';
   const pageFragments = fragmentsByPage[pageKey] || [];
   if (pageFragments.length && THREE.GLTFLoader) {
     const loader = new THREE.GLTFLoader();
