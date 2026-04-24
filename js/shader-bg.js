@@ -72,10 +72,15 @@
   // anchors the hero; as the user scrolls, it drifts up and off-screen and
   // the next fragment comes in from below.
   const VIEWPORT_WORLD_H = 4.6;   // rough world-space height of one viewport
-  const fragments = [
-    { src: '/assets/reliefs/goat.glb',    size: 7.0, flat: 0.22, x:  1.0, y: -1.0,                      rz: 0.0,  rx: 0.0, ry: 0.0 },
-    { src: '/assets/reliefs/oceanus.glb', size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0 },
-  ];
+  const fragmentsByPage = {
+    home: [
+      { src: '/assets/reliefs/goat.glb',    size: 7.0, flat: 0.22, x:  1.0, y: -1.0,                         rz: 0.0, rx: 0.0,      ry: 0.0 },
+      { src: '/assets/reliefs/oceanus.glb', size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0 },
+    ],
+    contact: [
+      { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0,                         z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
+    ],
+  };
 
   // Center, scale, and flatten one loaded GLB scene into a mesh that sits
   // half-embedded in the wall plane (center at z=0).
@@ -122,13 +127,16 @@
     return holder;
   }
 
-  // Reliefs only appear on the homepage. Every other page gets the wall +
-  // cursor light only, so there's no goat/statuary on inner pages.
+  // Pick the relief set based on the current page. Pages not listed get
+  // the wall + cursor light only.
   const path = window.location.pathname;
-  const isHome = path === '/' || /\/index\.html?$/.test(path) || path === '/index';
-  if (isHome && THREE.GLTFLoader) {
+  let pageKey = null;
+  if (path === '/' || /\/index\.html?$/.test(path) || path === '/index') pageKey = 'home';
+  else if (/\/contact\.html?$/.test(path)) pageKey = 'contact';
+  const pageFragments = fragmentsByPage[pageKey] || [];
+  if (pageFragments.length && THREE.GLTFLoader) {
     const loader = new THREE.GLTFLoader();
-    fragments.forEach((cfg) => {
+    pageFragments.forEach((cfg) => {
       loader.load(
         cfg.src,
         (gltf) => prepareFragment(gltf, cfg),
