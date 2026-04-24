@@ -74,7 +74,7 @@
   const VIEWPORT_WORLD_H = 4.6;   // rough world-space height of one viewport
   const fragmentsByPage = {
     home: [
-      { src: '/assets/reliefs/goat.glb',    size: 7.0, flat: 0.22, x:  1.0, y: -1.0,                         rz: 0.0, rx: 0.0,      ry: 0.0 },
+      { src: '/assets/reliefs/goat.glb',    size: 7.0, flat: 0.35, x:  1.0, y: -1.0,                         rz: 0.0, rx: 0.0,      ry: 0.0 },
       { src: '/assets/reliefs/oceanus.glb', size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0 },
     ],
     contact: [
@@ -85,7 +85,7 @@
       { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 3.5 + 2.0, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
     ],
     work: [
-      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.22, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
+      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
     ],
   };
 
@@ -166,20 +166,29 @@
 
   // Cursor light sits slightly in front of the wall, grazing the normal-
   // mapped surface to produce a bright hot-spot that illuminates the relief.
+  // Normal-mode cursor uses a softer intensity so the lit hot-spot doesn't
+  // overexpose reliefs sitting on top of the bright ambient floor. Inverted
+  // mode bumps it back up because there's no ambient competing.
   const WALL_LIGHT_Z = 0.6;
-  const cursorLight = new THREE.PointLight(0xffffff, 1.1, 2.0, 1.6);
+  const cursorLight = new THREE.PointLight(0xffffff, 0.6, 2.0, 1.6);
   cursorLight.position.set(0, 0, WALL_LIGHT_Z);
   scene.add(cursorLight);
 
   // "Lights off" mode — when the page is inverted, kill ambient/hemi so the
   // cursor becomes the only light source (flashlight in a dark room). The
   // cursor light's range is bumped so it still illuminates the reliefs clearly.
-  const LIGHT_DEFAULTS = { ambient: ambient.intensity, hemi: hemi.intensity, cursorDist: cursorLight.distance };
+  const LIGHT_DEFAULTS = {
+    ambient: ambient.intensity,
+    hemi: hemi.intensity,
+    cursorIntensity: cursorLight.intensity,
+    cursorDist: cursorLight.distance,
+  };
   function applyInvertedLights() {
     const inv = document.documentElement.classList.contains('inverted');
-    ambient.intensity = inv ? 0.02 : LIGHT_DEFAULTS.ambient;
-    hemi.intensity    = inv ? 0.02 : LIGHT_DEFAULTS.hemi;
-    cursorLight.distance = inv ? 3.2 : LIGHT_DEFAULTS.cursorDist;
+    ambient.intensity      = inv ? 0.02 : LIGHT_DEFAULTS.ambient;
+    hemi.intensity         = inv ? 0.02 : LIGHT_DEFAULTS.hemi;
+    cursorLight.intensity  = inv ? 1.1  : LIGHT_DEFAULTS.cursorIntensity;
+    cursorLight.distance   = inv ? 3.2  : LIGHT_DEFAULTS.cursorDist;
   }
   applyInvertedLights();
   new MutationObserver(applyInvertedLights).observe(document.documentElement, {
