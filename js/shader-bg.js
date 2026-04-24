@@ -27,7 +27,7 @@
 
   /* ---- Wall plane (plaster) ---- */
   const texLoader = new THREE.TextureLoader();
-  const normal = texLoader.load('assets/wall-normal.jpg');
+  const normal = texLoader.load('/assets/wall-normal.jpg');
   normal.wrapS = normal.wrapT = THREE.RepeatWrapping;
   normal.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
@@ -73,13 +73,8 @@
   // the next fragment comes in from below.
   const VIEWPORT_WORLD_H = 4.6;   // rough world-space height of one viewport
   const fragments = [
-    { src: 'assets/reliefs/goat.glb',      size: 3.3, flat: 1.0,  x:  1.0, y:  0, z: 2.2,               rz: 0.0,  rx: 0.0, ry: 0.0, spin: 0.006 },
-    { src: 'assets/reliefs/venus.glb',     size: 5.5, flat: 0.18, x: -2.6, y: -VIEWPORT_WORLD_H * 1.0,  rz: 0.0,  rx: -Math.PI / 2, ry: 0.0 },
-    { src: 'assets/reliefs/ox-relief.glb', size: 5.0, flat: 0.22, x:  0.0, y: -VIEWPORT_WORLD_H * 2.0,  rz: 0.0,  rx: 0.0 },
-    { src: 'assets/reliefs/ram.glb',       size: 4.0, flat: 0.20, x:  2.6, y: -VIEWPORT_WORLD_H * 3.0,  rz:-0.2,  rx: 0.0 },
-    { src: 'assets/reliefs/eagle.glb',     size: 3.2, flat: 0.22, x: -2.8, y: -VIEWPORT_WORLD_H * 4.0,  rz:-0.1,  rx: 0.0 },
-    { src: 'assets/reliefs/helmet.glb',    size: 2.4, flat: 0.22, x: -1.8, y: -VIEWPORT_WORLD_H * 5.0,  rz: 0.2,  rx: 0.0 },
-    { src: 'assets/reliefs/head.glb',      size: 3.0, flat: 0.10, x:  2.4, y: -VIEWPORT_WORLD_H * 6.0,  rz: 0.0,  rx: Math.PI / 2, ry: 0.35 },
+    { src: '/assets/reliefs/goat.glb',    size: 7.0, flat: 0.22, x:  1.0, y: -1.0,                      rz: 0.0,  rx: 0.0, ry: 0.0 },
+    { src: '/assets/reliefs/oceanus.glb', size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 5.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0 },
   ];
 
   // Center, scale, and flatten one loaded GLB scene into a mesh that sits
@@ -113,35 +108,35 @@
     const center = new THREE.Vector3(); box.getCenter(center);
     group.position.sub(center);
 
-    // Spinning fragments need uniform scale (longest of ALL 3 axes) so mid-
-    // rotation views don't turn into a flattened disc. Static fragments use
-    // face-on silhouette scaling + a flatten-z for the "embedded" look.
-    const faceExtent = cfg.spin
-      ? Math.max(size.x, size.y, size.z)
-      : Math.max(size.x, size.y);
+    // Face-on silhouette scaling + flatten-z for the embedded relief look.
+    // cfg.mirror flips horizontally without spinning the sculpture into the
+    // wall — keeps the detailed side toward the camera.
+    const faceExtent = Math.max(size.x, size.y);
     const s = cfg.size / (faceExtent || 1);
-    holder.scale.set(s, s, s * cfg.flat);
+    holder.scale.set(cfg.mirror ? -s : s, s, s * cfg.flat);
 
     holder.position.set(cfg.x, cfg.y, cfg.z || 0);
     holder.rotation.z = cfg.rz || 0;
-
-    if (cfg.spin) spinning.push({ holder, rate: cfg.spin });
 
     scene.add(holder);
     return holder;
   }
 
-  const spinning = [];
-
-  const loader = new THREE.GLTFLoader();
-  fragments.forEach((cfg) => {
-    loader.load(
-      cfg.src,
-      (gltf) => prepareFragment(gltf, cfg),
-      undefined,
-      (err) => console.warn('[shader-bg] fragment load failed', cfg.src, err)
-    );
-  });
+  // Reliefs only appear on the homepage. Every other page gets the wall +
+  // cursor light only, so there's no goat/statuary on inner pages.
+  const path = window.location.pathname;
+  const isHome = path === '/' || /\/index\.html?$/.test(path) || path === '/index';
+  if (isHome && THREE.GLTFLoader) {
+    const loader = new THREE.GLTFLoader();
+    fragments.forEach((cfg) => {
+      loader.load(
+        cfg.src,
+        (gltf) => prepareFragment(gltf, cfg),
+        undefined,
+        (err) => console.warn('[shader-bg] fragment load failed', cfg.src, err)
+      );
+    });
+  }
 
   /* ---- Lighting ---- */
   // Lower ambient so the cursor's directional shading reads as real depth
@@ -152,12 +147,9 @@
   const hemi = new THREE.HemisphereLight(0xf4efe6, 0xb5aea1, 0.25);
   scene.add(hemi);
 
-  // Single cursor light that adapts its depth to whatever's under the cursor.
-  // When the cursor is over an out-of-wall hero fragment (e.g. the goat) the
-  // light slides forward to sit just in front of that fragment's face. When
-  // the cursor is over flat wall/relief area the light drops back to graze
-  // the wall plane. One light → no wall bleed-through behind the goat.
-  const WALL_LIGHT_Z = 0.18;
+  // Cursor light sits slightly in front of the wall, grazing the normal-
+  // mapped surface to produce a bright hot-spot that illuminates the relief.
+  const WALL_LIGHT_Z = 0.6;
   const cursorLight = new THREE.PointLight(0xffffff, 1.1, 2.0, 1.6);
   cursorLight.position.set(0, 0, WALL_LIGHT_Z);
   scene.add(cursorLight);
@@ -207,39 +199,12 @@
     camera.position.y += (scrollCamY - camera.position.y) * 0.18;
     wall.position.y = camera.position.y;
 
-    // Spin any fragments flagged for it.
-    for (const s of spinning) {
-      s.holder.rotation.y += s.rate;
-    }
-
     raycaster.setFromCamera(mouse, camera);
+    raycaster.ray.intersectPlane(wallPlane, targetPos);
 
-    // Pick target cursor-light position. If the ray passes through a hero
-    // fragment's bounding box, target a point just in front of that fragment's
-    // forward face. Otherwise, fall back to grazing the wall plane.
-    let tX, tY, tZ;
-    let hoveringFragment = false;
-    for (let i = 0; i < spinning.length; i++) {
-      const box = new THREE.Box3().setFromObject(spinning[i].holder);
-      const tmp = new THREE.Vector3();
-      if (raycaster.ray.intersectBox(box, tmp)) {
-        tX = tmp.x;
-        tY = tmp.y;
-        tZ = box.max.z + 0.5;   // just in front of the forward face
-        hoveringFragment = true;
-        break;
-      }
-    }
-    if (!hoveringFragment) {
-      raycaster.ray.intersectPlane(wallPlane, targetPos);
-      tX = targetPos.x;
-      tY = targetPos.y;
-      tZ = WALL_LIGHT_Z;
-    }
-
-    currentPos.x += (tX - currentPos.x) * 0.14;
-    currentPos.y += (tY - currentPos.y) * 0.14;
-    currentPos.z += (tZ - currentPos.z) * 0.14;
+    currentPos.x += (targetPos.x - currentPos.x) * 0.14;
+    currentPos.y += (targetPos.y - currentPos.y) * 0.14;
+    currentPos.z += (WALL_LIGHT_Z - currentPos.z) * 0.14;
     cursorLight.position.copy(currentPos);
 
     renderer.render(scene, camera);
