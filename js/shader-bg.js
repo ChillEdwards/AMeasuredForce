@@ -16,7 +16,7 @@
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0xefebe5, 1);
+  renderer.setClearColor(0xf1ede7, 1);
 
   const scene = new THREE.Scene();
 
@@ -34,7 +34,7 @@
   const wallMat = new THREE.MeshStandardMaterial({
     normalMap: normal,
     normalScale: new THREE.Vector2(1.1, 1.1),
-    color: 0xefebe5,
+    color: 0xf1ede7,
     roughness: 0.95,
     metalness: 0.0,
   });
@@ -74,7 +74,7 @@
   const VIEWPORT_WORLD_H = 4.6;   // rough world-space height of one viewport
   const fragments = [
     { src: '/assets/reliefs/goat.glb',    size: 7.0, flat: 0.22, x:  1.0, y: -1.0,                      rz: 0.0,  rx: 0.0, ry: 0.0 },
-    { src: '/assets/reliefs/oceanus.glb', size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 5.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0 },
+    { src: '/assets/reliefs/oceanus.glb', size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0 },
   ];
 
   // Center, scale, and flatten one loaded GLB scene into a mesh that sits
@@ -141,10 +141,10 @@
   /* ---- Lighting ---- */
   // Lower ambient so the cursor's directional shading reads as real depth
   // contrast (not just a brightness bump over flat fill).
-  const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.62);
   scene.add(ambient);
 
-  const hemi = new THREE.HemisphereLight(0xf4efe6, 0xb5aea1, 0.25);
+  const hemi = new THREE.HemisphereLight(0xf4efe6, 0xb5aea1, 0.28);
   scene.add(hemi);
 
   // Cursor light sits slightly in front of the wall, grazing the normal-
