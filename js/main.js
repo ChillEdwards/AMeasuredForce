@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
       el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
     });
 
-    document.querySelectorAll('.featured-item, .works-card').forEach(el => {
+    document.querySelectorAll('.works-cycle-item a, .works-card').forEach(el => {
       el.addEventListener('mouseenter', () => {
         cursor.classList.remove('hovering');
         cursor.classList.add('hovering-work');
@@ -423,27 +423,77 @@ document.addEventListener('DOMContentLoaded', () => {
     cell.style.transitionDelay = (i * 0.04) + 's';
   });
 
-  /* ============ FEATURED ITEMS — text reveal on scroll ============ */
-  document.querySelectorAll('.featured-item').forEach(item => {
-    const fObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const text = entry.target.querySelector('.featured-text');
-          if (text) {
-            text.style.opacity = '0';
-            text.style.transform = 'translateY(30px)';
-            text.style.transition = 'opacity 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s, transform 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s';
-            requestAnimationFrame(() => {
-              text.style.opacity = '1';
-              text.style.transform = 'translateY(0)';
-            });
-          }
-          fObserver.unobserve(entry.target);
+  /* ============ WORKS CYCLE — vertical scroll-through active detection ===
+     The image rail scrolls naturally; the sticky frame stays pinned. On
+     each scroll frame we find the item whose vertical center is closest to
+     viewport center and mark it active. The names list, tags, and index
+     update to match. Mobile skips this entirely (frame is hidden by CSS). */
+  (function worksCycle() {
+    const section = document.querySelector('.works-cycle');
+    if (!section) return;
+    const items = Array.from(section.querySelectorAll('.works-cycle-item'));
+    if (!items.length) return;
+    const nameLinks = Array.from(section.querySelectorAll('.works-cycle-names a'));
+    const tagsEl   = section.querySelector('[data-bind="tags"]');
+    const indexEl  = section.querySelector('[data-bind="index"]');
+    let activeIdx = -1;
+
+    function setActive(idx) {
+      idx = Math.max(0, Math.min(items.length - 1, idx));
+      if (idx === activeIdx) return;
+      activeIdx = idx;
+      items.forEach((el, i) => el.classList.toggle('is-active', i === idx));
+      nameLinks.forEach((a, i) => a.classList.toggle('is-active', i === idx));
+      const item = items[idx];
+      if (tagsEl)  tagsEl.textContent  = item.dataset.tags  || '';
+      if (indexEl) indexEl.textContent = item.dataset.index || '';
+    }
+
+    const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+    let rafId = null, isVisible = false, lastScroll = -1;
+    function tick() {
+      // Only recompute when scroll has actually moved; cheap idle check.
+      const sy = window.scrollY;
+      if (sy !== lastScroll) {
+        lastScroll = sy;
+        const center = window.innerHeight / 2;
+        let bestIdx = activeIdx >= 0 ? activeIdx : 0;
+        let bestDist = Infinity;
+        for (let i = 0; i < items.length; i++) {
+          const r = items[i].getBoundingClientRect();
+          const d = Math.abs((r.top + r.bottom) / 2 - center);
+          if (d < bestDist) { bestDist = d; bestIdx = i; }
+        }
+        setActive(bestIdx);
+      }
+      if (isVisible) rafId = requestAnimationFrame(tick);
+    }
+
+    const visObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        isVisible = e.isIntersecting;
+        if (isVisible && !rafId && !isMobile()) {
+          rafId = requestAnimationFrame(tick);
+        } else if (!isVisible && rafId) {
+          cancelAnimationFrame(rafId); rafId = null;
         }
       });
-    }, { threshold: 0.3 });
-    fObserver.observe(item);
-  });
+    }, { threshold: 0 });
+    visObs.observe(section);
+
+    /* Click a name in the side list → smooth-scroll the matching image to center */
+    nameLinks.forEach((link, i) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = items[i];
+        if (!target) return;
+        const r = target.getBoundingClientRect();
+        const targetY = window.scrollY + r.top - (window.innerHeight - r.height) / 2;
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+      });
+    });
+  })();
 
   /* ==========================================================
      WORKS PAGE — Studio375-inspired scroll interaction engine

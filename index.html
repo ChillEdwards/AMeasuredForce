@@ -82,54 +82,58 @@
       </div>
     </section>
 
-    <!-- Featured Work — Full-viewport cards with background images -->
-    <section class="featured" id="work">
-      <div class="section-label featured-label">Works</div>
+    <!-- Selected Work — Vertical scroll-through column with sticky side meta -->
+    <section class="works-cycle" id="work">
+      <div class="section-label works-cycle-label">Works</div>
 
-      <a href="work/therasurf.html" class="featured-item">
-        <img class="featured-bg" src="https://static.wixstatic.com/media/c837a6_8acabb3e926d482bb78f3b47c7007b4d~mv2.jpg/v1/fill/w_1920,h_1080,al_c,q_85/image.jpg" alt="THERAsurf">
-        <div class="featured-text">
-          <span class="featured-num">01</span>
-          <h3 class="featured-name">THERAsurf</h3>
-          <div class="featured-tags"><span>Branding</span><span>Digital Design</span><span>Non-Profit</span></div>
+      <!-- Sticky frame: project name list on left, tags + index on right -->
+      <div class="works-cycle-frame">
+        <ul class="works-cycle-names">
+          <li><a href="#work-01" data-idx="0" class="is-active">THERAsurf</a></li>
+          <li><a href="#work-02" data-idx="1">Rep Materials Co.</a></li>
+          <li><a href="#work-03" data-idx="2">Zuma Lighting</a></li>
+          <li><a href="#work-04" data-idx="3">LUXXEV</a></li>
+          <li><a href="#work-05" data-idx="4">Johnson &amp; Johnson</a></li>
+        </ul>
+        <div class="works-cycle-meta">
+          <span class="works-cycle-tags" data-bind="tags">Branding, Digital Design, Non-Profit</span>
+          <span class="works-cycle-index" data-bind="index">01</span>
         </div>
-      </a>
+      </div>
 
-      <a href="work/rep-materials.html" class="featured-item">
-        <img class="featured-bg" src="https://static.wixstatic.com/media/1f7c26_7c659f0d2eb04829b2dbc0ffc7a16160~mv2.jpg/v1/fill/w_1920,h_1080,al_c,q_85/image.jpg" alt="Rep Materials Co.">
-        <div class="featured-text">
-          <span class="featured-num">02</span>
-          <h3 class="featured-name">Rep Materials Co.</h3>
-          <div class="featured-tags"><span>Branding</span><span>Digital Design</span><span>Marketing</span></div>
-        </div>
-      </a>
-
-      <a href="work/zuma-lighting.html" class="featured-item">
-        <img class="featured-bg" src="https://static.wixstatic.com/media/1f7c26_a0fa6951377940a69f23ff743cbc1615~mv2.jpeg/v1/fill/w_1920,h_1080,al_c,q_85/image.jpeg" alt="Zuma Lighting">
-        <div class="featured-text">
-          <span class="featured-num">03</span>
-          <h3 class="featured-name">Zuma Lighting</h3>
-          <div class="featured-tags"><span>Digital Design</span><span>Technology</span><span>B2B</span></div>
-        </div>
-      </a>
-
-      <a href="work/luxxev.html" class="featured-item">
-        <img class="featured-bg" src="https://static.wixstatic.com/media/1f7c26_77672e88ad814f4da0616bdb7f153133~mv2.jpeg/v1/fill/w_1920,h_1080,al_c,q_85/image.jpeg" alt="LUXXEV">
-        <div class="featured-text">
-          <span class="featured-num">04</span>
-          <h3 class="featured-name">LUXXEV</h3>
-          <div class="featured-tags"><span>E-Commerce</span><span>D2C</span><span>Marketing</span></div>
-        </div>
-      </a>
-
-      <a href="work.html" class="featured-item">
-        <img class="featured-bg" src="https://static.wixstatic.com/media/55d98a_bd711467d9ef434fad15f8196a346e96~mv2.jpeg/v1/fill/w_1920,h_1080,al_c,q_85/image.jpeg" alt="Johnson & Johnson">
-        <div class="featured-text">
-          <span class="featured-num">05</span>
-          <h3 class="featured-name">Johnson &amp; Johnson</h3>
-          <div class="featured-tags"><span>Branding</span><span>Digital Design</span><span>Production</span></div>
-        </div>
-      </a>
+      <!-- Image rail — stacked vertically, scrolls naturally past the sticky frame -->
+      <ol class="works-cycle-rail">
+        <li class="works-cycle-item is-active" id="work-01"
+            data-name="THERAsurf"
+            data-tags="Branding, Digital Design, Non-Profit"
+            data-index="01">
+          <a href="work/therasurf.html"><img src="https://static.wixstatic.com/media/c837a6_8acabb3e926d482bb78f3b47c7007b4d~mv2.jpg/v1/fill/w_800,h_1000,al_c,q_85/image.jpg" alt="THERAsurf"></a>
+        </li>
+        <li class="works-cycle-item" id="work-02"
+            data-name="Rep Materials Co."
+            data-tags="Branding, Digital Design, Marketing"
+            data-index="02">
+          <a href="work/rep-materials.html"><img src="https://static.wixstatic.com/media/1f7c26_7c659f0d2eb04829b2dbc0ffc7a16160~mv2.jpg/v1/fill/w_800,h_1000,al_c,q_85/image.jpg" alt="Rep Materials Co."></a>
+        </li>
+        <li class="works-cycle-item" id="work-03"
+            data-name="Zuma Lighting"
+            data-tags="Digital Design, Technology, B2B"
+            data-index="03">
+          <a href="work/zuma-lighting.html"><img src="https://static.wixstatic.com/media/1f7c26_a0fa6951377940a69f23ff743cbc1615~mv2.jpeg/v1/fill/w_800,h_1000,al_c,q_85/image.jpeg" alt="Zuma Lighting"></a>
+        </li>
+        <li class="works-cycle-item" id="work-04"
+            data-name="LUXXEV"
+            data-tags="E-Commerce, D2C, Marketing"
+            data-index="04">
+          <a href="work/luxxev.html"><img src="https://static.wixstatic.com/media/1f7c26_77672e88ad814f4da0616bdb7f153133~mv2.jpeg/v1/fill/w_800,h_1000,al_c,q_85/image.jpeg" alt="LUXXEV"></a>
+        </li>
+        <li class="works-cycle-item" id="work-05"
+            data-name="Johnson &amp; Johnson"
+            data-tags="Branding, Digital Design, Production"
+            data-index="05">
+          <a href="work.html"><img src="https://static.wixstatic.com/media/55d98a_bd711467d9ef434fad15f8196a346e96~mv2.jpeg/v1/fill/w_800,h_1000,al_c,q_85/image.jpeg" alt="Johnson &amp; Johnson"></a>
+        </li>
+      </ol>
     </section>
 
     <!-- Services -->

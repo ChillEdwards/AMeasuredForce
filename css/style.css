@@ -156,10 +156,13 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 /* Invert the whole site when active. The canvas and work photos are counter-
    inverted so they stay untouched — pure invert(1) self-cancels cleanly. */
 html.inverted { filter: invert(1); }
-html.inverted #shaderBg,
-html.inverted .featured-bg { filter: invert(1) !important; }
+html.inverted #shaderBg { filter: invert(1) !important; }
 /* .works-card img already has filter: brightness(0.85); preserve it here. */
 html.inverted .works-card img { filter: brightness(0.85) invert(1) !important; }
+/* Homepage cycling thumbs: keep their grayscale look; just counter-invert so
+   they don't double-invert when the page goes dark. */
+html.inverted .works-cycle-item img { filter: grayscale(1) invert(1) !important; }
+html.inverted .works-cycle-item.is-active img { filter: invert(1) !important; }
 
 .menu-toggle {
   display: none; background: none;
@@ -267,57 +270,96 @@ html.inverted .works-card img { filter: brightness(0.85) invert(1) !important; }
 }
 .stat-label { font-size: 0.8rem; color: var(--gray); line-height: 1.5; }
 
-/* ============ FEATURED WORK — 100vh CARDS ============ */
-.featured { position: relative; }
-.featured-label {
-  position: sticky; top: 7rem;
+/* ============ SELECTED WORK — Vertical scroll-through (obys-style) ===
+   The image rail and the sticky frame share the same grid cell so the
+   sticky frame stays pinned at viewport top while the image column
+   scrolls through it. Active item is the one nearest viewport center. */
+.works-cycle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
   padding: 0 var(--pad);
+}
+.works-cycle-label {
+  position: absolute; top: 2.5rem; left: var(--pad);
+  z-index: 3;
+}
+
+/* Sticky frame — left names, right meta, with the middle column reserved
+   as the gap the image rail flows through. Pinned at the viewport top. */
+.works-cycle-frame {
+  grid-column: 1; grid-row: 1;
+  position: sticky; top: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr clamp(420px, 50vw, 760px) 1fr;
+  align-items: center;
+  pointer-events: none;
   z-index: 2;
 }
-.featured-item {
-  display: block; position: relative;
-  width: 100%; height: 100vh;
-  overflow: hidden;
+.works-cycle-frame > * { pointer-events: auto; }
+
+.works-cycle-names {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 0.35rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+}
+.works-cycle-names a {
+  color: var(--stone);
+  text-decoration: none;
+  transition: color 0.35s ease;
   cursor: none;
 }
-.featured-bg {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
+.works-cycle-names a.is-active { color: var(--ink); }
+
+.works-cycle-meta {
+  grid-column: 3;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--ink);
+  text-align: right;
+}
+.works-cycle-tags { color: var(--ink); }
+.works-cycle-index {
+  font-variant-numeric: tabular-nums;
+  color: var(--ash);
+}
+
+/* Image rail — vertical column scrolling through the sticky frame */
+.works-cycle-rail {
+  grid-column: 1; grid-row: 1;
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column;
+  align-items: center;
+  /* Top/bottom padding so first and last image can reach viewport center */
+  padding: 35vh 0;
+  gap: 25vh;
+  z-index: 1;
+}
+.works-cycle-item {
+  width: clamp(220px, 22vw, 360px);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 2px;
   transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
 }
-.featured-item:hover .featured-bg { transform: scale(1.03); }
-.featured-text {
-  position: absolute;
-  bottom: clamp(3rem, 8vw, 6rem);
-  left: var(--pad);
-  z-index: 2;
-}
-.featured-num {
+.works-cycle-item a {
   display: block;
-  font-size: 0.7rem; letter-spacing: 0.15em;
-  color: #fff; opacity: 0.7;
-  margin-bottom: 0.75rem;
+  width: 100%; height: 100%;
+  cursor: none;
+  position: relative;
 }
-.featured-name {
-  font-family: var(--font-serif); font-weight: 400;
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 1.05; letter-spacing: -0.02em;
-  color: #fff;
-  text-shadow: 0 2px 40px rgba(0,0,0,0.5);
+.works-cycle-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1);
+  transition: filter 0.55s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1);
 }
-.featured-tags {
-  display: flex; gap: 0.5rem; flex-wrap: wrap;
-  margin-top: 1rem;
-}
-.featured-tags span {
-  border: 2px solid rgba(255,255,255,0.6);
-  padding: 0.2rem 0.7rem; border-radius: 20px;
-  font-size: 0.65rem; text-transform: uppercase;
-  letter-spacing: 0.08em; color: #fff;
-  backdrop-filter: blur(4px);
-  background: rgba(255,255,255,0.05);
-}
+.works-cycle-item.is-active img { filter: grayscale(0); }
+.works-cycle-item a:hover img { transform: scale(1.04); }
 
 /* ============ SERVICES ============ */
 .services { padding: 10rem var(--pad); border-top: 1px solid var(--border); }
@@ -1154,8 +1196,29 @@ html.inverted .works-card img { filter: brightness(0.85) invert(1) !important; }
   .contact-info-row { flex-direction: column; gap: 2rem; }
   .footer-row { flex-direction: column; gap: 0.75rem; text-align: center; }
 
-  .featured-name { font-size: clamp(2rem, 8vw, 3.5rem); }
-  .featured-text { bottom: 2rem; }
+  /* Mobile: drop the sticky frame; just stack images with project name +
+     tags below each one. Cleanest readable list pattern on a phone. */
+  .works-cycle-frame { display: none; }
+  .works-cycle-rail {
+    padding: 4rem 0;
+    gap: 4rem;
+  }
+  .works-cycle-item {
+    width: min(80vw, 360px);
+    position: relative;
+  }
+  .works-cycle-item img { filter: grayscale(0); }
+  .works-cycle-item::after {
+    content: attr(data-name) " — " attr(data-tags);
+    display: block;
+    margin-top: 0.75rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ash);
+    text-align: center;
+  }
 
   .case-hero { padding: 7rem var(--pad) 2rem; }
   .case-results-grid { grid-template-columns: 1fr; }
