@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom AI Solutions | A Measured Force</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+<body>
+  <!-- WebGL Shader Background -->
+  <canvas id="shaderBg"></canvas>
+
+  <div class="transition-overlay t-overlay-1"></div>
+  <div class="transition-overlay t-overlay-2"></div>
+  <div class="transition-overlay t-overlay-3"></div>
+  <div class="cursor" id="cursor"><div class="cursor-text">View</div></div>
+
+  <header class="header" id="header">
+    <div class="header-logo"><a href="../../index.html"><img src="../../assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
+    <div class="header-center-name"><a href="../../index.html">A Measured Force</a></div>
+    <nav class="header-nav">
+      <a href="../../work.html">Work</a>
+      <a href="../../about.html">About</a>
+      <a href="index.html" class="active">AI</a>
+      <a href="../../contact.html">Contact</a>
+      <button class="invert-dot" id="invertDot" aria-label="Invert colors">
+        <svg class="invert-dot-svg" viewBox="0 0 100 100">
+          <g class="invert-dot-spin">
+            <defs><path id="invertCirclePath" d="M 50,50 m -30,0 a 30,30 0 1,1 60,0 a 30,30 0 1,1 -60,0"/></defs>
+            <text xml:space="preserve"><textPath href="#invertCirclePath" startOffset="0" textLength="188.5" lengthAdjust="spacing">click me · click me · click me · </textPath></text>
+          </g>
+          <circle cx="50" cy="50" r="1.6" fill="currentColor"/>
+        </svg>
+      </button>
+    </nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
+  </header>
+  <div class="mobile-nav" id="mobileNav">
+    <nav>
+      <a href="../../index.html" class="mobile-nav-link">Home</a>
+      <a href="../../work.html" class="mobile-nav-link">Work</a>
+      <a href="../../about.html" class="mobile-nav-link">About</a>
+      <a href="index.html" class="mobile-nav-link">AI</a>
+      <a href="../../contact.html" class="mobile-nav-link">Contact</a>
+    </nav>
+  </div>
+
+  <main>
+    <!-- HERO -->
+    <section class="ai-hero">
+      <h1 class="ai-hero-headline split-chars" data-parallax-speed="-0.15">AI is only as useful as the <em>system</em> it's built into.</h1>
+      <div class="ai-hero-footer">
+        <span class="ai-hero-scroll">[↓] Scroll</span>
+        <span class="ai-hero-tagline">Custom AI Solutions · Built as infrastructure</span>
+      </div>
+    </section>
+
+    <!-- APHORISM BEATS — each its own breathing moment -->
+    <section class="ai-beat ai-beat--left">
+      <div class="ai-beat-inner">
+        <span class="ai-beat-label" data-parallax-speed="0.08">On approach</span>
+        <p class="ai-beat-line split-words">We design custom AI solutions that fit how your company actually operates.</p>
+      </div>
+    </section>
+
+    <section class="ai-beat ai-beat--right">
+      <div class="ai-beat-inner">
+        <span class="ai-beat-label" data-parallax-speed="0.08">The failure mode</span>
+        <p class="ai-beat-line split-words">Most AI work fails because it's <em>bolted on</em> instead of <em>built in</em>.</p>
+      </div>
+    </section>
+
+    <section class="ai-beat ai-beat--center">
+      <div class="ai-beat-inner">
+        <span class="ai-beat-label" data-parallax-speed="0.08">The other way</span>
+        <p class="ai-beat-line split-words">We approach AI the way we approach growth — as <em>infrastructure</em>.</p>
+      </div>
+    </section>
+
+    <!-- PRINCIPLES — each its own ~100vh block with sticky left rail -->
+    <section class="ai-principles" id="principles">
+
+      <div class="ai-principle-block">
+        <div class="ai-principle-sticky" data-parallax-speed="0.1">
+          <span class="ai-principle-num">(01)</span>
+          <span class="ai-principle-label">Principle</span>
+        </div>
+        <div class="ai-principle-content">
+          <h2 class="ai-principle-title">Strategy before software.</h2>
+          <p class="ai-principle-body">The first thing we build is <em>judgment</em>, not code. Before we recommend a model or a stack, we work to understand the business underneath it. Where is intelligence missing today. Where would it compound if added. The answers shape everything that follows.</p>
+        </div>
+      </div>
+
+      <div class="ai-principle-block">
+        <div class="ai-principle-sticky" data-parallax-speed="0.1">
+          <span class="ai-principle-num">(02)</span>
+          <span class="ai-principle-label">Principle</span>
+        </div>
+        <div class="ai-principle-content">
+          <h2 class="ai-principle-title">Every engagement is custom.</h2>
+          <p class="ai-principle-body">We don't ship templates. Each project is shaped around the company's data, decisions, and daily operations. What works for one client is the wrong answer for the next.</p>
+        </div>
+      </div>
+
+      <div class="ai-principle-block">
+        <div class="ai-principle-sticky" data-parallax-speed="0.1">
+          <span class="ai-principle-num">(03)</span>
+          <span class="ai-principle-label">Principle</span>
+        </div>
+        <div class="ai-principle-content">
+          <h2 class="ai-principle-title">AI inside a well-built system.</h2>
+          <p class="ai-principle-body">AI doesn't grow a company on its own. AI inside a well-built <em>system</em> does. Our work sits at the intersection of brand, marketing, technology, and data — which means the AI we build is shaped by the same strategy as everything else.</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- WHAT WE BUILD — each item its own breathing beat -->
+    <section class="ai-builds" aria-label="Recent AI engagements">
+
+      <div class="ai-build-beat">
+        <div class="ai-build-num" data-parallax-speed="0.12">01</div>
+        <div class="ai-build-text">
+          <h3 class="ai-build-name">Quoting tools and pricing calculators</h3>
+          <p class="ai-build-outcome">that turn complex inputs into instant, accurate proposals.</p>
+        </div>
+      </div>
+
+      <div class="ai-build-beat">
+        <div class="ai-build-num" data-parallax-speed="0.12">02</div>
+        <div class="ai-build-text">
+          <h3 class="ai-build-name">Sales dashboards</h3>
+          <p class="ai-build-outcome">that consolidate pipeline, performance, and forecasting into one source of truth.</p>
+        </div>
+      </div>
+
+      <div class="ai-build-beat">
+        <div class="ai-build-num" data-parallax-speed="0.12">03</div>
+        <div class="ai-build-text">
+          <h3 class="ai-build-name">Automated credit checks</h3>
+          <p class="ai-build-outcome">that move underwriting from days to minutes.</p>
+        </div>
+      </div>
+
+      <div class="ai-build-beat">
+        <div class="ai-build-num" data-parallax-speed="0.12">04</div>
+        <div class="ai-build-text">
+          <h3 class="ai-build-name">AI onboarding systems</h3>
+          <p class="ai-build-outcome">that get new hires productive faster, with less hand-holding from the team.</p>
+        </div>
+      </div>
+
+      <div class="ai-build-beat">
+        <div class="ai-build-num" data-parallax-speed="0.12">05</div>
+        <div class="ai-build-text">
+          <h3 class="ai-build-name">Internal copilots and operational tools</h3>
+          <p class="ai-build-outcome">built around the workflows your team runs every day.</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- BIG EMAIL CTA -->
+    <section class="ai-big-cta">
+      <p class="ai-cta-pretitle">Ready to put AI to work inside your business?</p>
+      <a class="ai-cta-display" href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
+      <div class="ai-cta-sub">
+        <a href="../../contact.html" class="pill-btn">Schedule a consultation</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-row">
+      <div class="footer-left"><span>&copy; 2026 A Measured Force</span></div>
+      <div class="footer-center">
+        <a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a><span class="footer-divider">|</span>
+        <a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a><span class="footer-divider">|</span>
+        <a href="https://www.tiktok.com" target="_blank" rel="noopener">TikTok</a>
+      </div>
+      <div class="footer-right"><a href="#">Privacy Policy</a></div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="../../js/shader-bg.js"></script>
+  <script src="../../js/main.js"></script>
+</body>
+</html>

@@ -401,7 +401,10 @@ document.addEventListener('DOMContentLoaded', () => {
     '.logo-ticker',
     '.studio-tagline-h2', '.studio-tagline-pills', '.studio-about-dot',
     '.studio-logos',
-    '.logo-cell'
+    '.logo-cell',
+    '.ai-beat-line', '.ai-principle-title', '.ai-principle-body',
+    '.ai-build-name', '.ai-build-outcome',
+    '.ai-cta-pretitle', '.ai-cta-display'
   ].join(', ');
 
   const revealEls = document.querySelectorAll(revealSelectors);
@@ -750,6 +753,45 @@ document.addEventListener('DOMContentLoaded', () => {
       document.documentElement.classList.toggle('inverted');
     });
   }
+
+  /* ============ PARALLAX ENGINE ============
+   * Subtle scroll-driven translateY on [data-parallax-speed] elements.
+   * Single rAF loop; only active when at least one element is in viewport.
+   * Skipped on touch + reduced-motion. */
+  (function parallax() {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isTouchDevice || reducedMotion) return;
+
+    const items = Array.from(document.querySelectorAll('[data-parallax-speed]'))
+      .map(el => ({ el, speed: parseFloat(el.dataset.parallaxSpeed) || 0, inView: false }));
+    if (!items.length) return;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        const item = items.find(i => i.el === e.target);
+        if (item) item.inView = e.isIntersecting;
+      });
+    }, { rootMargin: '50px 0px' });
+    items.forEach(i => io.observe(i.el));
+
+    let rafId = null, lastScroll = -1;
+    function tick() {
+      const sy = window.scrollY;
+      if (sy !== lastScroll) {
+        lastScroll = sy;
+        const vCenter = window.innerHeight / 2;
+        for (const item of items) {
+          if (!item.inView) continue;
+          const r = item.el.getBoundingClientRect();
+          const eCenter = r.top + r.height / 2;
+          const offset = (vCenter - eCenter) * item.speed;
+          item.el.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
+        }
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+    rafId = requestAnimationFrame(tick);
+  })();
 
   /* ============ CONTACT FORM ============ */
   const contactForm = document.getElementById('contactForm');

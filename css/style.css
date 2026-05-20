@@ -84,14 +84,14 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 .cursor {
   position: fixed; top: 0; left: 0;
   width: 20px; height: 20px;
-  background: var(--orange);
+  background: #fff;
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
   transition: width 0.4s cubic-bezier(0.16,1,0.3,1),
               height 0.4s cubic-bezier(0.16,1,0.3,1),
-              background 0.3s, opacity 0.3s;
+              opacity 0.3s;
   mix-blend-mode: difference;
   display: flex; align-items: center; justify-content: center;
   opacity: 0;
@@ -100,16 +100,15 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
 .cursor-text {
   font-family: var(--font-sans);
   font-size: 0; font-weight: 500;
-  color: var(--white);
+  color: var(--ink);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   white-space: nowrap;
   transition: font-size 0.3s cubic-bezier(0.16,1,0.3,1);
-  mix-blend-mode: difference;
 }
 .cursor.hovering { width: 80px; height: 80px; }
 .cursor.hovering .cursor-text { font-size: 0.55rem; }
-.cursor.hovering-work { width: 120px; height: 120px; background: var(--accent); }
+.cursor.hovering-work { width: 120px; height: 120px; }
 .cursor.hovering-work .cursor-text { font-size: 0.65rem; }
 @media (pointer: coarse) { .cursor { display: none; } }
 
@@ -1242,4 +1241,283 @@ html.inverted .works-cycle-item.is-active img { filter: invert(1) !important; }
 
 @media (max-width: 480px) {
   .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* ============ AI SERVICE PAGE — Long-scroll conversational ============ */
+
+/* HERO — giant centered serif headline; full viewport so parallax can play */
+.ai-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 10rem var(--pad) 4rem;
+  text-align: center;
+}
+.ai-hero-headline {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2.8rem, 8.5vw, 8.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+  color: var(--ink);
+  will-change: transform;
+}
+.ai-hero-headline em {
+  color: var(--ink);
+  font-style: italic;
+}
+.ai-hero-footer {
+  position: absolute;
+  bottom: 1.5rem; left: 0; right: 0;
+  display: flex; justify-content: space-between;
+  padding: 1rem var(--pad) 0;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ash);
+}
+
+/* APHORISM BEATS — each its own breathing viewport */
+.ai-beat {
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  padding: 6rem var(--pad);
+  position: relative;
+}
+.ai-beat-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.ai-beat--left  .ai-beat-inner { margin-left: 0; padding-right: 30%; }
+.ai-beat--right .ai-beat-inner { margin-right: 0; margin-left: auto; padding-left: 30%; text-align: right; }
+.ai-beat--center .ai-beat-inner { text-align: center; max-width: 900px; }
+.ai-beat-line {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 4.2vw, 3.8rem);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  max-width: 22ch;
+}
+.ai-beat--right .ai-beat-line { margin-left: auto; }
+.ai-beat--center .ai-beat-line { margin: 0 auto; }
+.ai-beat-line em {
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+.ai-beat-label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.65rem; letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ash);
+  margin-bottom: 1.5rem;
+  will-change: transform;
+}
+
+/* PRINCIPLES — each principle is its own ~100vh block with sticky left rail */
+.ai-principles {
+  padding: 0;
+}
+.ai-principle-block {
+  position: relative;
+  min-height: 110vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 4rem;
+  padding: 8rem var(--pad);
+  max-width: 1400px; margin: 0 auto;
+}
+.ai-principle-sticky {
+  position: sticky;
+  top: 45vh;
+  align-self: start;
+  height: max-content;
+  display: flex; flex-direction: column;
+  gap: 0.3rem;
+  will-change: transform;
+}
+.ai-principle-num {
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 1;
+  font-size: clamp(1rem, 1.4vw, 1.3rem);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+.ai-principle-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem; letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+.ai-principle-content {
+  max-width: 720px;
+  padding-top: 30vh; /* drops body below where the sticky label initially lands */
+}
+.ai-principle-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin-bottom: 2rem;
+  max-width: 18ch;
+}
+.ai-principle-body {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  line-height: 1.7;
+  color: var(--ink);
+}
+.ai-principle-body em {
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+/* WHAT WE BUILD — each item is its own ~80vh breathing beat */
+.ai-builds {
+  padding: 6rem 0;
+}
+.ai-build-beat {
+  min-height: 80vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  padding: 6rem var(--pad);
+  max-width: 1400px; margin: 0 auto;
+  align-items: center;
+}
+.ai-build-beat:nth-child(even) {
+  direction: rtl;
+}
+.ai-build-beat:nth-child(even) > * { direction: ltr; }
+.ai-build-num {
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 1;
+  font-size: clamp(4rem, 10vw, 9rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--stone);
+  line-height: 1;
+  will-change: transform;
+}
+.ai-build-text {
+  display: flex; flex-direction: column;
+  gap: 1.5rem;
+  max-width: 480px;
+}
+.ai-build-name {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.ai-build-outcome {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  line-height: 1.7;
+  color: var(--ash);
+}
+
+/* BIG EMAIL CTA — kept; padded heavily for breathing room */
+.ai-big-cta {
+  padding: 14rem 0 10rem;
+}
+.ai-cta-pretitle {
+  padding: 0 var(--pad);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ash);
+  margin-bottom: 4rem;
+}
+.ai-cta-display {
+  display: block;
+  padding: 0 var(--pad);
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 8.2vw, 7.8rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  color: var(--stone);
+  text-decoration: none;
+  transition: color 0.5s ease;
+  word-break: break-word;
+}
+.ai-cta-display:hover { color: var(--ink); opacity: 1; }
+.ai-cta-sub {
+  padding: 4rem var(--pad) 0;
+  display: flex; gap: 1rem;
+  align-items: center;
+}
+
+/* Reduced-motion guard: disable parallax + sticky pins, keep content flowing */
+@media (prefers-reduced-motion: reduce) {
+  .ai-hero-headline,
+  .ai-beat-label,
+  .ai-principle-sticky,
+  .ai-build-num {
+    transform: none !important;
+    will-change: auto;
+  }
+  .ai-principle-sticky { position: static; }
+  .ai-principle-content { padding-top: 0; }
+}
+
+@media (max-width: 1024px) {
+  .ai-hero { min-height: 90vh; }
+  .ai-beat { min-height: 70vh; padding: 5rem var(--pad); }
+  .ai-beat--left .ai-beat-inner,
+  .ai-beat--right .ai-beat-inner { padding-left: 0; padding-right: 0; }
+  .ai-principle-block { grid-template-columns: 160px 1fr; gap: 2.5rem; min-height: auto; padding: 6rem var(--pad); }
+  .ai-principle-content { padding-top: 4rem; }
+  .ai-build-beat { grid-template-columns: 1fr; gap: 2rem; min-height: auto; padding: 5rem var(--pad); }
+  .ai-build-beat:nth-child(even) { direction: ltr; }
+  .ai-big-cta { padding: 8rem 0 6rem; }
+}
+@media (max-width: 768px) {
+  .ai-hero { padding: 7rem var(--pad) 3rem; min-height: 85vh; }
+  .ai-hero-footer {
+    position: relative;
+    bottom: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    padding-left: 0; padding-right: 0;
+  }
+  .ai-beat { min-height: 60vh; padding: 4rem var(--pad); }
+  .ai-beat--right .ai-beat-inner { text-align: left; }
+  .ai-beat--right .ai-beat-line { margin-left: 0; }
+  .ai-principle-block {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 5rem var(--pad);
+  }
+  .ai-principle-sticky {
+    position: static;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: baseline;
+  }
+  .ai-principle-content { padding-top: 0; }
+  .ai-build-beat { padding: 4rem var(--pad); }
+  .ai-big-cta { padding: 5rem 0 3rem; }
+  .ai-cta-pretitle { margin-bottom: 2rem; }
+  .ai-cta-sub { padding-top: 2rem; }
 }
