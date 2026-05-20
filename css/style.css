@@ -1243,42 +1243,168 @@ html.inverted .works-cycle-item.is-active img { filter: invert(1) !important; }
   .stats-grid { grid-template-columns: 1fr; }
 }
 
+/* ============ SYSTEM DIAGRAM (AI page centerpiece) ============
+   Scoped under .system-diagram. Tokens mapped to AMF palette:
+   --bg → --paper, --mute-strong → --ash, --serif/--sans → AMF fonts.
+   Section bg left transparent so the warm shader bleeds through. */
+
+.system-diagram {
+  color: var(--ink);
+  padding: clamp(120px, 16vh, 200px) clamp(20px, 4vw, 64px)
+           clamp(80px, 12vh, 160px);
+  border-top: 1px solid var(--line);
+}
+
+.system-diagram .diagram-wrap {
+  max-width: 1480px;
+  margin: 0 auto;
+  position: relative;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.system-diagram .diagram-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.system-diagram .state-label {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(15px, 1.4vw, 20px);
+  color: var(--ink);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.system-diagram .state-label .change {
+  display: inline-block;
+  min-width: 7ch;
+  transition: opacity .35s ease;
+}
+
+.system-diagram .toggle {
+  display: inline-flex;
+  background: transparent;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  padding: 4px;
+}
+.system-diagram .toggle button {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 999px;
+  color: var(--ink);
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  cursor: none;
+  transition: background .25s ease, color .25s ease;
+}
+.system-diagram .toggle button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.system-diagram .diagram {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-height: 720px;
+}
+.system-diagram .diagram svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* SVG element theming — classes referenced by JS-created nodes */
+.system-diagram .diagram svg text { fill: var(--ink); }
+.system-diagram .diagram svg .signal-fill { fill: var(--ink); }
+.system-diagram .diagram svg .line-stroke { stroke: var(--ink); }
+.system-diagram .diagram svg .sub-fill { fill: var(--ash); }
+
+.system-diagram .legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ash);
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.system-diagram .legend .item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.system-diagram .legend .swatch {
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  background: var(--ink);
+}
+.system-diagram .legend .swatch.dashed {
+  background: repeating-linear-gradient(
+    to right,
+    var(--ink) 0 3px,
+    transparent 3px 6px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .system-diagram *,
+  .system-diagram *::before,
+  .system-diagram *::after {
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .system-diagram .diagram { aspect-ratio: 4 / 5; }
+}
+
 /* ============ AI SERVICE PAGE — Long-scroll conversational ============ */
 
-/* HERO — giant centered serif headline; full viewport so parallax can play */
+/* HERO — sibling to homepage hero: same scale, bottom-aligned, left */
 .ai-hero {
   position: relative;
   min-height: 100vh;
   display: flex; flex-direction: column;
-  justify-content: center; align-items: center;
-  padding: 10rem var(--pad) 4rem;
-  text-align: center;
+  justify-content: flex-end; align-items: flex-start;
+  padding: 8rem var(--pad) var(--pad);
+  text-align: left;
+}
+.ai-hero-inner {
+  width: 100%;
+  margin-top: auto;
+  padding-bottom: 1rem;
 }
 .ai-hero-headline {
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(2.8rem, 8.5vw, 8.5rem);
-  line-height: 0.98;
-  letter-spacing: -0.025em;
-  max-width: 18ch;
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   color: var(--ink);
   will-change: transform;
+  margin: 0;
 }
 .ai-hero-headline em {
   color: var(--ink);
   font-style: italic;
-}
-.ai-hero-footer {
-  position: absolute;
-  bottom: 1.5rem; left: 0; right: 0;
-  display: flex; justify-content: space-between;
-  padding: 1rem var(--pad) 0;
-  border-top: 1px solid var(--line);
-  font-family: var(--font-sans);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--ash);
 }
 
 /* APHORISM BEATS — each its own breathing viewport */
@@ -1480,7 +1606,7 @@ html.inverted .works-cycle-item.is-active img { filter: invert(1) !important; }
 }
 
 @media (max-width: 1024px) {
-  .ai-hero { min-height: 90vh; }
+  .ai-hero { min-height: 100vh; }
   .ai-beat { min-height: 70vh; padding: 5rem var(--pad); }
   .ai-beat--left .ai-beat-inner,
   .ai-beat--right .ai-beat-inner { padding-left: 0; padding-right: 0; }
@@ -1491,16 +1617,7 @@ html.inverted .works-cycle-item.is-active img { filter: invert(1) !important; }
   .ai-big-cta { padding: 8rem 0 6rem; }
 }
 @media (max-width: 768px) {
-  .ai-hero { padding: 7rem var(--pad) 3rem; min-height: 85vh; }
-  .ai-hero-footer {
-    position: relative;
-    bottom: auto;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    margin-top: 3rem;
-    padding-left: 0; padding-right: 0;
-  }
+  .ai-hero { padding: 7rem var(--pad) 4rem; min-height: 100vh; }
   .ai-beat { min-height: 60vh; padding: 4rem var(--pad); }
   .ai-beat--right .ai-beat-inner { text-align: left; }
   .ai-beat--right .ai-beat-line { margin-left: 0; }
