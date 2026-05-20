@@ -1510,53 +1510,193 @@ html.inverted .works-cycle-item.is-active img { filter: invert(1) !important; }
   font-style: italic;
 }
 
-/* WHAT WE BUILD — each item is its own ~80vh breathing beat */
-.ai-builds {
-  padding: 6rem 0;
+/* AI WORKS — full-width horizontal travel
+   .ai-works-pin is a tall outer container. Inside, the .ai-works-stage
+   sticks to the viewport while the rail of 5 cards translates from
+   off-screen-right to off-screen-left. Each card has a distinct moment at
+   viewport center; the name label (above) and index+tag (below) only
+   appear when their card is centered, fading out between cards.
+
+   To populate a card with a real image:
+     <div class="ai-works-card" data-aspect="square" data-index="02" ...>
+       <img src="../../assets/ai-projects/02-sales-dashboard.jpg" alt="">
+     </div>
+   Card keeps its [data-aspect] sizing; <img> fills via object-fit. */
+.ai-works-pin {
+  position: relative;
+  height: 380vh;
+  margin-top: 2rem;
 }
-.ai-build-beat {
-  min-height: 80vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  padding: 6rem var(--pad);
-  max-width: 1400px; margin: 0 auto;
+.ai-works-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+.ai-works-eyebrow {
+  position: absolute;
+  top: 2.5rem;
+  left: var(--pad);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ash);
+  z-index: 3;
+}
+
+/* Track spans the full viewport. Rail translates inside via JS. */
+.ai-works-track {
+  position: absolute;
+  inset: 0;
+  display: flex;
   align-items: center;
 }
-.ai-build-beat:nth-child(even) {
-  direction: rtl;
-}
-.ai-build-beat:nth-child(even) > * { direction: ltr; }
-.ai-build-num {
-  font-family: var(--font-sans);
-  font-feature-settings: "tnum" 1;
-  font-size: clamp(4rem, 10vw, 9rem);
-  font-weight: 300;
-  letter-spacing: -0.04em;
-  color: var(--stone);
-  line-height: 1;
+.ai-works-rail {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  gap: 32vw;
+  transform: translate3d(100vw, -50%, 0);
   will-change: transform;
 }
-.ai-build-text {
-  display: flex; flex-direction: column;
-  gap: 1.5rem;
-  max-width: 480px;
+.ai-works-card {
+  flex: 0 0 auto;
+  position: relative;
+  background: rgba(23, 21, 18, 0.04);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  height: min(44vh, 420px);
+  max-width: 34vw;
 }
-.ai-build-name {
+.ai-works-card[data-aspect="portrait"]    { aspect-ratio: 4 / 5; }
+.ai-works-card[data-aspect="square"]      { aspect-ratio: 1 / 1; }
+.ai-works-card[data-aspect="tall"]        { aspect-ratio: 3 / 5; }
+.ai-works-card[data-aspect="landscape"]   { aspect-ratio: 16 / 10; }
+.ai-works-card[data-aspect="square-wide"] { aspect-ratio: 6 / 5; }
+.ai-works-card::after {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+.ai-works-card[data-aspect="portrait"]::after    { content: "image · 4 : 5"; }
+.ai-works-card[data-aspect="square"]::after      { content: "image · 1 : 1"; }
+.ai-works-card[data-aspect="tall"]::after        { content: "image · 3 : 5"; }
+.ai-works-card[data-aspect="landscape"]::after   { content: "image · 16 : 10"; }
+.ai-works-card[data-aspect="square-wide"]::after { content: "image · 6 : 5"; }
+.ai-works-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ai-works-card:has(img)::after { display: none; }
+
+/* Labels — centered horizontally, above and below the active card.
+   Opacity is driven by JS based on the nearest card's distance from center. */
+.ai-works-label-top,
+.ai-works-label-bottom {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 4;
+  max-width: 80vw;
+}
+.ai-works-label-top {
+  top: calc(50% - min(22vh, 230px) - 3rem);
   font-family: var(--font-serif);
-  font-weight: 400;
   font-style: italic;
-  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  font-weight: 400;
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
   line-height: 1.2;
-  letter-spacing: -0.01em;
   color: var(--ink);
 }
-.ai-build-outcome {
+.ai-works-label-bottom {
+  top: calc(50% + min(22vh, 230px) + 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   font-family: var(--font-sans);
-  font-weight: 300;
-  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
-  line-height: 1.7;
+  font-size: 0.85rem;
   color: var(--ash);
+  letter-spacing: 0.04em;
+}
+.ai-works-label-index {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.ai-works-label-tag {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ash);
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-works-pin { height: auto; margin-top: 0; }
+  .ai-works-stage {
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding: 6rem var(--pad);
+  }
+  .ai-works-eyebrow { position: static; margin-bottom: 3rem; }
+  .ai-works-track { position: static; display: block; }
+  .ai-works-rail {
+    position: static;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3rem;
+    transform: none !important;
+  }
+  .ai-works-card {
+    width: min(100%, 480px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  .ai-works-label-top,
+  .ai-works-label-bottom { display: none; }
+}
+
+@media (max-width: 900px) {
+  .ai-works-pin { height: auto; margin-top: 0; }
+  .ai-works-stage {
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding: 5rem var(--pad);
+  }
+  .ai-works-eyebrow { position: static; margin-bottom: 2.5rem; }
+  .ai-works-track { position: static; display: block; }
+  .ai-works-rail {
+    position: static;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2.5rem;
+    transform: none !important;
+  }
+  .ai-works-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  .ai-works-label-top,
+  .ai-works-label-bottom { display: none; }
 }
 
 /* BIG EMAIL CTA — kept; padded heavily for breathing room */

@@ -498,6 +498,140 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
+  /* ============ AI WORKS — full-width horizontal travel =====================
+     Pin section is 380vh; inside, a 100vh sticky stage holds a horizontal
+     rail of cards. As the user scrolls 0..1 through the pin, the rail
+     translates linearly from off-screen-right (+vw) to off-screen-left
+     (-railWidth). Each card has a unique scroll position at which it sits
+     at viewport center — at that moment, the name label (above) and the
+     index+tag label (below) reach full opacity. Between cards, both fade
+     out. Text swaps to the next card when opacity is near zero. */
+  (function aiWorks() {
+    const section = document.querySelector('.ai-works-pin');
+    if (!section) return;
+    const rail  = section.querySelector('[data-rail]');
+    const cards = Array.from(rail ? rail.children : []);
+    const labelTop    = section.querySelector('[data-label-top]');
+    const labelBottom = section.querySelector('[data-label-bottom]');
+    const nameEl  = section.querySelector('[data-bind="name"]');
+    const indexEl = section.querySelector('[data-bind="index"]');
+    const tagEl   = section.querySelector('[data-bind="tag"]');
+    if (!rail || !cards.length) return;
+
+    const prefersReducedMotion = () =>
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isNarrow = () => window.matchMedia('(max-width: 900px)').matches;
+
+    let cardCenters = [];   // each card's center, in rail-local X coords
+    let centerProgress = []; // scroll-progress at which each card is centered
+    let sectionTop = 0, sectionHeight = 0;
+    let vw = window.innerWidth, vh = window.innerHeight;
+    let railWidth = 0;
+    let startX = 0, endX = 0, travel = 0;
+    let activeIdx = -1;
+    let disabled = false;
+
+    function measure() {
+      disabled = prefersReducedMotion() || isNarrow();
+      if (disabled) { rail.style.transform = ''; return; }
+      vw = window.innerWidth;
+      vh = window.innerHeight;
+      const rect = section.getBoundingClientRect();
+      sectionTop = rect.top + window.scrollY;
+      sectionHeight = section.offsetHeight;
+
+      cardCenters = cards.map(c => c.offsetLeft + c.offsetWidth / 2);
+      railWidth = rail.scrollWidth;
+
+      // Travel: rail starts at +vw (first card's left edge at viewport's right
+      // edge) and ends at -railWidth (rail's right edge at viewport's left edge).
+      startX = vw;
+      endX = -railWidth;
+      travel = startX - endX;
+
+      // For each card, the progress value at which its center sits at vw/2:
+      //   railX = vw/2 - cardCenters[i]
+      //   progress = (startX - railX) / travel
+      centerProgress = cardCenters.map(c => (startX - (vw / 2 - c)) / travel);
+    }
+
+    function applyLabel(idx) {
+      if (idx === activeIdx) return;
+      activeIdx = idx;
+      const card = cards[idx];
+      if (!card) return;
+      if (nameEl)  nameEl.textContent  = card.dataset.name || '';
+      if (indexEl) indexEl.textContent = card.dataset.index || '';
+      if (tagEl)   tagEl.textContent   = card.dataset.tag ? '— ' + card.dataset.tag : '';
+    }
+
+    let rafId = null, isVisible = false, lastScroll = -1;
+    function tick() {
+      const sy = window.scrollY;
+      if (sy !== lastScroll) {
+        lastScroll = sy;
+        const denom = Math.max(1, sectionHeight - vh);
+        let progress = (sy - sectionTop) / denom;
+        if (progress < 0) progress = 0;
+        else if (progress > 1) progress = 1;
+
+        const railX = startX - progress * travel;
+        rail.style.transform = 'translate3d(' + railX + 'px, -50%, 0)';
+
+        // Find nearest centered card by progress distance.
+        let nearestIdx = 0, nearestDist = Infinity;
+        for (let i = 0; i < cards.length; i++) {
+          const d = Math.abs(progress - centerProgress[i]);
+          if (d < nearestDist) { nearestDist = d; nearestIdx = i; }
+        }
+        applyLabel(nearestIdx);
+
+        // Opacity falls off as the nearest card moves away from center.
+        // Convert progress-distance to pixels and fade over ~22% of viewport.
+        const pixelDist = nearestDist * travel;
+        const fadeWidth = vw * 0.22;
+        let opacity = 1 - pixelDist / fadeWidth;
+        if (opacity < 0) opacity = 0;
+        else if (opacity > 1) opacity = 1;
+        // Ease for softer in/out
+        opacity = opacity * opacity * (3 - 2 * opacity);
+        if (labelTop)    labelTop.style.opacity    = opacity;
+        if (labelBottom) labelBottom.style.opacity = opacity;
+      }
+      if (isVisible && !disabled) rafId = requestAnimationFrame(tick);
+    }
+
+    const visObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        isVisible = e.isIntersecting;
+        if (isVisible && !rafId && !disabled) {
+          lastScroll = -1;
+          rafId = requestAnimationFrame(tick);
+        } else if (!isVisible && rafId) {
+          cancelAnimationFrame(rafId); rafId = null;
+        }
+      });
+    }, { threshold: 0 });
+    visObs.observe(section);
+
+    measure();
+    requestAnimationFrame(() => {
+      lastScroll = -1;
+      if (!disabled) tick();
+    });
+
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        measure();
+        lastScroll = -1;
+        if (!disabled && isVisible && !rafId) rafId = requestAnimationFrame(tick);
+        if (disabled && rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      }, 120);
+    });
+  })();
+
   /* ==========================================================
      WORKS PAGE — Studio375-inspired scroll interaction engine
      - Smooth inertia-based scroll driving the image column
