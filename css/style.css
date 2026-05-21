@@ -117,55 +117,43 @@ body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: grid; grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 1.5rem var(--pad);
+  padding: 1.1rem var(--pad);
   transition: background 0.4s, backdrop-filter 0.4s;
 }
 .header-logo { justify-self: start; }
 .header-logo a { display: flex; align-items: center; }
-.header-logo-img { height: 105px; width: auto; }
+.header-logo-img { height: 78px; width: auto; }
 .header-center-name { justify-self: center; }
 .header-center-name a {
-  font-family: var(--font-sans); font-weight: 500;
-  font-size: 0.8rem; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--white);
+  font-family: var(--font-sans); font-weight: 400;
+  font-size: 0.65rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--ash);
+  transition: color 0.3s ease;
 }
-.header-center-name a:hover { color: var(--white); opacity: 0.7; }
-.header-nav { justify-self: end; display: flex; gap: 2.5rem; align-items: center; }
-.header-nav a { font-size: 0.8rem; font-weight: 400; letter-spacing: 0.04em; }
-.header-nav a.active { opacity: 0.4; }
+.header-center-name a:hover { color: var(--ink); }
+.header-actions {
+  justify-self: end;
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
 
-/* Engraved-coin invert-colors toggle */
+/* Quiet invert-colors toggle — half-disc glyph that previews its own action
+   on hover (rotation flips the light/dark halves). */
 .invert-dot {
-  width: 84px; height: 84px;
+  width: 22px; height: 22px;
   background: transparent;
   border: none; padding: 0; cursor: pointer;
-  position: relative;
+  color: var(--ash);
+  display: inline-flex; align-items: center; justify-content: center;
   flex-shrink: 0;
+  transition: color 0.3s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.invert-dot:hover {
   color: var(--ink);
-  transition: transform 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  transform: rotate(180deg);
 }
-.invert-dot:hover { transform: scale(1.06); }
-
-.invert-dot-svg { width: 100%; height: 100%; overflow: visible; }
-
-.invert-dot-spin {
-  transform-origin: 50% 50%;
-  transform-box: view-box;
-  animation: invertRotate 20s linear infinite;
-}
-.invert-dot-spin text {
-  fill: currentColor;
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.05em;
-}
-
-@keyframes invertRotate { to { transform: rotate(360deg); } }
+.invert-dot svg { width: 100%; height: 100%; display: block; }
 
 /* Invert the whole site when active. The canvas and work photos are counter-
    inverted so they stay untouched — pure invert(1) self-cancels cleanly. */
@@ -178,32 +166,142 @@ html.inverted .works-card img { filter: brightness(0.85) invert(1) !important; }
 html.inverted .works-cycle-item img { filter: grayscale(1) invert(1) !important; }
 html.inverted .works-cycle-item.is-active img { filter: invert(1) !important; }
 
-.menu-toggle {
-  display: none; background: none;
-  border: 1px solid var(--line-strong);
-  color: var(--ink); padding: 0.4rem 1.2rem;
-  border-radius: 100px; font-size: 0.75rem;
-  font-family: var(--font-sans); letter-spacing: 0.08em;
-  text-transform: uppercase; cursor: none;
+/* ============ MENU TRIGGER (dot → ring → X) ============ */
+.menu-trigger {
+  width: 22px; height: 22px;
+  background: transparent;
+  border: none; padding: 0; cursor: pointer;
+  color: var(--ash);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+  position: relative;
 }
-.menu-toggle:hover { border-color: var(--ink); }
+.menu-trigger:hover { color: var(--ink); }
+.menu-trigger-dot {
+  display: block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  position: relative;
+  transition:
+    width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.menu-trigger:hover .menu-trigger-dot {
+  width: 14px; height: 14px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+.menu-trigger.is-open .menu-trigger-dot {
+  width: 16px; height: 16px;
+  background: transparent;
+  box-shadow: none;
+}
+.menu-trigger.is-open .menu-trigger-dot::before,
+.menu-trigger.is-open .menu-trigger-dot::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+}
+.menu-trigger.is-open .menu-trigger-dot::before { transform: rotate(45deg); }
+.menu-trigger.is-open .menu-trigger-dot::after  { transform: rotate(-45deg); }
 
-/* ============ MOBILE NAV ============ */
-.mobile-nav {
-  position: fixed; inset: 0; z-index: 99;
+/* ============ FULL-SCREEN MENU OVERLAY ============ */
+.menu-overlay {
+  position: fixed; inset: 0;
+  z-index: 9000;
   background: var(--paper);
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; visibility: hidden;
-  transition: opacity 0.5s, visibility 0.5s;
+  opacity: 0;
+  pointer-events: none;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 8rem var(--pad) 4rem;
+  transition: opacity 0.55s cubic-bezier(0.76, 0, 0.24, 1);
 }
-.mobile-nav.open { opacity: 1; visibility: visible; }
-.mobile-nav nav { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-.mobile-nav-link {
+.menu-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.menu-overlay-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column;
+  gap: clamp(1rem, 2.5vh, 2.2rem);
+  max-width: 1100px;
+  margin-inline: auto;
+  width: 100%;
+}
+.menu-overlay-list li {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1),
+              transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.menu-overlay.is-open .menu-overlay-list li {
+  opacity: 1;
+  transform: translateY(0);
+}
+.menu-overlay.is-open .menu-overlay-list li:nth-child(1) { transition-delay: 0.20s; }
+.menu-overlay.is-open .menu-overlay-list li:nth-child(2) { transition-delay: 0.28s; }
+.menu-overlay.is-open .menu-overlay-list li:nth-child(3) { transition-delay: 0.36s; }
+.menu-overlay.is-open .menu-overlay-list li:nth-child(4) { transition-delay: 0.44s; }
+
+.menu-overlay-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 2.5rem;
+  color: var(--ink);
+  text-decoration: none;
   font-family: var(--font-serif);
-  font-size: clamp(2.5rem, 8vw, 4.5rem);
-  font-style: italic; line-height: 1.2;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
-.mobile-nav-link:hover { color: var(--orange); }
+.menu-overlay-num {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--ash);
+  min-width: 2.5rem;
+  flex-shrink: 0;
+  align-self: center;
+  font-feature-settings: "tnum" 1;
+}
+.menu-overlay-list a.is-active .menu-overlay-num { color: var(--ink); }
+
+.menu-overlay-footer {
+  margin-top: clamp(3rem, 6vh, 5rem);
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: var(--ash);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.55s,
+              transform 0.6s cubic-bezier(0.16,1,0.3,1) 0.55s;
+}
+.menu-overlay.is-open .menu-overlay-footer { opacity: 1; transform: translateY(0); }
+.menu-overlay-footer a { color: var(--ash); text-decoration: none; transition: color 0.3s ease; }
+.menu-overlay-footer a:hover { color: var(--ink); }
+
+body.menu-open { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-overlay,
+  .menu-overlay-list li,
+  .menu-overlay-footer { transition-duration: 0.01ms !important; transform: none !important; }
+}
 
 /* ============ HERO ============ */
 .hero {
@@ -1179,9 +1277,7 @@ html.inverted .works-cycle-item.is-active img { filter: invert(1) !important; }
 }
 
 @media (max-width: 768px) {
-  .header-nav { display: none; }
   .header-center-name { display: none; }
-  .menu-toggle { display: block; }
   .header-logo-img { height: 75px; }
   .header { padding: 1rem var(--pad); }
 

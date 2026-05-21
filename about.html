@@ -22,10 +22,20 @@
   <header class="header" id="header">
     <div class="header-logo"><a href="index.html"><img src="assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
     <div class="header-center-name"><a href="index.html">A Measured Force</a></div>
-    <nav class="header-nav"><a href="work.html">Work</a><a href="about.html" class="active">About</a><a href="services/ai/">AI</a><a href="contact.html">Contact</a><button class="invert-dot" id="invertDot" aria-label="Invert colors"><svg class="invert-dot-svg" viewBox="0 0 100 100"><g class="invert-dot-spin"><defs><path id="invertCirclePath" d="M 50,50 m -30,0 a 30,30 0 1,1 60,0 a 30,30 0 1,1 -60,0"/></defs><text xml:space="preserve"><textPath href="#invertCirclePath" startOffset="0" textLength="188.5" lengthAdjust="spacing">click me · click me · click me · </textPath></text></g><circle cx="50" cy="50" r="1.6" fill="currentColor"/></svg></button></nav>
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
+    <div class="header-actions"><button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 10,3 A 7,7 0 0,0 10,17 Z" fill="currentColor"/></svg></button><button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-controls="menuOverlay" aria-expanded="false"><span class="menu-trigger-dot"></span></button></div>
   </header>
-  <div class="mobile-nav" id="mobileNav"><nav><a href="index.html" class="mobile-nav-link">Home</a><a href="work.html" class="mobile-nav-link">Work</a><a href="about.html" class="mobile-nav-link">About</a><a href="services/ai/" class="mobile-nav-link">AI</a><a href="contact.html" class="mobile-nav-link">Contact</a></nav></div>
+
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ol class="menu-overlay-list">
+      <li><a href="work.html"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="about.html" class="is-active"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+    </ol>
+    <div class="menu-overlay-footer">
+      <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
+    </div>
+  </div>
 
   <main>
     <!-- Section 2: Agency Description + Logos -->

@@ -843,23 +843,38 @@ document.addEventListener('DOMContentLoaded', () => {
     imgObs.observe(img);
   });
 
-  /* ============ MOBILE MENU ============ */
-  const menuToggle = document.getElementById('menuToggle');
-  const mobileNav = document.getElementById('mobileNav');
-  let menuOpen = false;
-
-  if (menuToggle && mobileNav) {
-    menuToggle.addEventListener('click', () => {
-      menuOpen = !menuOpen;
-      mobileNav.classList.toggle('open', menuOpen);
-      menuToggle.querySelector('span').textContent = menuOpen ? 'Close' : 'Menu';
+  /* ============ MENU OVERLAY ============ */
+  // Full-viewport overlay with staggered item reveal. Trigger dot in the
+  // header toggles between filled-dot (closed) and X (open) via .is-open.
+  // Esc closes; clicking a nav item closes (so the overlay fades out behind
+  // the existing page-transition curtains).
+  const menuTrigger = document.getElementById('menuTrigger');
+  const menuOverlay = document.getElementById('menuOverlay');
+  if (menuTrigger && menuOverlay) {
+    const openMenu = () => {
+      menuOverlay.classList.add('is-open');
+      menuTrigger.classList.add('is-open');
+      menuTrigger.setAttribute('aria-expanded', 'true');
+      menuOverlay.setAttribute('aria-hidden', 'false');
+      menuTrigger.setAttribute('aria-label', 'Close menu');
+      document.body.classList.add('menu-open');
+    };
+    const closeMenu = () => {
+      menuOverlay.classList.remove('is-open');
+      menuTrigger.classList.remove('is-open');
+      menuTrigger.setAttribute('aria-expanded', 'false');
+      menuOverlay.setAttribute('aria-hidden', 'true');
+      menuTrigger.setAttribute('aria-label', 'Open menu');
+      document.body.classList.remove('menu-open');
+    };
+    menuTrigger.addEventListener('click', () => {
+      menuTrigger.classList.contains('is-open') ? closeMenu() : openMenu();
     });
-    document.querySelectorAll('.mobile-nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        menuOpen = false;
-        mobileNav.classList.remove('open');
-        menuToggle.querySelector('span').textContent = 'Menu';
-      });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menuTrigger.classList.contains('is-open')) closeMenu();
+    });
+    menuOverlay.querySelectorAll('a[href]').forEach((a) => {
+      a.addEventListener('click', () => { setTimeout(closeMenu, 0); });
     });
   }
 
