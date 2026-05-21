@@ -132,9 +132,31 @@
     holder.position.set(cfg.x, cfg.y, cfg.z || 0);
     holder.rotation.z = cfg.rz || 0;
 
+    // Emerge animation — start the holder ~1.6 world units deeper than its
+    // target z (fully behind the opaque wall plane). The animate loop only
+    // begins easing it forward once the sculpture scrolls into viewport, so
+    // each one rises as the user reaches it. Skipped on reduced-motion.
+    const targetZ = cfg.z || 0;
+    if (prefersReducedMotion) {
+      holder.position.z = targetZ;
+    } else {
+      const emergeStartZ = targetZ - 1.6;
+      holder.userData.emerge = {
+        startTime: -1,
+        duration: 2.8,        // slow rise — sculpture feels weighty
+        startZ: emergeStartZ,
+        targetZ: targetZ,
+        done: false,
+      };
+      holder.position.z = emergeStartZ;
+      emerging.push(holder);
+    }
+
     scene.add(holder);
     return holder;
   }
+  const emerging = [];
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Pick the relief set based on the current page. Pages not listed get
   // the wall + cursor light only.
@@ -249,6 +271,38 @@
     currentPos.y += (targetPos.y - currentPos.y) * 0.14;
     currentPos.z += (WALL_LIGHT_Z - currentPos.z) * 0.14;
     cursorLight.position.copy(currentPos);
+
+    // Emerge: start each sculpture's rise when it first enters the viewport
+    // (with a small lead margin so the animation has begun by the time it's
+    // fully on screen). Each sculpture eases from deep-in-wall to its target
+    // z over `duration` with easeOutCubic. Sculptures above/below the
+    // viewport simply wait at their start z.
+    if (emerging.length) {
+      const tNow = performance.now() / 1000;
+      const visibleH = visibleAtZ(0).h;
+      const cameraY = camera.position.y;
+      const viewTop = cameraY + visibleH / 2 + 1.5;
+      const viewBot = cameraY - visibleH / 2 - 1.5;
+      for (let i = 0; i < emerging.length; i++) {
+        const h = emerging[i];
+        const e = h.userData.emerge;
+        if (e.done) continue;
+        if (e.startTime < 0) {
+          const sy = h.position.y;
+          if (sy < viewBot || sy > viewTop) continue;
+          e.startTime = tNow;
+        }
+        const t = (tNow - e.startTime) / e.duration;
+        if (t >= 1) {
+          h.position.z = e.targetZ;
+          e.done = true;
+        } else {
+          const k = 1 - t;
+          const eased = 1 - k * k * k; // easeOutCubic
+          h.position.z = e.startZ + (e.targetZ - e.startZ) * eased;
+        }
+      }
+    }
 
     renderer.render(scene, camera);
   }
