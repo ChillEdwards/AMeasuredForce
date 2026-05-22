@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Johnson &amp; Johnson | A Measured Force</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+<body>
+  <!-- WebGL Shader Background -->
+  <canvas id="shaderBg"></canvas>
+
+  <div class="transition-overlay t-overlay-1"></div>
+  <div class="transition-overlay t-overlay-2"></div>
+  <div class="transition-overlay t-overlay-3"></div>
+  <div class="cursor" id="cursor"><div class="cursor-text">View</div></div>
+
+  <header class="header" id="header">
+    <div class="header-logo"><a href="../index.html"><img src="../assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
+    <div class="header-center-name"><a href="../index.html">A Measured Force</a></div>
+    <div class="header-actions"><button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 10,3 A 7,7 0 0,0 10,17 Z" fill="currentColor"/></svg></button><button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-controls="menuOverlay" aria-expanded="false"><span class="menu-trigger-dot"></span></button></div>
+  </header>
+
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ol class="menu-overlay-list">
+      <li><a href="../work.html" class="is-active"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="../about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="../services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="../contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+    </ol>
+    <div class="menu-overlay-footer">
+      <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
+    </div>
+  </div>
+
+  <main class="case">
+    <section class="case-hero">
+      <a class="case-back" href="../work.html">
+        <span class="case-back-arrow" aria-hidden="true">&larr;</span>
+        <span>All Projects</span>
+      </a>
+      <span class="case-eyebrow"><em>Project</em> · 06</span>
+      <h1 class="case-title">Johnson &amp; Johnson</h1>
+      <p class="case-tagline">A multi-platform content program helping parents have age-appropriate conversations with their young children about race and bias.</p>
+      <button class="case-play-btn" data-video="YesS7nBrQPc" aria-label="Play film">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="3,0 20,10 3,20" fill="currentColor"/></svg>
+        <span>Watch The Film</span>
+      </button>
+    </section>
+
+    <!-- Video Lightbox -->
+    <div class="video-lightbox" id="videoLightbox">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Close video">&times;</button>
+      <div class="lightbox-inner">
+        <iframe id="lightboxVideo" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <section class="case-meta">
+      <div class="case-meta-row">
+        <span class="case-meta-label">Services</span>
+        <span class="case-meta-value">Content Production, Scriptwriting, On-Set Direction, Post-Production</span>
+      </div>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Based In</span>
+        <span class="case-meta-value">New York, NY</span>
+      </div>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Credits</span>
+        <span class="case-meta-value">Pre-Production · Scripting · Coordination · Direction · Post-Production</span>
+      </div>
+    </section>
+
+    <figure class="case-bleed scroll-reveal">
+      <img src="../assets/work/johnson-johnson-hero.png" alt="From The Start, Johnson &amp; Johnson family-led video series">
+      <figcaption>From The Start, family-led video series</figcaption>
+    </figure>
+
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Overview</aside>
+        <div class="case-story-body">
+          <p>A Measured Force partnered with Johnson &amp; Johnson, Scary Mommy, and Fatherly to produce From The Start, a multi-platform program designed to help parents talk with their young children about race and bias. The campaign combined expert-led editorial with intimate, family-led video, distributed across the From The Start hub, Scary Mommy, Fatherly, and YouTube.</p>
+        </div>
+      </article>
+
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Challenge</aside>
+        <div class="case-story-body">
+          <p>Research shows children begin forming racial biases between the ages of zero and five, but most parents feel under-equipped to lead those conversations at home. J&amp;J's baby brands (Johnson's, Aveeno Baby, and Desitin) needed a program that gave parents practical, age-appropriate tools to start the conversation: content that felt authentic, representative, and warm rather than instructional.</p>
+          <p>The work required a production approach that could draw real, unscripted moments out of very young children on camera while still landing the editorial points the program needed to make, all while protecting the comfort and safety of every family involved.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- Two side-by-side images, awaiting image URLs
+    <div class="case-grid-two scroll-reveal">
+      <figure><img src="" alt="" loading="lazy"></figure>
+      <figure><img src="" alt="" loading="lazy"></figure>
+    </div>
+    -->
+
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Approach</aside>
+        <div class="case-story-body">
+          <p>A Measured Force led end-to-end production on the family-led video series at the heart of the program. We scripted every scene, shaping the questions, prompts, and conversational beats that drew honest, age-appropriate moments out of parents and children on camera.</p>
+          <p>We ran the full pre-production pipeline (casting and vetting families, location scouting, scheduling, talent coordination, releases, crew, and equipment), building shoot days designed around the attention spans and comfort of young kids. AMF coordinated production across every shoot, directed on set in real time, and managed post-production end-to-end through editorial, color, sound, graphics, and revisions, delivering final cuts to the From The Start hub, YouTube, and partner properties.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="case-films scroll-reveal">
+      <span class="case-eyebrow">The Films</span>
+      <div class="case-films-grid">
+        <button class="case-film" data-video="YesS7nBrQPc" aria-label="Play film">
+          <span class="case-film-thumb">
+            <img src="https://i.ytimg.com/vi/YesS7nBrQPc/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/YesS7nBrQPc/hqdefault.jpg'" alt="From The Start film" loading="lazy">
+            <span class="case-film-play"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="6,3 16,10 6,17" fill="currentColor"/></svg></span>
+          </span>
+        </button>
+        <button class="case-film" data-video="V1XV-Ooq74Y" aria-label="Play film">
+          <span class="case-film-thumb">
+            <img src="https://i.ytimg.com/vi/V1XV-Ooq74Y/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/V1XV-Ooq74Y/hqdefault.jpg'" alt="From The Start film" loading="lazy">
+            <span class="case-film-play"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="6,3 16,10 6,17" fill="currentColor"/></svg></span>
+          </span>
+        </button>
+      </div>
+      <p class="case-films-caption">Family-led storytelling on race and bias</p>
+    </section>
+
+    <!-- Two side-by-side images, awaiting image URLs
+    <div class="case-grid-two scroll-reveal">
+      <figure><img src="" alt="" loading="lazy"></figure>
+      <figure><img src="" alt="" loading="lazy"></figure>
+    </div>
+    -->
+
+    <section class="case-impact">
+      <span class="case-eyebrow">In Brief</span>
+      <ol class="case-impact-list">
+        <li><span class="case-impact-num">01</span><span class="case-impact-text">Award-winning multi-platform content program</span></li>
+        <li><span class="case-impact-num">02</span><span class="case-impact-text">Family-led video storytelling</span></li>
+        <li><span class="case-impact-num">03</span><span class="case-impact-text">Cross-platform media distribution</span></li>
+        <li><span class="case-impact-num">04</span><span class="case-impact-text">Expert-led editorial series</span></li>
+        <li><span class="case-impact-num">05</span><span class="case-impact-text">Authentic conversations with parents and kids</span></li>
+        <li><span class="case-impact-num">06</span><span class="case-impact-text">End-to-end production at scale</span></li>
+      </ol>
+    </section>
+
+    <section class="case-results">
+      <span class="case-eyebrow">Results</span>
+      <ul class="case-results-list">
+        <li>
+          <span class="case-stat-num">86%</span>
+          <span class="case-stat-label">of survey respondents agreed Johnson's supports the health and well-being of all children (Nielsen Branded Content Effectiveness Study)</span>
+        </li>
+        <li>
+          <span class="case-stat-num">38K+</span>
+          <span class="case-stat-label">total visits to the From The Start hub</span>
+        </li>
+        <li>
+          <span class="case-stat-num">108K+</span>
+          <span class="case-stat-label">total engagements on custom videos</span>
+        </li>
+        <li>
+          <span class="case-stat-num">2:21</span>
+          <span class="case-stat-label">average time spent on custom article content</span>
+        </li>
+        <li>
+          <span class="case-stat-num">+7%</span>
+          <span class="case-stat-label">lift in purchase intent for J&amp;J Consumer Health Baby Brands</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="case-awards">
+      <span class="case-eyebrow">Awards &amp; Recognition</span>
+      <ul class="case-awards-list">
+        <li>
+          <span class="case-award-source">Adweek</span>
+          <span class="case-award-detail">Media Plan of the Year</span>
+        </li>
+        <li>
+          <span class="case-award-source">Festival of Media North America 2021</span>
+          <span class="case-award-detail">Campaign of the Year · Best Branded Content · Best Campaign Led by Cause · Collaboration Award · Judge's Choice</span>
+        </li>
+        <li>
+          <span class="case-award-source">M&amp;M Global Awards 2021</span>
+          <span class="case-award-detail">Winner, Collaboration Award Campaign</span>
+        </li>
+        <li>
+          <span class="case-award-source">US BIG Awards 2021</span>
+          <span class="case-award-detail">Finalist, Best Sponsorship</span>
+        </li>
+        <li>
+          <span class="case-award-source">Pressboard</span>
+          <span class="case-award-detail">Top 10 Branded Content Partnerships of 2021</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="case-next">
+      <a href="therasurf.html" class="case-next-link case-next-prev">
+        <span class="case-next-arrow" aria-hidden="true">&larr;</span>
+        <span class="case-next-text">
+          <span class="case-next-label">Previous Project</span>
+          <span class="case-next-name">THERAsurf</span>
+        </span>
+      </a>
+      <a href="obama-fatherhood.html" class="case-next-link case-next-next">
+        <span class="case-next-text">
+          <span class="case-next-label">Next Project</span>
+          <span class="case-next-name">A Conversation About Fatherhood</span>
+        </span>
+        <span class="case-next-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="contact-cta">
+        <div class="contact-dot"></div>
+        <h2>Like what you see?<br>Let's create something <em>together.</em><br><a href="../contact.html" class="email-link">Get in touch</a></h2>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-row">
+      <div class="footer-left"><span>&copy; 2026 A Measured Force</span></div>
+      <div class="footer-center"><a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a><span class="footer-divider">|</span><a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a><span class="footer-divider">|</span><a href="https://www.tiktok.com" target="_blank" rel="noopener">TikTok</a></div>
+      <div class="footer-right"><a href="#">Privacy Policy</a></div>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="../js/shader-bg.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+    (function() {
+      const lightbox = document.getElementById('videoLightbox');
+      const closeBtn = document.getElementById('lightboxClose');
+      const iframe = document.getElementById('lightboxVideo');
+
+      function openVideo(id) {
+        iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('active');
+        iframe.src = '';
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('[data-video]').forEach((trigger) => {
+        trigger.addEventListener('click', () => openVideo(trigger.dataset.video));
+      });
+
+      closeBtn.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+      });
+    })();
+  </script>
+</body>
+</html>
