@@ -22,88 +22,96 @@
   <header class="header" id="header">
     <div class="header-logo"><a href="../index.html"><img src="../assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
     <div class="header-center-name"><a href="../index.html">A Measured Force</a></div>
-    <nav class="header-nav"><a href="../work.html" class="active">Work</a><a href="../about.html">About</a><a href="../services/ai/">AI</a><a href="../contact.html">Contact</a><button class="invert-dot" id="invertDot" aria-label="Invert colors"></button></nav>
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
+    <div class="header-actions"><button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 10,3 A 7,7 0 0,0 10,17 Z" fill="currentColor"/></svg></button><button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-controls="menuOverlay" aria-expanded="false"><span class="menu-trigger-dot"></span></button></div>
   </header>
-  <div class="mobile-nav" id="mobileNav"><nav><a href="../index.html" class="mobile-nav-link">Home</a><a href="../work.html" class="mobile-nav-link">Work</a><a href="../about.html" class="mobile-nav-link">About</a><a href="../services/ai/" class="mobile-nav-link">AI</a><a href="../contact.html" class="mobile-nav-link">Contact</a></nav></div>
 
-  <main>
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ol class="menu-overlay-list">
+      <li><a href="../work.html" class="is-active"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="../about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="../services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="../contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+    </ol>
+    <div class="menu-overlay-footer">
+      <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
+    </div>
+  </div>
+
+  <main class="case">
     <section class="case-hero">
-      <div class="case-hero-content">
-        <div class="case-hero-left">
-          <span class="case-label">Client</span>
-          <h1 class="case-title">LUXXEV</h1>
-        </div>
-        <div class="case-hero-right">
-          <div class="case-meta-block">
-            <span class="case-label">Services</span>
-            <span class="case-value">Branding, Digital Design, Marketing, E-Commerce</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Location</span>
-            <span class="case-value">Los Angeles, CA</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Info</span>
-            <p class="case-value">Transforming an early-stage concept into a fully realized premium consumer brand with e-commerce and packaging.</p>
-          </div>
-        </div>
+      <span class="case-eyebrow"><em>Project</em> · 03</span>
+      <h1 class="case-title">LUXXEV</h1>
+      <p class="case-tagline">Transforming an early-stage concept into a fully realized premium consumer brand with e-commerce and packaging.</p>
+    </section>
+
+    <section class="case-meta">
+      <div class="case-meta-row">
+        <span class="case-meta-label">Services</span>
+        <span class="case-meta-value">Branding, Digital Design, Marketing, E-Commerce</span>
       </div>
-      <div class="case-hero-tags">
-        <span>Branding</span><span>E-Commerce</span><span>D2C</span><span>Marketing</span>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Location</span>
+        <span class="case-meta-value">Los Angeles, CA</span>
+      </div>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Discipline</span>
+        <span class="case-meta-value">Branding · E-Commerce · D2C · Marketing</span>
       </div>
     </section>
 
-    <div class="case-hero-img">
+    <figure class="case-bleed scroll-reveal">
       <img src="https://static.wixstatic.com/media/1f7c26_77672e88ad814f4da0616bdb7f153133~mv2.jpeg/v1/fill/w_1600,h_900,al_c,q_85/image.jpeg" alt="LUXXEV">
-    </div>
+      <figcaption>LUXXEV — premium brand &amp; commerce</figcaption>
+    </figure>
 
-    <section class="case-body">
-      <div class="case-section">
-        <div class="case-section-label">Summary</div>
-        <div class="case-section-content">
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Overview</aside>
+        <div class="case-story-body">
           <p>A Measured Force partnered with LuxxEV to transform an early-stage concept into a fully realized premium brand. Starting with a logo and product vision, AMF developed the brand identity, digital commerce platform, content strategy, and packaging design needed to bring the company to market. These efforts established LuxxEV as a modern lifestyle brand focused on high-end air fresheners designed specifically for Tesla interiors.</p>
         </div>
-      </div>
+      </article>
 
-      <div class="case-section">
-        <div class="case-section-label">Challenge</div>
-        <div class="case-section-content">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Challenge</aside>
+        <div class="case-story-body">
           <p>LuxxEV had a product concept and initial logo but lacked the broader brand identity, digital platform, and marketing infrastructure needed to launch a premium consumer product. The challenge was to build a cohesive brand experience that matched the sleek, modern aesthetic of Tesla vehicles while clearly differentiating LuxxEV in the automotive lifestyle market.</p>
           <p>In addition to brand positioning, LuxxEV required a complete go-to-market system including e-commerce capabilities, product storytelling, marketing assets, and packaging that could communicate quality, luxury, and design consistency across both digital and physical touchpoints.</p>
         </div>
-      </div>
+      </article>
+    </section>
 
-      <div class="case-full-img">
-        <img src="https://static.wixstatic.com/media/1f7c26_a279fbc58057410583e325ce001106a6~mv2.jpeg/v1/fill/w_1600,h_900,al_c,q_85/image.jpeg" alt="LUXXEV project">
-      </div>
+    <figure class="case-bleed scroll-reveal">
+      <img src="https://static.wixstatic.com/media/1f7c26_a279fbc58057410583e325ce001106a6~mv2.jpeg/v1/fill/w_1600,h_900,al_c,q_85/image.jpeg" alt="LUXXEV project" loading="lazy">
+      <figcaption>Packaging &amp; product experience</figcaption>
+    </figure>
 
-      <div class="case-section">
-        <div class="case-section-label">Solution</div>
-        <div class="case-section-content">
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Approach</aside>
+        <div class="case-story-body">
           <p>A Measured Force developed LuxxEV's full brand identity and digital infrastructure, beginning with brand strategy and visual language that reflected the minimalist, high-end aesthetic of the Tesla ecosystem. We designed and launched a custom e-commerce website that presents the product through a refined and intuitive user experience.</p>
           <p>To support the brand launch, AMF directed photography, videography, and copywriting to create a library of evergreen content used across the website, advertising, and social media. The brand identity was extended into packaging design and production to ensure the physical product experience matched the digital brand. We also supported the product launch through paid advertising management and curated social media content designed to build awareness and drive early customer engagement.</p>
         </div>
-      </div>
+      </article>
+    </section>
 
-      <div class="case-results">
-        <h3>Key Results</h3>
-        <div class="case-results-grid">
-          <div class="case-result">Premium consumer brand launched</div>
-          <div class="case-result">Custom e-commerce platform developed</div>
-          <div class="case-result">Brand identity and visual system created</div>
-          <div class="case-result">Evergreen content library produced</div>
-          <div class="case-result">Packaging design and product experience</div>
-          <div class="case-result">Paid launch campaigns and social growth</div>
-        </div>
-      </div>
+    <section class="case-impact">
+      <span class="case-eyebrow">Impact</span>
+      <ol class="case-impact-list">
+        <li><span class="case-impact-num">01</span><span class="case-impact-text">Premium consumer brand launched</span></li>
+        <li><span class="case-impact-num">02</span><span class="case-impact-text">Custom e-commerce platform developed</span></li>
+        <li><span class="case-impact-num">03</span><span class="case-impact-text">Brand identity and visual system created</span></li>
+        <li><span class="case-impact-num">04</span><span class="case-impact-text">Evergreen content library produced</span></li>
+        <li><span class="case-impact-num">05</span><span class="case-impact-text">Packaging design and product experience</span></li>
+        <li><span class="case-impact-num">06</span><span class="case-impact-text">Paid launch campaigns and social growth</span></li>
+      </ol>
     </section>
 
     <section class="case-next">
-      <span class="case-label">Next Project</span>
-      <a href="therasurf.html" class="case-next-link">
-        <h2>THERAsurf</h2>
-        <span class="pill-btn">View Project</span>
+      <span class="case-eyebrow">Next Project</span>
+      <a href="clif-kid.html" class="case-next-link">
+        <h2 class="case-next-title">CLIF KID</h2>
       </a>
     </section>
 

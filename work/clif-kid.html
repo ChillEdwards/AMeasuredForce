@@ -22,40 +22,30 @@
   <header class="header" id="header">
     <div class="header-logo"><a href="../index.html"><img src="../assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
     <div class="header-center-name"><a href="../index.html">A Measured Force</a></div>
-    <nav class="header-nav"><a href="../work.html" class="active">Work</a><a href="../about.html">About</a><a href="../services/ai/">AI</a><a href="../contact.html">Contact</a><button class="invert-dot" id="invertDot" aria-label="Invert colors"></button></nav>
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
+    <div class="header-actions"><button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 10,3 A 7,7 0 0,0 10,17 Z" fill="currentColor"/></svg></button><button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-controls="menuOverlay" aria-expanded="false"><span class="menu-trigger-dot"></span></button></div>
   </header>
-  <div class="mobile-nav" id="mobileNav"><nav><a href="../index.html" class="mobile-nav-link">Home</a><a href="../work.html" class="mobile-nav-link">Work</a><a href="../about.html" class="mobile-nav-link">About</a><a href="../services/ai/" class="mobile-nav-link">AI</a><a href="../contact.html" class="mobile-nav-link">Contact</a></nav></div>
 
-  <main>
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ol class="menu-overlay-list">
+      <li><a href="../work.html" class="is-active"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="../about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="../services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="../contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+    </ol>
+    <div class="menu-overlay-footer">
+      <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
+    </div>
+  </div>
+
+  <main class="case">
     <section class="case-hero">
-      <div class="case-hero-content">
-        <div class="case-hero-left">
-          <span class="case-label">Client</span>
-          <h1 class="case-title">CLIF KID</h1>
-          <button class="case-play-btn" id="playBtn" aria-label="Play video">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="3,0 20,10 3,20" fill="currentColor"/></svg>
-            <span>Watch The Spot</span>
-          </button>
-        </div>
-        <div class="case-hero-right">
-          <div class="case-meta-block">
-            <span class="case-label">Services</span>
-            <span class="case-value">Content Production, Brand Storytelling, Campaign Strategy</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Location</span>
-            <span class="case-value">Venice, CA</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Info</span>
-            <p class="case-value">A cross-platform campaign combining athlete-led content and user-generated media to inspire children to embrace new experiences and outdoor activity.</p>
-          </div>
-        </div>
-      </div>
-      <div class="case-hero-tags">
-        <span>Campaign</span><span>Content Production</span><span>Brand Storytelling</span><span>CPG</span>
-      </div>
+      <span class="case-eyebrow"><em>Project</em> · 04</span>
+      <h1 class="case-title">CLIF KID</h1>
+      <p class="case-tagline">A cross-platform campaign combining athlete-led content and user-generated media to inspire children to embrace new experiences and outdoor activity.</p>
+      <button class="case-play-btn" id="playBtn" aria-label="Play video">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="3,0 20,10 3,20" fill="currentColor"/></svg>
+        <span>Watch The Spot</span>
+      </button>
     </section>
 
     <!-- Video Lightbox -->
@@ -66,83 +56,92 @@
       </div>
     </div>
 
-    <div class="img-blur-cell" style="max-height:70vh;">
-      <div class="img-blur-bg" style="background-image:url('https://static.wixstatic.com/media/1f7c26_6d025a7a72c04f848e1735face0b2826~mv2.png/v1/fill/w_1600,h_918,al_c,q_90/image.png');"></div>
-      <img src="https://static.wixstatic.com/media/1f7c26_6d025a7a72c04f848e1735face0b2826~mv2.png/v1/fill/w_1600,h_918,al_c,q_90/image.png" alt="CLIF KID" class="img-blur-fg" style="object-fit:contain;">
-    </div>
-
-    <section class="case-body">
-      <div class="case-section">
-        <div class="case-section-label">Summary</div>
-        <div class="case-section-content">
-          <p>A Measured Force partnered with CLIF Kid to develop and execute Fuel Your First, a cross-platform campaign designed to inspire children to embrace new experiences and outdoor activity. The campaign combined brand storytelling, athlete-led content, and user-generated media to create an authentic and engaging narrative distributed across platforms including Scary Mommy, Fatherly, and The Dade.</p>
-        </div>
+    <section class="case-meta">
+      <div class="case-meta-row">
+        <span class="case-meta-label">Services</span>
+        <span class="case-meta-value">Content Production, Brand Storytelling, Campaign Strategy</span>
       </div>
-
-      <div class="case-section">
-        <div class="case-section-label">Challenge</div>
-        <div class="case-section-content">
-          <p>CLIF Kid needed a campaign that would resonate with families and encourage children to explore new experiences following a period of limited activity and isolation. The challenge was to create content that felt authentic and inspiring while connecting the brand to real moments of growth, confidence, and adventure.</p>
-          <p>The campaign required a scalable content approach that could feature both a high-profile athlete and real families, while maintaining a consistent tone across multiple media platforms and distribution partners.</p>
-        </div>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Location</span>
+        <span class="case-meta-value">Venice, CA</span>
       </div>
-
-      <!-- Two air tricks side by side -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:3rem var(--pad); max-width:1400px; margin:0 auto;">
-        <div class="img-blur-cell" style="height:650px; border-radius:4px;">
-          <div class="img-blur-bg" style="background-image:url('https://static.wixstatic.com/media/1f7c26_f65f43afe1dd4cddb281480ca2abafdf~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png');"></div>
-          <img src="https://static.wixstatic.com/media/1f7c26_f65f43afe1dd4cddb281480ca2abafdf~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png" alt="Sky Brown air trick at Venice Skatepark" loading="lazy" class="img-blur-fg img-blur-fg--cover">
-        </div>
-        <div class="img-blur-cell" style="height:650px; border-radius:4px;">
-          <div class="img-blur-bg" style="background-image:url('https://static.wixstatic.com/media/1f7c26_ef736fff4193473087c59fa5c446c6ec~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png');"></div>
-          <img src="https://static.wixstatic.com/media/1f7c26_ef736fff4193473087c59fa5c446c6ec~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png" alt="Sky Brown air trick" loading="lazy" class="img-blur-fg img-blur-fg--cover">
-        </div>
-      </div>
-
-      <div class="case-section">
-        <div class="case-section-label">Solution</div>
-        <div class="case-section-content">
-          <p>A Measured Force developed and executed Fuel Your First, a multi-platform campaign anchored by a series of short films. The campaign featured Olympic skateboarder Sky Brown, capturing her surfing and skating at Venice Skatepark, alongside user-generated content showcasing children experiencing activities such as climbing, camping, and surfing for the first time.</p>
-          <p>AMF led all aspects of production, including concept development, casting, on-set direction, and post-production, ensuring a cohesive narrative across all content. The campaign was distributed across major digital media platforms, combining professional storytelling with authentic, documentary-style content to connect with families and reinforce CLIF Kid's brand message.</p>
-        </div>
-      </div>
-
-      <!-- Sky Brown with ZBar — full width -->
-      <div class="img-blur-cell" style="width:100vw; position:relative; left:50%; transform:translateX(-50%); margin:6rem 0; max-height:90vh;">
-        <div class="img-blur-bg" style="background-image:url('https://static.wixstatic.com/media/1f7c26_71a53e5f1a574d16a833be7f8b0c1c0a~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png');"></div>
-        <img src="https://static.wixstatic.com/media/1f7c26_71a53e5f1a574d16a833be7f8b0c1c0a~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png" alt="Sky Brown with ZBar on skateboard" loading="lazy" class="img-blur-fg" style="object-fit:contain;">
-      </div>
-
-      <!-- ZBar product + Sky Brown portrait side by side -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:3rem var(--pad); max-width:1400px; margin:0 auto;">
-        <div class="img-blur-cell" style="height:715px; border-radius:4px;">
-          <div class="img-blur-bg" style="background-image:url('https://static.wixstatic.com/media/1f7c26_04e58837d4884ae98533433ec901339a~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png');"></div>
-          <img src="https://static.wixstatic.com/media/1f7c26_04e58837d4884ae98533433ec901339a~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png" alt="CLIF ZBar product" loading="lazy" class="img-blur-fg img-blur-fg--cover" style="object-position:center;">
-        </div>
-        <div class="img-blur-cell" style="height:715px; border-radius:4px;">
-          <div class="img-blur-bg" style="background-image:url('https://static.wixstatic.com/media/1f7c26_9ca13556ae0043cfb979d1c2f08bcd87~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png');"></div>
-          <img src="https://static.wixstatic.com/media/1f7c26_9ca13556ae0043cfb979d1c2f08bcd87~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png" alt="Sky Brown holding ZBar" loading="lazy" class="img-blur-fg img-blur-fg--cover" style="object-position:top;">
-        </div>
-      </div>
-
-      <div class="case-results">
-        <h3>Impact</h3>
-        <div class="case-results-grid">
-          <div class="case-result">National multi-platform campaign</div>
-          <div class="case-result">Olympic athlete-led storytelling</div>
-          <div class="case-result">Cross-platform media distribution</div>
-          <div class="case-result">Original short-form video series</div>
-          <div class="case-result">Integration of user-generated content</div>
-          <div class="case-result">Authentic brand storytelling at scale</div>
-        </div>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Discipline</span>
+        <span class="case-meta-value">Campaign · Content Production · Brand Storytelling · CPG</span>
       </div>
     </section>
 
+    <figure class="case-bleed scroll-reveal">
+      <img src="https://static.wixstatic.com/media/1f7c26_6d025a7a72c04f848e1735face0b2826~mv2.png/v1/fill/w_1600,h_918,al_c,q_90/image.png" alt="CLIF KID — Fuel Your First">
+      <figcaption>CLIF KID — Fuel Your First campaign</figcaption>
+    </figure>
+
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Overview</aside>
+        <div class="case-story-body">
+          <p>A Measured Force partnered with CLIF Kid to develop and execute Fuel Your First, a cross-platform campaign designed to inspire children to embrace new experiences and outdoor activity. The campaign combined brand storytelling, athlete-led content, and user-generated media to create an authentic and engaging narrative distributed across platforms including Scary Mommy, Fatherly, and The Dade.</p>
+        </div>
+      </article>
+
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Challenge</aside>
+        <div class="case-story-body">
+          <p>CLIF Kid needed a campaign that would resonate with families and encourage children to explore new experiences following a period of limited activity and isolation. The challenge was to create content that felt authentic and inspiring while connecting the brand to real moments of growth, confidence, and adventure.</p>
+          <p>The campaign required a scalable content approach that could feature both a high-profile athlete and real families, while maintaining a consistent tone across multiple media platforms and distribution partners.</p>
+        </div>
+      </article>
+    </section>
+
+    <div class="case-grid-two scroll-reveal">
+      <figure>
+        <img src="https://static.wixstatic.com/media/1f7c26_f65f43afe1dd4cddb281480ca2abafdf~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png" alt="Sky Brown air trick at Venice Skatepark" loading="lazy">
+      </figure>
+      <figure>
+        <img src="https://static.wixstatic.com/media/1f7c26_ef736fff4193473087c59fa5c446c6ec~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png" alt="Sky Brown air trick" loading="lazy">
+      </figure>
+    </div>
+
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Approach</aside>
+        <div class="case-story-body">
+          <p>A Measured Force developed and executed Fuel Your First, a multi-platform campaign anchored by a series of short films. The campaign featured Olympic skateboarder Sky Brown, capturing her surfing and skating at Venice Skatepark, alongside user-generated content showcasing children experiencing activities such as climbing, camping, and surfing for the first time.</p>
+          <p>AMF led all aspects of production, including concept development, casting, on-set direction, and post-production, ensuring a cohesive narrative across all content. The campaign was distributed across major digital media platforms, combining professional storytelling with authentic, documentary-style content to connect with families and reinforce CLIF Kid's brand message.</p>
+        </div>
+      </article>
+    </section>
+
+    <figure class="case-bleed scroll-reveal">
+      <img src="https://static.wixstatic.com/media/1f7c26_71a53e5f1a574d16a833be7f8b0c1c0a~mv2.png/v1/fill/w_1600,h_1667,al_c,q_90/image.png" alt="Sky Brown with ZBar on skateboard" loading="lazy">
+      <figcaption>Olympic skateboarder Sky Brown — Venice Skatepark</figcaption>
+    </figure>
+
+    <div class="case-grid-two scroll-reveal">
+      <figure>
+        <img src="https://static.wixstatic.com/media/1f7c26_04e58837d4884ae98533433ec901339a~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png" alt="CLIF ZBar product" loading="lazy">
+      </figure>
+      <figure>
+        <img src="https://static.wixstatic.com/media/1f7c26_9ca13556ae0043cfb979d1c2f08bcd87~mv2.png/v1/fill/w_800,h_834,al_c,q_90/image.png" alt="Sky Brown holding ZBar" loading="lazy">
+      </figure>
+    </div>
+
+    <section class="case-impact">
+      <span class="case-eyebrow">Impact</span>
+      <ol class="case-impact-list">
+        <li><span class="case-impact-num">01</span><span class="case-impact-text">National multi-platform campaign</span></li>
+        <li><span class="case-impact-num">02</span><span class="case-impact-text">Olympic athlete-led storytelling</span></li>
+        <li><span class="case-impact-num">03</span><span class="case-impact-text">Cross-platform media distribution</span></li>
+        <li><span class="case-impact-num">04</span><span class="case-impact-text">Original short-form video series</span></li>
+        <li><span class="case-impact-num">05</span><span class="case-impact-text">Integration of user-generated content</span></li>
+        <li><span class="case-impact-num">06</span><span class="case-impact-text">Authentic brand storytelling at scale</span></li>
+      </ol>
+    </section>
+
     <section class="case-next">
-      <span class="case-label">Next Project</span>
+      <span class="case-eyebrow">Next Project</span>
       <a href="therasurf.html" class="case-next-link">
-        <h2>THERAsurf</h2>
-        <span class="pill-btn">View Project</span>
+        <h2 class="case-next-title">THERAsurf</h2>
       </a>
     </section>
 

@@ -22,87 +22,95 @@
   <header class="header" id="header">
     <div class="header-logo"><a href="../index.html"><img src="../assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
     <div class="header-center-name"><a href="../index.html">A Measured Force</a></div>
-    <nav class="header-nav"><a href="../work.html" class="active">Work</a><a href="../about.html">About</a><a href="../services/ai/">AI</a><a href="../contact.html">Contact</a><button class="invert-dot" id="invertDot" aria-label="Invert colors"></button></nav>
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
+    <div class="header-actions"><button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 10,3 A 7,7 0 0,0 10,17 Z" fill="currentColor"/></svg></button><button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-controls="menuOverlay" aria-expanded="false"><span class="menu-trigger-dot"></span></button></div>
   </header>
-  <div class="mobile-nav" id="mobileNav"><nav><a href="../index.html" class="mobile-nav-link">Home</a><a href="../work.html" class="mobile-nav-link">Work</a><a href="../about.html" class="mobile-nav-link">About</a><a href="../services/ai/" class="mobile-nav-link">AI</a><a href="../contact.html" class="mobile-nav-link">Contact</a></nav></div>
 
-  <main>
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ol class="menu-overlay-list">
+      <li><a href="../work.html" class="is-active"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="../about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="../services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="../contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+    </ol>
+    <div class="menu-overlay-footer">
+      <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
+    </div>
+  </div>
+
+  <main class="case">
     <section class="case-hero">
-      <div class="case-hero-content">
-        <div class="case-hero-left">
-          <span class="case-label">Client</span>
-          <h1 class="case-title">THERAsurf</h1>
-        </div>
-        <div class="case-hero-right">
-          <div class="case-meta-block">
-            <span class="case-label">Services</span>
-            <span class="case-value">Branding, Digital Design, Non-Profit</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Location</span>
-            <span class="case-value">Malibu, CA</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Info</span>
-            <p class="case-value">Modernizing a nonprofit's brand and digital presence to better communicate its mission and drive community engagement.</p>
-          </div>
-        </div>
+      <span class="case-eyebrow"><em>Project</em> · 05</span>
+      <h1 class="case-title">THERAsurf</h1>
+      <p class="case-tagline">Modernizing a nonprofit's brand and digital presence to better communicate its mission and drive community engagement.</p>
+    </section>
+
+    <section class="case-meta">
+      <div class="case-meta-row">
+        <span class="case-meta-label">Services</span>
+        <span class="case-meta-value">Branding, Digital Design, Non-Profit</span>
       </div>
-      <div class="case-hero-tags">
-        <span>Branding</span><span>Digital Design</span><span>Non-Profit</span>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Location</span>
+        <span class="case-meta-value">Malibu, CA</span>
+      </div>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Discipline</span>
+        <span class="case-meta-value">Branding · Digital Design · Non-Profit</span>
       </div>
     </section>
 
-    <div class="case-hero-img">
+    <figure class="case-bleed scroll-reveal">
       <img src="https://static.wixstatic.com/media/c837a6_8acabb3e926d482bb78f3b47c7007b4d~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="THERAsurf">
-    </div>
+      <figcaption>THERAsurf — brand &amp; digital presence</figcaption>
+    </figure>
 
-    <section class="case-body">
-      <div class="case-section">
-        <div class="case-section-label">Summary</div>
-        <div class="case-section-content">
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Overview</aside>
+        <div class="case-story-body">
           <p>A Measured Force partnered with THERAsurf, a nonprofit dedicated to helping individuals with disabilities experience the healing power of surfing, to modernize the organization's brand and digital presence. Our work focused on redesigning the website, refining the visual identity, and strengthening social media communication to better showcase THERAsurf's mission, programs, and community impact.</p>
         </div>
-      </div>
+      </article>
 
-      <div class="case-section">
-        <div class="case-section-label">Challenge</div>
-        <div class="case-section-content">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Challenge</aside>
+        <div class="case-story-body">
           <p>THERAsurf had built a strong reputation through its programs and community involvement, but its brand and digital presence did not fully reflect the scale of its work. The organization needed a modern website capable of clearly communicating its mission, highlighting its programs, and supporting donor engagement. The existing platform lacked the structure, design, and functionality required to effectively reach new supporters, attract corporate sponsors, and drive fundraising.</p>
         </div>
-      </div>
+      </article>
+    </section>
 
-      <div class="case-full-img">
-        <img src="https://static.wixstatic.com/media/84770f_66ee75d5475b4711afd6c54d4c659630~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="THERAsurf project">
-      </div>
+    <figure class="case-bleed scroll-reveal">
+      <img src="https://static.wixstatic.com/media/84770f_66ee75d5475b4711afd6c54d4c659630~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="THERAsurf project" loading="lazy">
+      <figcaption>A modern platform built around the mission</figcaption>
+    </figure>
 
-      <div class="case-section">
-        <div class="case-section-label">Solution</div>
-        <div class="case-section-content">
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Approach</aside>
+        <div class="case-story-body">
           <p>AMF redesigned THERAsurf's website from the ground up, creating a modern digital platform that clearly communicates the organization's mission, showcases its programs, and highlights the real impact of the organization's work, and provides clear pathways for supporters to get involved through volunteering, partnerships, and donations.</p>
           <p>Alongside the website launch, AMF helped modernize the organization's brand presence and developed a more cohesive social media approach to improve communication with supporters and strengthen community engagement.</p>
         </div>
-      </div>
+      </article>
+    </section>
 
-      <div class="case-results">
-        <h3>Key Results</h3>
-        <div class="case-results-grid">
-          <div class="case-result">Modern nonprofit website platform</div>
-          <div class="case-result">Refined brand and visual identity</div>
-          <div class="case-result">Improved social media presence</div>
-          <div class="case-result">Clearer communication of mission</div>
-          <div class="case-result">Increased donations from individuals and businesses</div>
-          <div class="case-result">Acquired grant fundraising</div>
-        </div>
-      </div>
+    <section class="case-impact">
+      <span class="case-eyebrow">Impact</span>
+      <ol class="case-impact-list">
+        <li><span class="case-impact-num">01</span><span class="case-impact-text">Modern nonprofit website platform</span></li>
+        <li><span class="case-impact-num">02</span><span class="case-impact-text">Refined brand and visual identity</span></li>
+        <li><span class="case-impact-num">03</span><span class="case-impact-text">Improved social media presence</span></li>
+        <li><span class="case-impact-num">04</span><span class="case-impact-text">Clearer communication of mission</span></li>
+        <li><span class="case-impact-num">05</span><span class="case-impact-text">Increased donations from individuals and businesses</span></li>
+        <li><span class="case-impact-num">06</span><span class="case-impact-text">Acquired grant fundraising</span></li>
+      </ol>
     </section>
 
     <section class="case-next">
-      <span class="case-label">Next Project</span>
+      <span class="case-eyebrow">Next Project</span>
       <a href="rep-materials.html" class="case-next-link">
-        <h2>Rep Materials Co.</h2>
-        <span class="pill-btn">View Project</span>
+        <h2 class="case-next-title">Rep Materials Co.</h2>
       </a>
     </section>
 

@@ -22,89 +22,97 @@
   <header class="header" id="header">
     <div class="header-logo"><a href="../index.html"><img src="../assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
     <div class="header-center-name"><a href="../index.html">A Measured Force</a></div>
-    <nav class="header-nav"><a href="../work.html" class="active">Work</a><a href="../about.html">About</a><a href="../services/ai/">AI</a><a href="../contact.html">Contact</a><button class="invert-dot" id="invertDot" aria-label="Invert colors"></button></nav>
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
+    <div class="header-actions"><button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 10,3 A 7,7 0 0,0 10,17 Z" fill="currentColor"/></svg></button><button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-controls="menuOverlay" aria-expanded="false"><span class="menu-trigger-dot"></span></button></div>
   </header>
-  <div class="mobile-nav" id="mobileNav"><nav><a href="../index.html" class="mobile-nav-link">Home</a><a href="../work.html" class="mobile-nav-link">Work</a><a href="../about.html" class="mobile-nav-link">About</a><a href="../services/ai/" class="mobile-nav-link">AI</a><a href="../contact.html" class="mobile-nav-link">Contact</a></nav></div>
 
-  <main>
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ol class="menu-overlay-list">
+      <li><a href="../work.html" class="is-active"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="../about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="../services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="../contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+    </ol>
+    <div class="menu-overlay-footer">
+      <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
+    </div>
+  </div>
+
+  <main class="case">
     <section class="case-hero">
-      <div class="case-hero-content">
-        <div class="case-hero-left">
-          <span class="case-label">Client</span>
-          <h1 class="case-title">Zuma Lighting</h1>
-        </div>
-        <div class="case-hero-right">
-          <div class="case-meta-block">
-            <span class="case-label">Services</span>
-            <span class="case-value">Branding, Digital Design, Technology, Marketing</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Location</span>
-            <span class="case-value">Los Angeles, CA</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Info</span>
-            <p class="case-value">Full brand transformation and creation of a new sub-brand for architectural security products.</p>
-          </div>
-        </div>
+      <span class="case-eyebrow"><em>Project</em> · 02</span>
+      <h1 class="case-title">Zuma Lighting</h1>
+      <p class="case-tagline">Full brand transformation and creation of a new sub-brand for architectural security products.</p>
+    </section>
+
+    <section class="case-meta">
+      <div class="case-meta-row">
+        <span class="case-meta-label">Services</span>
+        <span class="case-meta-value">Branding, Digital Design, Technology, Marketing</span>
       </div>
-      <div class="case-hero-tags">
-        <span>Branding</span><span>Digital Design</span><span>Technology</span><span>B2B</span>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Location</span>
+        <span class="case-meta-value">Los Angeles, CA</span>
+      </div>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Discipline</span>
+        <span class="case-meta-value">Branding · Digital Design · Technology · B2B</span>
       </div>
     </section>
 
-    <div class="case-hero-img">
+    <figure class="case-bleed scroll-reveal">
       <img src="https://static.wixstatic.com/media/1f7c26_a0fa6951377940a69f23ff743cbc1615~mv2.jpeg/v1/fill/w_1600,h_900,al_c,q_85/image.jpeg" alt="Zuma Lighting">
-    </div>
+      <figcaption>Zuma Lighting — brand &amp; product platform</figcaption>
+    </figure>
 
-    <section class="case-body">
-      <div class="case-section">
-        <div class="case-section-label">Summary</div>
-        <div class="case-section-content">
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Overview</aside>
+        <div class="case-story-body">
           <p>A Measured Force partnered with Zuma Lighting to modernize the brand and build the marketing and digital infrastructure needed to support long-term growth. This included leading a full brand transformation, redesigning the company's website and product marketing systems, and creating Zuma Bollards, a new brand focused on architectural security products.</p>
           <p>Working closely with leadership, AMF developed the brand identity, digital platforms, and marketing systems that support Zuma's nationwide network of sales representatives, distributors, and design professionals.</p>
         </div>
-      </div>
+      </article>
 
-      <div class="case-section">
-        <div class="case-section-label">Challenge</div>
-        <div class="case-section-content">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Challenge</aside>
+        <div class="case-story-body">
           <p>Zuma Lighting had an established reputation in the architectural lighting industry but required a modernized brand and digital presence to support future growth. The existing marketing infrastructure and website did not fully communicate the company's custom capabilities, product portfolio, or value to architects, designers, and distributors.</p>
           <p>At the same time, the company was preparing to launch an entirely new product category — architectural security bollards — which required building a new brand from the ground up.</p>
         </div>
-      </div>
+      </article>
+    </section>
 
-      <div class="case-full-img">
-        <img src="https://static.wixstatic.com/media/1f7c26_a1b4433de00b45ab9752bb4c43946df3~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="Zuma Lighting project">
-      </div>
+    <figure class="case-bleed scroll-reveal">
+      <img src="https://static.wixstatic.com/media/1f7c26_a1b4433de00b45ab9752bb4c43946df3~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="Zuma Lighting project" loading="lazy">
+      <figcaption>A sales &amp; product-discovery platform for architects</figcaption>
+    </figure>
 
-      <div class="case-section">
-        <div class="case-section-label">Solution</div>
-        <div class="case-section-content">
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Approach</aside>
+        <div class="case-story-body">
           <p>A Measured Force led Zuma Lighting's brand transformation and digital overhaul, including the design and development of a new website built to function as a powerful sales and product discovery platform. The platform features an expanded product library, interactive configurators, project showcases, and clear communication of Zuma's custom manufacturing capabilities.</p>
           <p>In parallel, AMF created Zuma Bollards from the ground up, developing the brand name, identity system, product marketing strategy, website, and supporting digital content. Together, these efforts established a cohesive brand ecosystem that supports product discovery, sales enablement, and marketing growth across both brands.</p>
         </div>
-      </div>
+      </article>
+    </section>
 
-      <div class="case-results">
-        <h3>Key Results</h3>
-        <div class="case-results-grid">
-          <div class="case-result">Complete brand modernization</div>
-          <div class="case-result">New digital product platform</div>
-          <div class="case-result">Launch of Zuma Bollards brand</div>
-          <div class="case-result">Tools for architects and specifiers</div>
-          <div class="case-result">Sales enablement for reps and distributors</div>
-          <div class="case-result">Scalable marketing infrastructure</div>
-        </div>
-      </div>
+    <section class="case-impact">
+      <span class="case-eyebrow">Impact</span>
+      <ol class="case-impact-list">
+        <li><span class="case-impact-num">01</span><span class="case-impact-text">Complete brand modernization</span></li>
+        <li><span class="case-impact-num">02</span><span class="case-impact-text">New digital product platform</span></li>
+        <li><span class="case-impact-num">03</span><span class="case-impact-text">Launch of Zuma Bollards brand</span></li>
+        <li><span class="case-impact-num">04</span><span class="case-impact-text">Tools for architects and specifiers</span></li>
+        <li><span class="case-impact-num">05</span><span class="case-impact-text">Sales enablement for reps and distributors</span></li>
+        <li><span class="case-impact-num">06</span><span class="case-impact-text">Scalable marketing infrastructure</span></li>
+      </ol>
     </section>
 
     <section class="case-next">
-      <span class="case-label">Next Project</span>
+      <span class="case-eyebrow">Next Project</span>
       <a href="luxxev.html" class="case-next-link">
-        <h2>LUXXEV</h2>
-        <span class="pill-btn">View Project</span>
+        <h2 class="case-next-title">LUXXEV</h2>
       </a>
     </section>
 

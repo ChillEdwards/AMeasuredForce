@@ -22,89 +22,97 @@
   <header class="header" id="header">
     <div class="header-logo"><a href="../index.html"><img src="../assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
     <div class="header-center-name"><a href="../index.html">A Measured Force</a></div>
-    <nav class="header-nav"><a href="../work.html" class="active">Work</a><a href="../about.html">About</a><a href="../services/ai/">AI</a><a href="../contact.html">Contact</a><button class="invert-dot" id="invertDot" aria-label="Invert colors"></button></nav>
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span>Menu</span></button>
+    <div class="header-actions"><button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 10,3 A 7,7 0 0,0 10,17 Z" fill="currentColor"/></svg></button><button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-controls="menuOverlay" aria-expanded="false"><span class="menu-trigger-dot"></span></button></div>
   </header>
-  <div class="mobile-nav" id="mobileNav"><nav><a href="../index.html" class="mobile-nav-link">Home</a><a href="../work.html" class="mobile-nav-link">Work</a><a href="../about.html" class="mobile-nav-link">About</a><a href="../services/ai/" class="mobile-nav-link">AI</a><a href="../contact.html" class="mobile-nav-link">Contact</a></nav></div>
 
-  <main>
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ol class="menu-overlay-list">
+      <li><a href="../work.html" class="is-active"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="../about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="../services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="../contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+    </ol>
+    <div class="menu-overlay-footer">
+      <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
+    </div>
+  </div>
+
+  <main class="case">
     <section class="case-hero">
-      <div class="case-hero-content">
-        <div class="case-hero-left">
-          <span class="case-label">Client</span>
-          <h1 class="case-title">Rep Materials Co.</h1>
-        </div>
-        <div class="case-hero-right">
-          <div class="case-meta-block">
-            <span class="case-label">Services</span>
-            <span class="case-value">Branding, Digital Design, Marketing, Technology</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Location</span>
-            <span class="case-value">California &amp; Texas</span>
-          </div>
-          <div class="case-meta-block">
-            <span class="case-label">Info</span>
-            <p class="case-value">Building brand, marketing strategy, and digital infrastructure from inception for a rapidly growing manufacturing company.</p>
-          </div>
-        </div>
+      <span class="case-eyebrow"><em>Project</em> · 01</span>
+      <h1 class="case-title">Rep Materials Co.</h1>
+      <p class="case-tagline">Building brand, marketing strategy, and digital infrastructure from inception for a rapidly growing manufacturing company.</p>
+    </section>
+
+    <section class="case-meta">
+      <div class="case-meta-row">
+        <span class="case-meta-label">Services</span>
+        <span class="case-meta-value">Branding, Digital Design, Marketing, Technology</span>
       </div>
-      <div class="case-hero-tags">
-        <span>Branding</span><span>Digital Design</span><span>Marketing</span><span>B2B</span>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Location</span>
+        <span class="case-meta-value">California &amp; Texas</span>
+      </div>
+      <div class="case-meta-row">
+        <span class="case-meta-label">Discipline</span>
+        <span class="case-meta-value">Branding · Digital Design · Marketing · B2B</span>
       </div>
     </section>
 
-    <div class="case-hero-img">
+    <figure class="case-bleed scroll-reveal">
       <img src="https://static.wixstatic.com/media/1f7c26_7c659f0d2eb04829b2dbc0ffc7a16160~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="Rep Materials Co.">
-    </div>
+      <figcaption>Rep Materials Co. — brand &amp; digital infrastructure</figcaption>
+    </figure>
 
-    <section class="case-body">
-      <div class="case-section">
-        <div class="case-section-label">Summary</div>
-        <div class="case-section-content">
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Overview</aside>
+        <div class="case-story-body">
           <p>A Measured Force partnered with Representative Materials Company (RMC) and its subsidiary RMC Stainless to develop the brand, marketing strategy, and digital infrastructure from the company's inception. What began as a small startup operating out of a home office has grown into a rapidly expanding manufacturing company with large warehouse facilities, a nationwide sales network, and global manufacturing partnerships across North America, India, Thailand, China, and Saudi Arabia.</p>
           <p>Working closely with leadership, AMF built the company's brand identity, marketing systems, and digital platforms from the ground up while coordinating global creative and development teams across Serbia, Ukraine, Belgium, and Los Angeles.</p>
         </div>
-      </div>
+      </article>
 
-      <div class="case-section">
-        <div class="case-section-label">Challenge</div>
-        <div class="case-section-content">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Challenge</aside>
+        <div class="case-story-body">
           <p>RMC launched without an established brand, marketing infrastructure, or digital systems to support growth. In an industry dominated by long-standing manufacturers, the company needed to establish credibility while building the tools required to support national expansion.</p>
           <p>Beyond brand perception, the company required a complete marketing and digital infrastructure capable of supporting sales representatives, distributors, and global manufacturing management. At the same time, RMC needed to integrate modern marketing software, automation platforms, and emerging AI tools to support future growth.</p>
         </div>
-      </div>
+      </article>
+    </section>
 
-      <div class="case-full-img">
-        <img src="https://static.wixstatic.com/media/1f7c26_3ecc702d9a79467d91921d68057432cc~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="Rep Materials Co. project">
-      </div>
+    <figure class="case-bleed scroll-reveal">
+      <img src="https://static.wixstatic.com/media/1f7c26_3ecc702d9a79467d91921d68057432cc~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="Rep Materials Co. project" loading="lazy">
+      <figcaption>Product marketing systems across catalogs &amp; digital</figcaption>
+    </figure>
 
-      <div class="case-section">
-        <div class="case-section-label">Solution</div>
-        <div class="case-section-content">
+    <section class="case-story">
+      <article class="case-story-block scroll-reveal">
+        <aside class="case-story-label">Approach</aside>
+        <div class="case-story-body">
           <p>A Measured Force developed RMC's brand identity, marketing infrastructure, and digital platforms from the ground up. This included designing and launching multiple websites, establishing the company's visual language, and creating product marketing systems used across catalogs, digital platforms, marketing materials, and trade show environments.</p>
           <p>AMF also designed internal digital tools including a dedicated portal for sales representatives, backend dashboard interfaces for managing marketing assets, order tracking, sales reports, and content, and systems that track website engagement and spec sheet downloads to better understand customer activity.</p>
         </div>
-      </div>
+      </article>
+    </section>
 
-      <div class="case-results">
-        <h3>Key Results</h3>
-        <div class="case-results-grid">
-          <div class="case-result">Startup brand built from scratch</div>
-          <div class="case-result">Multimillion-dollar company growth</div>
-          <div class="case-result">Nationwide sales infrastructure</div>
-          <div class="case-result">Global manufacturing partnerships</div>
-          <div class="case-result">Digital tools for reps and distributors</div>
-          <div class="case-result">Marketing systems designed to scale</div>
-        </div>
-      </div>
+    <section class="case-impact">
+      <span class="case-eyebrow">Impact</span>
+      <ol class="case-impact-list">
+        <li><span class="case-impact-num">01</span><span class="case-impact-text">Startup brand built from scratch</span></li>
+        <li><span class="case-impact-num">02</span><span class="case-impact-text">Multimillion-dollar company growth</span></li>
+        <li><span class="case-impact-num">03</span><span class="case-impact-text">Nationwide sales infrastructure</span></li>
+        <li><span class="case-impact-num">04</span><span class="case-impact-text">Global manufacturing partnerships</span></li>
+        <li><span class="case-impact-num">05</span><span class="case-impact-text">Digital tools for reps and distributors</span></li>
+        <li><span class="case-impact-num">06</span><span class="case-impact-text">Marketing systems designed to scale</span></li>
+      </ol>
     </section>
 
     <section class="case-next">
-      <span class="case-label">Next Project</span>
+      <span class="case-eyebrow">Next Project</span>
       <a href="zuma-lighting.html" class="case-next-link">
-        <h2>Zuma Lighting</h2>
-        <span class="pill-btn">View Project</span>
+        <h2 class="case-next-title">Zuma Lighting</h2>
       </a>
     </section>
 
