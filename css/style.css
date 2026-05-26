@@ -64,21 +64,16 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
 ::selection { background: var(--ink); color: var(--paper); }
 img { display: block; }
 
-/* ============ PAGE TRANSITIONS ============ */
-.transition-overlay {
+/* Page transitions live in .page-transition (defined below) — the
+   legacy dark curtain system was removed. */
+html.amf-transitioning::before {
+  content: '';
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 10000;
-  transform: translateY(-105%);
-  transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+  inset: 0;
+  background: var(--paper);
+  z-index: 9999; /* below .page-transition (10000) so the canvas covers it */
+  pointer-events: none;
 }
-.t-overlay-1 { background: var(--orange); z-index: 10002; }
-.t-overlay-2 { background: var(--accent); z-index: 10001; }
-.t-overlay-3 { background: var(--black); z-index: 10000; }
-
-body.transitioning .t-overlay-1 { transform: translateY(0); transition-delay: 0s; }
-body.transitioning .t-overlay-2 { transform: translateY(0); transition-delay: 0.08s; }
-body.transitioning .t-overlay-3 { transform: translateY(0); transition-delay: 0.16s; }
 
 /* ============ CUSTOM CURSOR ============ */
 .cursor {
@@ -244,11 +239,28 @@ body.menu-open .invert-dot {
   display: flex; flex-direction: column;
   justify-content: center;
   padding: 8rem var(--pad) 4rem;
-  transition: opacity 0.55s cubic-bezier(0.76, 0, 0.24, 1);
+  transition: opacity 0.6s ease 0.4s; /* close: wait for words to dissolve out, then fade */
+  overflow: hidden;
+}
+/* Living shader canvas — fills the overlay. Its visibility rides on the
+   overlay's own opacity transition, so as the menu opens the field is
+   what fades in and fills the screen (not a flat paper background that
+   pops first). The nav links are delayed to materialize after the field
+   has landed. */
+.menu-shader-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  opacity: 0.97;
+  z-index: 0;
 }
 .menu-overlay.is-open {
   opacity: 1;
   pointer-events: auto;
+  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1); /* open: no delay */
 }
 
 .menu-overlay-list {
@@ -258,21 +270,27 @@ body.menu-open .invert-dot {
   max-width: 1100px;
   margin-inline: auto;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 .menu-overlay-list li {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1),
-              transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  transition: opacity 0.4s ease-out; /* close: fast dissolve-out */
 }
+/* All four nav links dissolve in together, after the smoke has filled. */
 .menu-overlay.is-open .menu-overlay-list li {
   opacity: 1;
-  transform: translateY(0);
+  transition: opacity 1.0s ease-out 0.45s;
 }
-.menu-overlay.is-open .menu-overlay-list li:nth-child(1) { transition-delay: 0.20s; }
-.menu-overlay.is-open .menu-overlay-list li:nth-child(2) { transition-delay: 0.28s; }
-.menu-overlay.is-open .menu-overlay-list li:nth-child(3) { transition-delay: 0.36s; }
-.menu-overlay.is-open .menu-overlay-list li:nth-child(4) { transition-delay: 0.44s; }
+
+/* When a menu item is clicked, fade the words and submenu out while the
+   smoke holds at full, then the page navigates. Drives the "zoom out
+   into the new page" transition cleanly out of the menu. */
+.menu-overlay.is-navigating .menu-overlay-list > li,
+.menu-overlay.is-navigating .menu-submenu-wrap {
+  opacity: 0 !important;
+  transition: opacity 0.4s ease-out !important;
+}
 
 .menu-overlay-list a {
   display: inline-flex;
@@ -287,6 +305,150 @@ body.menu-open .invert-dot {
   line-height: 1;
   letter-spacing: -0.02em;
 }
+
+/* Submenu — appears to the right of "Work" on hover, listing every
+   project vertically. Hovering a project shows its hero image to the
+   right of the list. Injected by js/menu-shader.js so the markup stays
+   a single source of truth across all pages. */
+.menu-overlay-list li.has-submenu {
+  align-self: flex-start;   /* shrink to text width so submenu sits next to it */
+  position: relative;
+}
+/* Wrap holds the project list + hero preview, pushed toward the middle
+   of the page and lowered slightly to align with Work's optical baseline. */
+.menu-submenu-wrap {
+  position: absolute;
+  top: clamp(0.45rem, 1vw, 1rem);
+  left: 100%;
+  padding-left: clamp(7rem, 15vw, 16rem);  /* doubles as the hover bridge */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+}
+.menu-overlay-list li.has-submenu:hover .menu-submenu-wrap,
+.menu-overlay-list li.has-submenu:focus-within .menu-submenu-wrap {
+  opacity: 1;
+  pointer-events: auto;
+}
+.menu-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.4rem, 1vh, 0.75rem);
+}
+/* Submenu items don't inherit the outer list's dissolve. */
+.menu-submenu li {
+  opacity: 1 !important;
+  transition: none !important;
+}
+.menu-submenu a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1rem;
+  text-decoration: none;
+  color: var(--ash);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  line-height: 1.3;
+  letter-spacing: 0;
+  transition: color 0.3s ease;
+}
+.menu-submenu a:hover { color: var(--ink); }
+.menu-submenu-num {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  width: 1.8rem;
+  flex: none;
+  font-feature-settings: "tnum" 1;
+}
+.menu-submenu-name { flex: 1; }
+
+/* Hero preview — fades in when a project is hovered. */
+.menu-submenu-preview {
+  flex: none;
+  width: clamp(16rem, 22vw, 26rem);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(23, 21, 18, 0.04);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.menu-submenu-preview.is-active { opacity: 1; }
+.menu-submenu-preview img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Responsive: tighten then drop the preview, then hide the whole thing on
+   narrow viewports where it doesn't fit. */
+@media (max-width: 1280px) {
+  .menu-submenu-wrap { padding-left: clamp(4rem, 9vw, 9rem); }
+  .menu-submenu-preview { display: none; }
+}
+@media (max-width: 900px) {
+  .menu-submenu-wrap { display: none; }
+}
+@media (pointer: coarse) {
+  .menu-submenu-wrap { display: none; }
+}
+
+/* Page transition — full-screen smoke layer that runs the same shader
+   as the menu, used for every internal navigation. Opacity is class-
+   driven (instant snap on entry, slow fade on exit); the canvas stays
+   visible throughout and the depth uniform animates from 1 → 0 to
+   pull the smoke back. */
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  background: var(--paper);
+  opacity: 0;
+  /* Default = exit transition (mirrors .menu-overlay closing pace). */
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.4s;
+}
+.page-transition.is-in {
+  opacity: 1;
+  pointer-events: auto;
+  /* Entry: slow fade-in, matches .menu-overlay.is-open pace. */
+  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+/* Arrived from a navigation: smoke is already at full and the overlay
+   must be visible on first paint without animating in. */
+.page-transition.is-arriving {
+  opacity: 1;
+  pointer-events: auto;
+  transition: none;
+}
+.page-transition.is-out {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.4s;
+}
+.page-transition-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-transition { display: none; }
+}
 .menu-overlay-num { display: none; }
 
 .menu-overlay-footer { display: none; }
@@ -297,6 +459,7 @@ body.menu-open { overflow: hidden; }
   .menu-overlay,
   .menu-overlay-list li,
   .menu-overlay-footer { transition-duration: 0.01ms !important; transform: none !important; }
+  .menu-shader-canvas { display: none; }
 }
 
 /* ============ HERO ============ */

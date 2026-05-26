@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>if(sessionStorage.getItem('amfTransition'))document.documentElement.classList.add('amf-transitioning');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>A Conversation About Fatherhood with President Barack Obama | A Measured Force</title>
   <link rel="stylesheet" href="../css/style.css">
@@ -14,9 +15,6 @@
   <!-- WebGL Shader Background -->
   <canvas id="shaderBg"></canvas>
 
-  <div class="transition-overlay t-overlay-1"></div>
-  <div class="transition-overlay t-overlay-2"></div>
-  <div class="transition-overlay t-overlay-3"></div>
   <div class="cursor" id="cursor"><div class="cursor-text">View</div></div>
 
   <header class="header" id="header">
@@ -179,6 +177,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="../js/shader-bg.js"></script>
+  <script src="../js/menu-shader.js"></script>
   <script src="../js/main.js"></script>
   <script>
     (function() {

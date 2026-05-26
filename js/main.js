@@ -149,21 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseenter', () => cursor.style.opacity = '');
   }
 
-  /* ============ PAGE TRANSITIONS ============ */
-  document.querySelectorAll('a[href]').forEach(link => {
-    link.addEventListener('click', function(e) {
-      const href = this.getAttribute('href');
-      if (!href || href === '#' || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('#')) return;
-
-      e.preventDefault();
-      document.body.classList.add('transitioning');
-      setTimeout(() => { window.location.href = href; }, 700);
-    });
-  });
-
-  window.addEventListener('pageshow', () => {
-    document.body.classList.remove('transitioning');
-  });
+  /* Page transitions are handled in js/menu-shader.js (smoke shader).
+     The legacy dark-curtain transition was removed. */
 
   /* ============ LINE-MASK REVEAL SYSTEM ============ */
   /*
@@ -858,6 +845,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menuOverlay.setAttribute('aria-hidden', 'false');
       menuTrigger.setAttribute('aria-label', 'Close menu');
       document.body.classList.add('menu-open');
+      if (window.MenuShader) window.MenuShader.start();
     };
     const closeMenu = () => {
       menuOverlay.classList.remove('is-open');
@@ -866,6 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menuOverlay.setAttribute('aria-hidden', 'true');
       menuTrigger.setAttribute('aria-label', 'Open menu');
       document.body.classList.remove('menu-open');
+      if (window.MenuShader) window.MenuShader.stop();
     };
     menuTrigger.addEventListener('click', () => {
       menuTrigger.classList.contains('is-open') ? closeMenu() : openMenu();
