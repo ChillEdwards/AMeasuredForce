@@ -16,7 +16,7 @@
 
 :root {
   /* Semantic palette — warm neutral, light-dominant. */
-  --paper:       #EFEBE5;
+  --paper:       #F1EDE7;
   --bone:        #E6E1D9;
   --ink:         #171512;
   --ash:         #6B6862;
@@ -63,17 +63,6 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
 
 ::selection { background: var(--ink); color: var(--paper); }
 img { display: block; }
-
-/* Page transitions live in .page-transition (defined below) — the
-   legacy dark curtain system was removed. */
-html.amf-transitioning::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: var(--paper);
-  z-index: 9999; /* below .page-transition (10000) so the canvas covers it */
-  pointer-events: none;
-}
 
 /* ============ CUSTOM CURSOR ============ */
 .cursor {
@@ -233,7 +222,7 @@ body.menu-open .invert-dot {
 .menu-overlay {
   position: fixed; inset: 0;
   z-index: 9000;
-  background: var(--paper);
+  background: transparent;
   opacity: 0;
   pointer-events: none;
   display: flex; flex-direction: column;
@@ -406,54 +395,24 @@ body.menu-open .invert-dot {
   .menu-submenu-wrap { display: none; }
 }
 
-/* Page transition — full-screen smoke layer that runs the same shader
-   as the menu, used for every internal navigation. Opacity is class-
-   driven (instant snap on entry, slow fade on exit); the canvas stays
-   visible throughout and the depth uniform animates from 1 → 0 to
-   pull the smoke back. */
-.page-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  pointer-events: none;
-  background: var(--paper);
-  opacity: 0;
-  /* Default = exit transition (mirrors .menu-overlay closing pace). */
-  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.4s;
-}
-.page-transition.is-in {
-  opacity: 1;
-  pointer-events: auto;
-  /* Entry: slow fade-in, matches .menu-overlay.is-open pace. */
-  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-}
-/* Arrived from a navigation: smoke is already at full and the overlay
-   must be visible on first paint without animating in. */
-.page-transition.is-arriving {
-  opacity: 1;
-  pointer-events: auto;
-  transition: none;
-}
-.page-transition.is-out {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.4s;
-}
-.page-transition-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
 @media (prefers-reduced-motion: reduce) {
-  .page-transition { display: none; }
 }
 .menu-overlay-num { display: none; }
 
 .menu-overlay-footer { display: none; }
 
 body.menu-open { overflow: hidden; }
+
+/* Menu is now visually transparent — its background was the only thing
+   hiding page content. Fade main/footer out when the menu opens so the
+   user sees only the plaster wall (shaderBg) + smoke + menu items. */
+main, footer {
+  transition: opacity 0.4s ease;
+}
+body.menu-open main,
+body.menu-open footer {
+  opacity: 0;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .menu-overlay,

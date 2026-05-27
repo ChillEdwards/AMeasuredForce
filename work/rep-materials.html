@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <script>if(sessionStorage.getItem('amfTransition'))document.documentElement.classList.add('amf-transitioning');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rep Materials Co. | A Measured Force</title>
   <link rel="stylesheet" href="../css/style.css">
@@ -18,17 +17,17 @@
   <div class="cursor" id="cursor"><div class="cursor-text">View</div></div>
 
   <header class="header" id="header">
-    <div class="header-logo"><a href="../index.html"><img src="../assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
-    <div class="header-center-name"><a href="../index.html">A Measured Force</a></div>
+    <div class="header-logo"><a href="/"><img src="/assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a></div>
+    <div class="header-center-name"><a href="/">A Measured Force</a></div>
     <div class="header-actions"><button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 10,3 A 7,7 0 0,0 10,17 Z" fill="currentColor"/></svg></button><button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-controls="menuOverlay" aria-expanded="false"><span class="menu-trigger-dot"></span></button></div>
   </header>
 
   <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
     <ol class="menu-overlay-list">
-      <li><a href="../work.html" class="is-active"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
-      <li><a href="../about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
-      <li><a href="../services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
-      <li><a href="../contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+      <li><a href="/work.html" class="is-active"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="/about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="/services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="/contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
     </ol>
     <div class="menu-overlay-footer">
       <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
@@ -37,7 +36,7 @@
 
   <main class="case">
     <section class="case-hero">
-      <a class="case-back" href="../work.html">
+      <a class="case-back" href="/work.html">
         <span class="case-back-arrow" aria-hidden="true">&larr;</span>
         <span>All Projects</span>
       </a>
@@ -131,7 +130,7 @@
     <section class="contact" id="contact">
       <div class="contact-cta">
         <div class="contact-dot"></div>
-        <h2>Like what you see?<br>Let's create something <em>together.</em><br><a href="../contact.html" class="email-link">Get in touch</a></h2>
+        <h2>Like what you see?<br>Let's create something <em>together.</em><br><a href="/contact.html" class="email-link">Get in touch</a></h2>
       </div>
     </section>
   </main>
@@ -147,6 +146,8 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="../js/shader-bg.js"></script>
   <script src="../js/menu-shader.js"></script>
+  <script src="../js/system-diagram.js"></script>
   <script src="../js/main.js"></script>
+  <script src="../js/router.js"></script>
 </body>
 </html>

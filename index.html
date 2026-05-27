@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <script>if(sessionStorage.getItem('amfTransition'))document.documentElement.classList.add('amf-transitioning');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>A Measured Force | Growth Infrastructure for Ambitious Brands</title>
   <link rel="stylesheet" href="css/style.css">
@@ -23,9 +22,9 @@
   <!-- Header -->
   <header class="header" id="header">
     <div class="header-logo">
-      <a href="index.html"><img src="assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a>
+      <a href="/"><img src="/assets/amf-logo.svg" alt="AMF" class="header-logo-img"></a>
     </div>
-    <div class="header-center-name"><a href="index.html">A Measured Force</a></div>
+    <div class="header-center-name"><a href="/">A Measured Force</a></div>
     <div class="header-actions">
       <button class="invert-dot" id="invertDot" aria-label="Invert colors" title="Invert">
         <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -42,10 +41,10 @@
   <!-- Full-screen menu overlay -->
   <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
     <ol class="menu-overlay-list">
-      <li><a href="work.html"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
-      <li><a href="about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
-      <li><a href="services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
-      <li><a href="contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
+      <li><a href="/work.html"><span class="menu-overlay-num">01</span><span class="menu-overlay-label">Work</span></a></li>
+      <li><a href="/about.html"><span class="menu-overlay-num">02</span><span class="menu-overlay-label">About</span></a></li>
+      <li><a href="/services/ai/"><span class="menu-overlay-num">03</span><span class="menu-overlay-label">AI</span></a></li>
+      <li><a href="/contact.html"><span class="menu-overlay-num">04</span><span class="menu-overlay-label">Contact</span></a></li>
     </ol>
     <div class="menu-overlay-footer">
       <a href="mailto:info@ameasuredforce.com">info@ameasuredforce.com</a>
@@ -72,7 +71,7 @@
         <div class="intro-dot"></div>
         <div class="intro-text">
           <p>We help ambitious companies transform disconnected marketing efforts into one coordinated system — from brand strategy and digital platforms to campaigns, automation, and analytics. When these pieces work together, ideas turn into traction and marketing becomes an engine for momentum.</p>
-          <a href="about.html" class="pill-btn">About Us</a>
+          <a href="/about.html" class="pill-btn">About Us</a>
         </div>
       </div>
     </section>
@@ -230,7 +229,9 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="js/shader-bg.js"></script>
   <script src="js/menu-shader.js"></script>
+  <script src="js/system-diagram.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/router.js"></script>
 </body>
 </html>
 

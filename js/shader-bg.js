@@ -12,7 +12,7 @@
   if (!window.THREE) return;
 
   const renderer = new THREE.WebGLRenderer({
-    canvas, antialias: true, alpha: false,
+    canvas, antialias: true, alpha: false, preserveDrawingBuffer: true,
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -147,6 +147,11 @@
         startZ: emergeStartZ,
         targetZ: targetZ,
         done: false,
+        // Retreat phase — kicked off by window.AMFShaderBg.retreatAllReliefs()
+        // when the user clicks a menu link. Same z-track, reversed.
+        retreatStart: -1,
+        retreatDuration: 0,
+        retreatFromZ: 0,
       };
       holder.position.z = emergeStartZ;
       emerging.push(holder);
@@ -158,26 +163,50 @@
   const emerging = [];
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Pick the relief set based on the current page. Pages not listed get
-  // the wall + cursor light only.
-  const path = window.location.pathname;
-  let pageKey = null;
-  if (path === '/' || /\/index\.html?$/.test(path) || path === '/index') pageKey = 'home';
-  else if (/\/contact\.html?$/.test(path)) pageKey = 'contact';
-  else if (/\/about\.html?$/.test(path)) pageKey = 'about';
-  else if (/\/work\.html?$/.test(path)) pageKey = 'work';
-  const pageFragments = fragmentsByPage[pageKey] || [];
-  if (pageFragments.length && THREE.GLTFLoader) {
+  // Map URL path → relief set key. Pages not listed get wall + cursor only.
+  function pageKeyFromPath(path) {
+    if (path === '/' || /\/index\.html?$/.test(path) || path === '/index') return 'home';
+    if (/\/contact\.html?$/.test(path)) return 'contact';
+    if (/\/about\.html?$/.test(path)) return 'about';
+    if (/\/work\.html?$/.test(path)) return 'work';
+    return null;
+  }
+
+  // Tear down a relief's GPU resources before removing it from the scene.
+  // reliefMat is shared across all reliefs so we never dispose it here.
+  function disposeReliefHolder(holder) {
+    scene.remove(holder);
+    holder.traverse((obj) => {
+      if (obj.geometry) obj.geometry.dispose();
+    });
+  }
+
+  function clearReliefs() {
+    for (let i = 0; i < emerging.length; i++) disposeReliefHolder(emerging[i]);
+    emerging.length = 0;
+  }
+
+  // Generation counter guards against late GLB callbacks landing after the
+  // user has already navigated to another page — a stale callback would
+  // otherwise add an extra relief to the new scene.
+  let loadGeneration = 0;
+  function loadReliefsForKey(pageKey) {
+    const gen = ++loadGeneration;
+    const pageFragments = fragmentsByPage[pageKey] || [];
+    if (!pageFragments.length || !THREE.GLTFLoader) return;
     const loader = new THREE.GLTFLoader();
     pageFragments.forEach((cfg) => {
       loader.load(
         cfg.src,
-        (gltf) => prepareFragment(gltf, cfg),
+        (gltf) => { if (gen === loadGeneration) prepareFragment(gltf, cfg); },
         undefined,
         (err) => console.warn('[shader-bg] fragment load failed', cfg.src, err)
       );
     });
   }
+
+  // Initial relief load for this page.
+  loadReliefsForKey(pageKeyFromPath(window.location.pathname));
 
   /* ---- Lighting ---- */
   // Lower ambient so the cursor's directional shading reads as real depth
@@ -286,6 +315,19 @@
       for (let i = 0; i < emerging.length; i++) {
         const h = emerging[i];
         const e = h.userData.emerge;
+        // Retreat takes priority over emerge — once a relief is sinking
+        // back into the wall, we don't want the emerge math to fight it.
+        if (e.retreatStart >= 0) {
+          const rt = (tNow - e.retreatStart) / e.retreatDuration;
+          if (rt >= 1) {
+            h.position.z = e.startZ;
+          } else {
+            const rk = 1 - rt;
+            const reased = 1 - rk * rk * rk; // same easeOutCubic as emerge
+            h.position.z = e.retreatFromZ + (e.startZ - e.retreatFromZ) * reased;
+          }
+          continue;
+        }
         if (e.done) continue;
         if (e.startTime < 0) {
           const sy = h.position.y;
@@ -308,4 +350,34 @@
   }
 
   animate();
+
+  // Public hook for the SPA router.
+  //   render             — synchronous draw (also used by the smoke snap).
+  //   retreatAllReliefs  — reverse-emerge on every currently-visible relief.
+  //   swapPage           — tears down the old page's reliefs and loads the
+  //                        new page's set. Camera scroll resets to the top
+  //                        of the incoming page so reliefs land in the
+  //                        correct viewport band.
+  window.AMFShaderBg = {
+    render: function () { renderer.render(scene, camera); },
+    retreatAllReliefs: function (durationMs) {
+      const now = performance.now() / 1000;
+      const dur = (durationMs || 800) / 1000;
+      for (let i = 0; i < emerging.length; i++) {
+        const e = emerging[i].userData.emerge;
+        // Buried reliefs that haven't started emerging stay where they
+        // are — no need to retreat something the user can't see.
+        if (e.startTime < 0) continue;
+        e.retreatStart = now;
+        e.retreatDuration = dur;
+        e.retreatFromZ = emerging[i].position.z;
+      }
+    },
+    swapPage: function (pageKey) {
+      clearReliefs();
+      camera.position.y = 0;
+      scrollCamY = 0;
+      loadReliefsForKey(pageKey || pageKeyFromPath(window.location.pathname));
+    }
+  };
 })();
