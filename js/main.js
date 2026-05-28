@@ -901,6 +901,62 @@
     if (handle && handle.teardown) trackTeardown(handle.teardown);
   }
 
+  /* ============ AI PRINCIPLES — scroll-driven crossfade stage ============ */
+
+  function initAiPrinciplesStage(root) {
+    const section = root.querySelector('.ai-principles');
+    if (!section) return;
+    const cards = Array.from(section.querySelectorAll('.ai-principle-card'));
+    const segs  = Array.from(section.querySelectorAll('.ai-principles-progress span'));
+    if (!cards.length) return;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      cards.forEach((c) => c.classList.add('is-active'));
+      segs.forEach((s) => s.classList.add('is-active'));
+      return;
+    }
+
+    let inView = false;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { inView = e.isIntersecting; });
+    }, { rootMargin: '0px' });
+    trackObs(io);
+    io.observe(section);
+
+    const n = cards.length;
+    let lastIdx = -1;
+    function update() {
+      const r = section.getBoundingClientRect();
+      const total = Math.max(1, section.offsetHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(1, -r.top / total));
+      // Each card peaks at (i + 0.5) / n. Continuous distance from peak
+      // drives both opacity and a parallax translateY — cards rise from
+      // below into focus, then lift up and fade as scroll passes them.
+      let activeIdx = 0;
+      let activeOp = -1;
+      for (let i = 0; i < n; i++) {
+        const peak = (i + 0.5) / n;
+        const dist = (progress - peak) * n;     // -∞..+∞, 0 = peak
+        const opacity = Math.max(0, Math.min(1, 1 - Math.abs(dist) * 1.4));
+        const translateY = -dist * 90;          // px
+        const c = cards[i];
+        c.style.opacity = opacity.toFixed(3);
+        c.style.transform = `translateY(${translateY.toFixed(1)}px)`;
+        if (opacity > activeOp) { activeOp = opacity; activeIdx = i; }
+      }
+      if (activeIdx !== lastIdx) {
+        cards.forEach((c, i) => c.classList.toggle('is-active', i === activeIdx));
+        lastIdx = activeIdx;
+      }
+    }
+    function tick() {
+      if (inView) update();
+      trackRaf(requestAnimationFrame(tick));
+    }
+    trackRaf(requestAnimationFrame(tick));
+    update();
+  }
+
   /* ============ BOOT ORCHESTRATION ============ */
 
   function bootPage(mainEl) {
@@ -922,6 +978,7 @@
     initParallax(mainEl);
     initContactForm(mainEl);
     initSystemDiagram(mainEl);
+    initAiPrinciplesStage(mainEl);
   }
 
   /* ============ HEADER SCROLL-HIDE (persistent) ============ */

@@ -94,7 +94,7 @@
       { src: '/assets/reliefs/vacossin.glb',   size: 6.0, flat: 0.25, x: -2.0, y: -VIEWPORT_WORLD_H * 2.0 + 2.5, z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0 },
       { src: '/assets/reliefs/bearded-man.glb', size: 5.0, flat: 0.25, x: 2.5, y: -VIEWPORT_WORLD_H * 4.0,        z:  0.25, rz: 0.0, rx: Math.PI, ry: Math.PI - Math.PI / 3,
         pin: { startY: -VIEWPORT_WORLD_H * 4.0, endY: -VIEWPORT_WORLD_H * 7.0, offsetY: 0 } },
-      { src: '/assets/reliefs/juengling.glb',  size: 9.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 10.0 - 5.5,  z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0, mirror: true },
+      { src: '/assets/reliefs/fullbody.glb',   size: 9.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 10.0 - 6.5,  z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
     ],
   };
 

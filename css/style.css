@@ -2112,65 +2112,120 @@ body.menu-open footer {
 }
 
 /* PRINCIPLES — each principle is its own ~100vh block with sticky left rail */
+/* Principles — sticky stage; each principle crossfades through a single
+   pinned viewport. Cards alternate left/right horizontal alignment so
+   the reader's eye moves across as they read down. */
 .ai-principles {
-  padding: 0;
-}
-.ai-principle-block {
   position: relative;
-  min-height: 110vh;
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 4rem;
-  padding: 8rem var(--pad);
-  max-width: 1400px; margin: 0 auto;
+  height: 360vh;
 }
-.ai-principle-sticky {
+.ai-principles-stage {
   position: sticky;
-  top: 45vh;
-  align-self: start;
-  height: max-content;
-  display: flex; flex-direction: column;
-  gap: 0.3rem;
-  will-change: transform;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 var(--pad);
+  overflow: hidden;
 }
+.ai-principles-eyebrow {
+  position: absolute;
+  top: 6rem;
+  left: var(--pad);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ash);
+  z-index: 3;
+}
+.ai-principle-card {
+  position: absolute;
+  top: 8vh;
+  bottom: 14vh;
+  width: min(620px, 50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  /* JS drives opacity + translateY per frame for a continuous parallax
+     ride; no CSS transition so the inline updates apply 1:1 with scroll. */
+}
+.ai-principle-card.is-active {
+  pointer-events: auto;
+}
+/* Alternate: 01 left, 02 right, 03 left. */
+.ai-principle-card[data-index="0"] { left: var(--pad);  right: auto; text-align: left; }
+.ai-principle-card[data-index="1"] { right: var(--pad); left: auto;  text-align: right; }
+.ai-principle-card[data-index="2"] { left: var(--pad);  right: auto; text-align: left; }
 .ai-principle-num {
   font-family: var(--font-sans);
   font-feature-settings: "tnum" 1;
-  font-size: clamp(1rem, 1.4vw, 1.3rem);
-  letter-spacing: 0.06em;
-  color: var(--ink);
-}
-.ai-principle-label {
-  font-family: var(--font-sans);
-  font-size: 0.7rem; letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+  letter-spacing: 0.16em;
   color: var(--ash);
-}
-.ai-principle-content {
-  max-width: 720px;
-  padding-top: 30vh; /* drops body below where the sticky label initially lands */
 }
 .ai-principle-title {
   font-family: var(--font-serif);
-  font-weight: 400;
   font-style: italic;
-  font-size: clamp(1.8rem, 3.6vw, 3rem);
-  line-height: 1.15;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  line-height: 1.1;
   letter-spacing: -0.015em;
   color: var(--ink);
-  margin-bottom: 2rem;
   max-width: 18ch;
+  margin: 0;
 }
+.ai-principle-card[data-index="1"] .ai-principle-title { margin-left: auto; }
 .ai-principle-body {
   font-family: var(--font-sans);
   font-weight: 300;
   font-size: clamp(1.05rem, 1.4vw, 1.25rem);
   line-height: 1.7;
   color: var(--ink);
+  max-width: 56ch;
+  margin: 0;
 }
+.ai-principle-card[data-index="1"] .ai-principle-body { margin-left: auto; }
 .ai-principle-body em {
   font-family: var(--font-serif);
   font-style: italic;
+}
+.ai-principles-progress {
+  position: absolute;
+  bottom: 6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1.5rem;
+  z-index: 1;
+}
+.ai-principles-progress span {
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--line-med);
+  transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1),
+              background 0.4s ease;
+}
+.ai-principles-progress span.is-active {
+  width: 56px;
+  background: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-principles { height: auto; }
+  .ai-principles-stage { position: static; height: auto; display: block; padding: 6rem var(--pad); overflow: visible; }
+  .ai-principle-card {
+    position: static; inset: auto; opacity: 1; transform: none;
+    padding: 6rem 0; pointer-events: auto; max-width: 760px;
+    margin: 0 auto;
+  }
+  .ai-principles-progress { display: none; }
 }
 
 /* AI WORKS — full-width horizontal travel
@@ -2395,17 +2450,14 @@ body.menu-open footer {
   align-items: center;
 }
 
-/* Reduced-motion guard: disable parallax + sticky pins, keep content flowing */
+/* Reduced-motion guard: disable parallax, keep content flowing */
 @media (prefers-reduced-motion: reduce) {
   .ai-hero-headline,
   .ai-beat-label,
-  .ai-principle-sticky,
   .ai-build-num {
     transform: none !important;
     will-change: auto;
   }
-  .ai-principle-sticky { position: static; }
-  .ai-principle-content { padding-top: 0; }
 }
 
 @media (max-width: 1024px) {
@@ -2413,8 +2465,6 @@ body.menu-open footer {
   .ai-beat { min-height: 70vh; padding: 5rem var(--pad); }
   .ai-beat--left .ai-beat-inner,
   .ai-beat--right .ai-beat-inner { padding-left: 0; padding-right: 0; }
-  .ai-principle-block { grid-template-columns: 160px 1fr; gap: 2.5rem; min-height: auto; padding: 6rem var(--pad); }
-  .ai-principle-content { padding-top: 4rem; }
   .ai-build-beat { grid-template-columns: 1fr; gap: 2rem; min-height: auto; padding: 5rem var(--pad); }
   .ai-build-beat:nth-child(even) { direction: ltr; }
   .ai-big-cta { padding: 8rem 0 6rem; }
@@ -2424,20 +2474,81 @@ body.menu-open footer {
   .ai-beat { min-height: 60vh; padding: 4rem var(--pad); }
   .ai-beat--right .ai-beat-inner { text-align: left; }
   .ai-beat--right .ai-beat-line { margin-left: 0; }
-  .ai-principle-block {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 5rem var(--pad);
-  }
-  .ai-principle-sticky {
-    position: static;
-    flex-direction: row;
-    gap: 1rem;
-    align-items: baseline;
-  }
-  .ai-principle-content { padding-top: 0; }
   .ai-build-beat { padding: 4rem var(--pad); }
   .ai-big-cta { padding: 5rem 0 3rem; }
   .ai-cta-pretitle { margin-bottom: 2rem; }
   .ai-cta-sub { padding-top: 2rem; }
+}
+
+/* ============ WIRED-IN HEXAGONAL DIAGRAM ============ */
+/* Self-contained editorial panel that replaces the old system-diagram. All
+   class names are BEM-scoped so nothing collides with the rest of the site. */
+.amf-wired-in {
+  --ink: #1F1F1F;
+  --ink-muted: #7A7565;
+  --ink-brand: #6B6555;
+  --hairline: rgba(31, 31, 31, 0.18);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", Arial, sans-serif;
+  position: relative;
+  /* Tight vertical rhythm — let the plaster wall show through and don't
+     leave a dead band between this section and the principles below.
+     Letting the SVG span nearly the full viewport so the hexagon reads
+     as a presence rather than a small badge. */
+  padding: clamp(80px, 10vh, 140px) clamp(12px, 2vw, 32px) clamp(20px, 3vh, 40px);
+  max-width: 1900px;
+  margin: 0 auto;
+}
+.amf-wired-in__rule {
+  border: none;
+  border-top: 0.5px solid var(--hairline);
+  margin: 0 36px;
+}
+.amf-wired-in__header {
+  text-align: center;
+  padding: 8px 36px 28px;
+}
+.amf-wired-in__diagram {
+  width: 100%;
+  display: block;
+  padding: 8px 0 0;
+}
+.amf-wired-in__stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.amf-wired-in__stamp-line {
+  display: inline-block;
+  width: 46px;
+  height: 1px;
+  background: var(--ink);
+  opacity: 0.45;
+}
+.amf-wired-in__stamp-tag {
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  color: var(--ink);
+  font-weight: 500;
+}
+.amf-wired-in__claim {
+  font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+/* Reduced motion: freeze all SMIL animations to their fully-drawn state. */
+@media (prefers-reduced-motion: reduce) {
+  .amf-wired-in__diagram [stroke-dashoffset] { stroke-dashoffset: 0 !important; }
+  .amf-wired-in__diagram animate { display: none; }
+}
+
+/* Narrow viewports: shrink padding so the diagram + labels breathe. */
+@media (max-width: 768px) {
+  .amf-wired-in__rule { margin: 0 16px; }
+  .amf-wired-in__header { padding: 6px 20px 18px; }
+  .amf-wired-in__claim { font-size: 18px; }
 }
