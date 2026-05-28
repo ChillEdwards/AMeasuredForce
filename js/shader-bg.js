@@ -90,10 +90,11 @@
       { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
     ],
     ai: [
-      { src: '/assets/reliefs/mercury.glb',    size: 5.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 11.0 - 3.5, z:  0.25, rz: 0.0, rx: 0.0, ry: Math.PI },
-      { src: '/assets/reliefs/transi.glb',     size: 7.0, flat: 0.25, x: -2.0, y: -VIEWPORT_WORLD_H * 2.0,        z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0 },
-      { src: '/assets/reliefs/bearded-man.glb', size: 5.0, flat: 0.25, x: 2.5, y: -VIEWPORT_WORLD_H * 5.0,        z:  0.25, rz: 0.0, rx: Math.PI, ry: Math.PI - Math.PI / 3,
-        pin: { startY: -VIEWPORT_WORLD_H * 5.0, endY: -VIEWPORT_WORLD_H * 8.0, offsetY: 0 } },
+      { src: '/assets/reliefs/mercury.glb',    size: 5.0, flat: 0.25, x: 2.0, y: -0.5,                          z:  0.25, rz: 0.0, rx: 0.0, ry: Math.PI },
+      { src: '/assets/reliefs/vacossin.glb',   size: 6.0, flat: 0.25, x: -2.0, y: -VIEWPORT_WORLD_H * 2.0 + 2.5, z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0 },
+      { src: '/assets/reliefs/bearded-man.glb', size: 5.0, flat: 0.25, x: 2.5, y: -VIEWPORT_WORLD_H * 4.0,        z:  0.25, rz: 0.0, rx: Math.PI, ry: Math.PI - Math.PI / 3,
+        pin: { startY: -VIEWPORT_WORLD_H * 4.0, endY: -VIEWPORT_WORLD_H * 7.0, offsetY: 0 } },
+      { src: '/assets/reliefs/juengling.glb',  size: 9.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 10.0 - 5.5,  z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0, mirror: true },
     ],
   };
 

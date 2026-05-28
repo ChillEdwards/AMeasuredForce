@@ -90,10 +90,30 @@ img { display: block; }
   white-space: nowrap;
   transition: font-size 0.3s cubic-bezier(0.16,1,0.3,1);
 }
-.cursor.hovering { width: 80px; height: 80px; }
-.cursor.hovering .cursor-text { font-size: 0.55rem; }
-.cursor.hovering-work { width: 120px; height: 120px; }
-.cursor.hovering-work .cursor-text { font-size: 0.65rem; }
+.cursor.hovering {
+  width: 80px; height: 80px;
+  animation: cursor-pulse 1.8s ease-in-out infinite;
+}
+.cursor.hovering .cursor-text { font-size: 0; }
+/* Over a work image: the circle becomes a warm spotlight — the area under
+   the cursor brightens and takes on a sepia/marble tint, echoing the
+   plaster-wall light theme. A slow breathing pulse signals "clickable"
+   without needing a label. Swap mix-blend-mode for a backdrop-filter so
+   we're not inverting, we're tinting + lighting. */
+.cursor.hovering-work {
+  width: 120px;
+  height: 120px;
+  background: transparent;
+  mix-blend-mode: normal;
+  backdrop-filter: brightness(1.25) sepia(0.7) saturate(0.7);
+  -webkit-backdrop-filter: brightness(1.25) sepia(0.7) saturate(0.7);
+  animation: cursor-pulse 1.8s ease-in-out infinite;
+}
+.cursor.hovering-work .cursor-text { font-size: 0; }
+@keyframes cursor-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%      { transform: translate(-50%, -50%) scale(1.08); }
+}
 @media (pointer: coarse) { .cursor { display: none; } }
 
 /* ============ HEADER ============ */
@@ -120,6 +140,19 @@ img { display: block; }
   display: flex;
   gap: 1.25rem;
   align-items: center;
+}
+
+/* Scroll-down hides the left logo + right actions; scroll-up brings them
+   back. Center wordmark stays put at all times. */
+.header-logo,
+.header-actions {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+body.header-hidden .header-logo,
+body.header-hidden .header-actions {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
 }
 
 /* Quiet invert-colors toggle — half-disc glyph that previews its own action
@@ -251,6 +284,29 @@ body.menu-open .invert-dot {
   opacity: 1;
   pointer-events: auto;
   transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1); /* open: no delay */
+}
+/* Plaster wipe — page-transition curtain for non-menu internal navs (pill
+   buttons, work cards, etc.). A single persistent <div.page-wipe> injected
+   by the router slides up from below, fully covers at midpoint (the swap
+   moment), then continues up off the top. Matches the wall color so it
+   reads as the wall briefly stepping in front of itself. Distinct from
+   the menu's smoke transition (smoke = "big moment"; wipe = everyday). */
+.page-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  background: var(--paper);
+  transform: translateY(100%);
+  pointer-events: none;
+  will-change: transform;
+}
+.page-wipe.is-running {
+  animation: page-wipe-up 1.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes page-wipe-up {
+  0%   { transform: translateY(100%); }
+  50%  { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
 }
 
 .menu-overlay-list {
@@ -1860,7 +1916,6 @@ body.menu-open footer {
   color: var(--ink);
   padding: clamp(120px, 16vh, 200px) clamp(20px, 4vw, 64px)
            clamp(80px, 12vh, 160px);
-  border-top: 1px solid var(--line);
 }
 
 .system-diagram .diagram-wrap {
@@ -2029,7 +2084,7 @@ body.menu-open footer {
   margin: 0 auto;
 }
 .ai-beat--left  .ai-beat-inner { margin-left: 0; padding-right: 30%; }
-.ai-beat--right .ai-beat-inner { margin-right: 0; margin-left: auto; padding-left: 30%; text-align: right; }
+.ai-beat--right .ai-beat-inner { margin-right: 0; margin-left: auto; padding-left: 30%; text-align: right; margin-top: 6rem; }
 .ai-beat--center .ai-beat-inner { text-align: center; max-width: 900px; }
 .ai-beat-line {
   font-family: var(--font-serif);
@@ -2143,7 +2198,7 @@ body.menu-open footer {
 }
 .ai-works-eyebrow {
   position: absolute;
-  top: 2.5rem;
+  top: 6rem;
   left: var(--pad);
   font-family: var(--font-sans);
   font-size: 0.7rem;

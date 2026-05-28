@@ -22,6 +22,22 @@
   if (typeof window === 'undefined') return;
   if (!window.history || !window.history.pushState) return;
 
+  // Inject the plaster-wipe transition element once. The wipe is a single
+  // persistent <div> that lives outside <main>, gets the same SPA-wide
+  // lifetime as the menu overlay and shader canvas, and is animated via
+  // CSS keyframes (see .page-wipe + @keyframes page-wipe-up in style.css).
+  function ensureWipeEl() {
+    if (document.querySelector('.page-wipe')) return;
+    const wipe = document.createElement('div');
+    wipe.className = 'page-wipe';
+    document.body.appendChild(wipe);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ensureWipeEl, { once: true });
+  } else {
+    ensureWipeEl();
+  }
+
   /* Mirror the relief lookup used in shader-bg.js so the router can
      decide which set to load after a swap. Keep these in sync. */
   function pageKeyFromPath(path) {
@@ -68,34 +84,52 @@
     navigating = true;
     const myGen = ++navGen;
 
-    // Reliefs sink back into the wall while we fetch. The wall itself
-    // stays — that's what gives the navigation its grounded feel.
-    if (!skipRetreat && window.AMFShaderBg && window.AMFShaderBg.retreatAllReliefs) {
+    // Snap the cursor back to its small default state. Without this, if the
+    // user clicks a work card (where the cursor is in .hovering-work) the
+    // card gets removed from the DOM by the page swap before a mouseout
+    // can fire, and the cursor stays enlarged/sepia/pulsing on the new page
+    // until the user moves the mouse over (and back off) a clickable element.
+    const cursorEl = document.getElementById('cursor');
+    if (cursorEl) cursorEl.classList.remove('hovering', 'hovering-work');
+
+    // Two distinct transitions:
+    //   - From-menu nav: smoke + relief retreat (the "big moment"). Smoke is
+    //     already at full from the menu being open; we recede it here.
+    //   - Non-menu nav: plaster wipe — a solid panel matching the wall sweeps
+    //     up over the page, the swap fires at full cover, then the panel
+    //     continues up off the top. No smoke, no visible relief retreat
+    //     (it would be hidden by the wipe anyway).
+    const menuOverlayEl = fromMenu ? document.getElementById('menuOverlay') : null;
+    if (fromMenu && window.AMFShaderBg && window.AMFShaderBg.retreatAllReliefs) {
       window.AMFShaderBg.retreatAllReliefs(1100);
     }
-
-    // Kick the smoke recede in parallel with the relief retreat so both fade
-    // together. The menu overlay container stays visible until the page swap;
-    // is-navigating fades the items + submenu in parallel with the smoke so
-    // nothing lingers after the smoke clears.
-    const menuOverlayEl = fromMenu ? document.getElementById('menuOverlay') : null;
     if (fromMenu && window.MenuShader && window.MenuShader.stop) {
       window.MenuShader.stop();
     }
     if (menuOverlayEl) menuOverlayEl.classList.add('is-navigating');
+    if (!fromMenu && !skipRetreat) {
+      const wipe = document.querySelector('.page-wipe');
+      if (wipe) {
+        wipe.classList.remove('is-running');
+        // Force reflow so the animation restarts cleanly on rapid nav.
+        void wipe.offsetWidth;
+        wipe.classList.add('is-running');
+        wipe.addEventListener('animationend', () => {
+          wipe.classList.remove('is-running');
+        }, { once: true });
+      }
+    }
 
-    // Fetch the target page in parallel with the retreat animation.
+    // Fetch the target page in parallel with the transition.
     const fetchPromise = fetch(href, { credentials: 'same-origin' })
       .then((r) => {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.text();
       });
 
-    // Hold the swap until BOTH the retreat has played out AND the fetch
-    // has landed. Retreat = 1100ms — matches the perceived "everything's
-    // gone" moment of the smoke + statue + items fade; the page swap lands
-    // right when the wall is bare.
-    const retreatMs = skipRetreat ? 0 : 1100;
+    // Menu close: 1100ms (matches smoke + relief retreat).
+    // Plaster wipe: 600ms (midpoint of the 1.2s wipe animation — full cover).
+    const retreatMs = skipRetreat ? 0 : (fromMenu ? 1100 : 600);
 
     let html;
     try {
@@ -148,7 +182,11 @@
     if (currentMain) currentMain.replaceWith(newMain);
     else document.body.appendChild(newMain);
 
-    window.scrollTo(0, 0);
+    // Instant, not smooth — html has `scroll-behavior: smooth` so a plain
+    // scrollTo(0,0) would animate over hundreds of ms, often outlasting the
+    // wipe and surfacing as a visible "scroll to top" after the new page
+    // reveals.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
     const newKey = pageKeyFromPath(new URL(href, location.href).pathname);
     if (window.AMFShaderBg && window.AMFShaderBg.swapPage) {

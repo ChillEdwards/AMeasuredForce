@@ -724,12 +724,12 @@
           const progress = Math.min((cardMid - blurZoneStart) / (viewH - blurZoneStart), 1.0);
           const blur = progress * 6;
           const bright = 0.85 - progress * 0.25;
-          img.style.filter = `brightness(${bright}) blur(${blur}px)`;
+          img.style.filter = `brightness(${bright}) blur(${blur}px) grayscale(${progress})`;
         } else if (cardMid < blurZoneEnd) {
           const progress = Math.min((blurZoneEnd - cardMid) / blurZoneEnd, 1.0);
           const blur = progress * 6;
           const bright = 0.85 - progress * 0.25;
-          img.style.filter = `brightness(${bright}) blur(${blur}px)`;
+          img.style.filter = `brightness(${bright}) blur(${blur}px) grayscale(${progress})`;
         } else {
           img.style.filter = 'brightness(0.85)';
         }
@@ -908,10 +908,31 @@
     initSystemDiagram(mainEl);
   }
 
+  /* ============ HEADER SCROLL-HIDE (persistent) ============ */
+
+  // Hide the left logo + right actions while scrolling down past a small
+  // top guard; show them again on scroll-up. Center wordmark is untouched.
+  function bootHeaderScrollHide() {
+    let lastY = window.scrollY || 0;
+    const TOP_GUARD = 80;
+    const DELTA = 6;
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY || 0;
+      if (Math.abs(y - lastY) < DELTA) return;
+      if (y > lastY && y > TOP_GUARD) {
+        document.body.classList.add('header-hidden');
+      } else {
+        document.body.classList.remove('header-hidden');
+      }
+      lastY = y;
+    }, { passive: true });
+  }
+
   function bootOnce() {
     bootCursor();
     bootMenu();
     bootInvert();
+    bootHeaderScrollHide();
   }
 
   /* ---- Public API used by the SPA router ----------------------------- */

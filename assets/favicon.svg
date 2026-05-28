@@ -3,9 +3,15 @@
   <defs>
     <style>
       .cls-1 {
-        fill: #e8611a;
-        stroke: #e8611a;
+        fill: #000000;
+        stroke: #000000;
         stroke-miterlimit: 10;
+      }
+      @media (prefers-color-scheme: dark) {
+        .cls-1 {
+          fill: #FFFFFF;
+          stroke: #FFFFFF;
+        }
       }
     </style>
   </defs>
