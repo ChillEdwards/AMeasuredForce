@@ -182,12 +182,24 @@
     const WORK_SEL = '.works-cycle-item a, .works-card';
     const HOVER_SEL = 'a, button, input, textarea, .pill-btn, .studio-pill';
 
+    // The header logo + wordmark are "disabled" while on the home page and
+    // still within the first section — clicks do nothing in that state (see
+    // router.js). Match that here so the cursor doesn't enlarge over a link
+    // that has no effect.
+    function isHeaderLogoLinkDisabled(el) {
+      const link = el && el.closest && (el.closest('.header-logo a') || el.closest('.header-center-name a'));
+      if (!link) return false;
+      const onHome = location.pathname === '/' || /\/index\.html?$/.test(location.pathname);
+      return onHome && (window.scrollY || 0) <= window.innerHeight * 0.8;
+    }
+
     document.addEventListener('mouseover', (e) => {
       const t = e.target;
       if (t.closest && t.closest(WORK_SEL)) {
         cursorEl.classList.remove('hovering');
         cursorEl.classList.add('hovering-work');
       } else if (t.closest && t.closest(HOVER_SEL)) {
+        if (isHeaderLogoLinkDisabled(t)) return;
         if (!cursorEl.classList.contains('hovering-work')) cursorEl.classList.add('hovering');
       }
     });
@@ -720,18 +732,22 @@
         const drag = fromCenter * velocity * 0.8;
         img.style.transform = `translateY(${drag}px)`;
         const blurZoneEnd = viewH * 0.25;
+        // Append invert(1) inline when the page is inverted so the dynamic
+        // blur/grayscale composes correctly (the CSS rule for inverted .works-
+        // card img is no longer !important, so the inline style wins).
+        const invertTail = document.documentElement.classList.contains('inverted') ? ' invert(1)' : '';
         if (cardMid > blurZoneStart) {
           const progress = Math.min((cardMid - blurZoneStart) / (viewH - blurZoneStart), 1.0);
           const blur = progress * 6;
           const bright = 0.85 - progress * 0.25;
-          img.style.filter = `brightness(${bright}) blur(${blur}px) grayscale(${progress})`;
+          img.style.filter = `brightness(${bright}) blur(${blur}px) grayscale(${progress})${invertTail}`;
         } else if (cardMid < blurZoneEnd) {
           const progress = Math.min((blurZoneEnd - cardMid) / blurZoneEnd, 1.0);
           const blur = progress * 6;
           const bright = 0.85 - progress * 0.25;
-          img.style.filter = `brightness(${bright}) blur(${blur}px) grayscale(${progress})`;
+          img.style.filter = `brightness(${bright}) blur(${blur}px) grayscale(${progress})${invertTail}`;
         } else {
-          img.style.filter = 'brightness(0.85)';
+          img.style.filter = `brightness(0.85)${invertTail}`;
         }
       });
 

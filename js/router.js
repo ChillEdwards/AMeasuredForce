@@ -232,6 +232,27 @@
       } catch (_) { /* fall through */ }
     }
 
+    // Header logo / wordmark while already on the home page: don't trigger
+    // a full reload (which would lose inverted state and cause a visible
+    // snap). If the user has scrolled past the first section, smooth-scroll
+    // them back to the top; otherwise do nothing.
+    const isLogoLink = !!(a.closest && (a.closest('.header-logo') || a.closest('.header-center-name')));
+    if (isLogoLink && !fromMenu) {
+      try {
+        const url = new URL(a.href, location.href);
+        const isHomeHref = url.pathname === '/' || /\/index\.html?$/.test(url.pathname);
+        const isOnHome = location.pathname === '/' || /\/index\.html?$/.test(location.pathname);
+        if (isHomeHref && isOnHome) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          if ((window.scrollY || 0) > window.innerHeight * 0.8) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+          return;
+        }
+      } catch (_) { /* fall through */ }
+    }
+
     if (!isInternalLink(a)) return;
 
     e.preventDefault();
