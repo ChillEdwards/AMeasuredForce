@@ -25,6 +25,7 @@
   /* Mirror the relief lookup used in shader-bg.js so the router can
      decide which set to load after a swap. Keep these in sync. */
   function pageKeyFromPath(path) {
+    if (/\/services\/ai\/?(index\.html)?$/.test(path)) return 'ai';
     if (path === '/' || /\/index\.html?$/.test(path) || path === '/index') return 'home';
     if (/\/contact\.html?$/.test(path)) return 'contact';
     if (/\/about\.html?$/.test(path)) return 'about';
@@ -70,8 +71,18 @@
     // Reliefs sink back into the wall while we fetch. The wall itself
     // stays — that's what gives the navigation its grounded feel.
     if (!skipRetreat && window.AMFShaderBg && window.AMFShaderBg.retreatAllReliefs) {
-      window.AMFShaderBg.retreatAllReliefs(700);
+      window.AMFShaderBg.retreatAllReliefs(1100);
     }
+
+    // Kick the smoke recede in parallel with the relief retreat so both fade
+    // together. The menu overlay container stays visible until the page swap;
+    // is-navigating fades the items + submenu in parallel with the smoke so
+    // nothing lingers after the smoke clears.
+    const menuOverlayEl = fromMenu ? document.getElementById('menuOverlay') : null;
+    if (fromMenu && window.MenuShader && window.MenuShader.stop) {
+      window.MenuShader.stop();
+    }
+    if (menuOverlayEl) menuOverlayEl.classList.add('is-navigating');
 
     // Fetch the target page in parallel with the retreat animation.
     const fetchPromise = fetch(href, { credentials: 'same-origin' })
@@ -81,8 +92,10 @@
       });
 
     // Hold the swap until BOTH the retreat has played out AND the fetch
-    // has landed. Retreat = 700ms; on warm cache the fetch is much faster.
-    const retreatMs = skipRetreat ? 0 : 700;
+    // has landed. Retreat = 1100ms — matches the perceived "everything's
+    // gone" moment of the smoke + statue + items fade; the page swap lands
+    // right when the wall is bare.
+    const retreatMs = skipRetreat ? 0 : 1100;
 
     let html;
     try {
@@ -148,6 +161,7 @@
 
     if (fromMenu && window.AMFMenu && window.AMFMenu.close) {
       window.AMFMenu.close();
+      if (menuOverlayEl) menuOverlayEl.classList.remove('is-navigating');
     }
 
     navigating = false;
@@ -161,13 +175,29 @@
     if (e.button !== 0) return;
     const a = e.target.closest && e.target.closest('a');
     if (!a) return;
+
+    const overlay = document.getElementById('menuOverlay');
+    const fromMenu = !!(overlay && overlay.classList.contains('is-open') && overlay.contains(a));
+
+    // Same-URL click from the open menu: just close the menu — don't retreat
+    // reliefs, don't swap <main>, don't reset scroll. The page the user is on
+    // stays exactly as it was; only the smoke + items + overlay dissolve.
+    if (fromMenu) {
+      try {
+        const url = new URL(a.href, location.href);
+        if (url.href === location.href) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          if (window.AMFMenu && window.AMFMenu.close) window.AMFMenu.close();
+          return;
+        }
+      } catch (_) { /* fall through */ }
+    }
+
     if (!isInternalLink(a)) return;
 
     e.preventDefault();
     e.stopImmediatePropagation();
-
-    const overlay = document.getElementById('menuOverlay');
-    const fromMenu = !!(overlay && overlay.classList.contains('is-open') && overlay.contains(a));
 
     navigate(a.href, { fromMenu: fromMenu });
   }, true);

@@ -89,6 +89,12 @@
     work: [
       { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
     ],
+    ai: [
+      { src: '/assets/reliefs/mercury.glb',    size: 5.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 11.0 - 3.5, z:  0.25, rz: 0.0, rx: 0.0, ry: Math.PI },
+      { src: '/assets/reliefs/transi.glb',     size: 7.0, flat: 0.25, x: -2.0, y: -VIEWPORT_WORLD_H * 2.0,        z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0 },
+      { src: '/assets/reliefs/bearded-man.glb', size: 5.0, flat: 0.25, x: 2.5, y: -VIEWPORT_WORLD_H * 5.0,        z:  0.25, rz: 0.0, rx: Math.PI, ry: Math.PI - Math.PI / 3,
+        pin: { startY: -VIEWPORT_WORLD_H * 5.0, endY: -VIEWPORT_WORLD_H * 8.0, offsetY: 0 } },
+    ],
   };
 
   // Center, scale, and flatten one loaded GLB scene into a mesh that sits
@@ -130,7 +136,19 @@
     holder.scale.set(cfg.mirror ? -s : s, s, s * cfg.flat);
 
     holder.position.set(cfg.x, cfg.y, cfg.z || 0);
+    holder.rotation.y = cfg.spin || 0;  // world-Y turntable spin
     holder.rotation.z = cfg.rz || 0;
+
+    // Pin: when the camera Y is inside [pin.endY, pin.startY] (the world-Y
+    // span of a page section), the relief sticks to the camera so it appears
+    // fixed on screen while the surrounding content scrolls past. Outside
+    // that range it parks at the nearest edge — entering from below as the
+    // camera scrolls down into the section, and getting left behind above
+    // after the camera scrolls out the bottom. Note pin.startY > pin.endY
+    // because scrolling down makes camera.y more negative.
+    if (cfg.pin) {
+      holder.userData.pin = cfg.pin;
+    }
 
     // Emerge animation — start the holder ~1.6 world units deeper than its
     // target z (fully behind the opaque wall plane). The animate loop only
@@ -165,6 +183,7 @@
 
   // Map URL path → relief set key. Pages not listed get wall + cursor only.
   function pageKeyFromPath(path) {
+    if (/\/services\/ai\/?(index\.html)?$/.test(path)) return 'ai';
     if (path === '/' || /\/index\.html?$/.test(path) || path === '/index') return 'home';
     if (/\/contact\.html?$/.test(path)) return 'contact';
     if (/\/about\.html?$/.test(path)) return 'about';
@@ -300,6 +319,22 @@
     currentPos.y += (targetPos.y - currentPos.y) * 0.14;
     currentPos.z += (WALL_LIGHT_Z - currentPos.z) * 0.14;
     cursorLight.position.copy(currentPos);
+
+    // Sticky pin pass — for any relief that declared a pin range, override
+    // its world Y so it tracks the camera through that range and parks at
+    // the edges otherwise. Runs before emerge so the emerge viewport check
+    // uses the post-pin position.
+    if (emerging.length) {
+      const camY = camera.position.y;
+      for (let i = 0; i < emerging.length; i++) {
+        const pin = emerging[i].userData.pin;
+        if (!pin) continue;
+        const offsetY = pin.offsetY || 0;
+        if (camY > pin.startY)      emerging[i].position.y = pin.startY + offsetY;
+        else if (camY < pin.endY)   emerging[i].position.y = pin.endY + offsetY;
+        else                        emerging[i].position.y = camY + offsetY;
+      }
+    }
 
     // Emerge: start each sculpture's rise when it first enters the viewport
     // (with a small lead margin so the animation has begun by the time it's

@@ -213,6 +213,7 @@
     if (!menuTrigger || !menuOverlay) return;
 
     const openMenu = () => {
+      menuOverlay.classList.remove('is-navigating');
       menuOverlay.classList.add('is-open');
       menuTrigger.classList.add('is-open');
       menuTrigger.setAttribute('aria-expanded', 'true');

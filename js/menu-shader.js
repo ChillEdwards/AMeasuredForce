@@ -215,7 +215,7 @@
   let menuSmoke = null;
   let menuOverlayEl = null;
   let menuCloseTimer = null;
-  const MENU_CLOSE_DELAY_MS = 400;
+  const MENU_CLOSE_DELAY_MS = 0;
 
   function ensureMenuSmoke() {
     if (reducedMotion) return null;
@@ -244,7 +244,7 @@
       const s = ensureMenuSmoke();
       if (!s) return;
       if (menuCloseTimer) { clearTimeout(menuCloseTimer); menuCloseTimer = null; }
-      s.setDepth(1, { arriveFactor: 0.04, recedeFactor: 0.10 });
+      s.setDepth(1, { arriveFactor: 0.04, recedeFactor: 0.04 });
     },
     stop() {
       if (!menuSmoke) return;

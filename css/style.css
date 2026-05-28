@@ -154,7 +154,8 @@ html.inverted .case-bleed img,
 html.inverted .case-grid-two img,
 html.inverted .case-grid-two video,
 html.inverted .case-video video,
-html.inverted .case-film-thumb img { filter: invert(1) !important; }
+html.inverted .case-film-thumb img,
+html.inverted .menu-submenu-preview img { filter: invert(1) !important; }
 html.inverted .video-lightbox { filter: invert(1) !important; }
 
 /* ============ MENU TRIGGER (two-line hamburger → X) ============ */
@@ -228,7 +229,7 @@ body.menu-open .invert-dot {
   display: flex; flex-direction: column;
   justify-content: center;
   padding: 8rem var(--pad) 4rem;
-  transition: opacity 0.6s ease 0.4s; /* close: wait for words to dissolve out, then fade */
+  transition: opacity 0.6s ease 0.4s; /* close: wait for items to dissolve, then fade overlay (smoke already receded in parallel during relief retreat) */
   overflow: hidden;
 }
 /* Living shader canvas — fills the overlay. Its visibility rides on the
@@ -278,7 +279,7 @@ body.menu-open .invert-dot {
 .menu-overlay.is-navigating .menu-overlay-list > li,
 .menu-overlay.is-navigating .menu-submenu-wrap {
   opacity: 0 !important;
-  transition: opacity 0.4s ease-out !important;
+  transition: opacity 0.5s ease-out !important;
 }
 
 .menu-overlay-list a {
@@ -407,7 +408,7 @@ body.menu-open { overflow: hidden; }
    hiding page content. Fade main/footer out when the menu opens so the
    user sees only the plaster wall (shaderBg) + smoke + menu items. */
 main, footer {
-  transition: opacity 0.4s ease;
+  transition: opacity 0.25s ease;
 }
 body.menu-open main,
 body.menu-open footer {
