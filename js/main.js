@@ -440,7 +440,7 @@
     });
 
     const revealSelectors = [
-      '.section-label', '.intro-content h2', '.intro-text', '.intro-dot',
+      '.section-label', '.intro-head', '.intro-rule', '.intro-content h2', '.pill-btn',
       '.stat',
       '.services-headline', '.service-col',
       '.process-title', '.process-subtitle', '.process-step',
