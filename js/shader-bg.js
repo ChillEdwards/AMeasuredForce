@@ -84,7 +84,7 @@
     ],
     about: [
       { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0,                         z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI },
-      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 3.5 + 2.0, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
+      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 3.5 + 3.0, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
     ],
     work: [
       { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },

@@ -188,7 +188,8 @@ html.inverted .case-grid-two img,
 html.inverted .case-grid-two video,
 html.inverted .case-video video,
 html.inverted .case-film-thumb img,
-html.inverted .menu-submenu-preview img { filter: invert(1) !important; }
+html.inverted .menu-submenu-preview img,
+html.inverted .ai-works-card img { filter: invert(1) !important; }
 html.inverted .video-lightbox { filter: invert(1) !important; }
 
 /* ============ MENU TRIGGER (two-line hamburger → X) ============ */
@@ -531,6 +532,12 @@ body.menu-open footer {
   max-width: 1100px;
 }
 .intro-content h2 em { color: var(--orange); }
+.intro-sub {
+  font-family: var(--font-sans); font-weight: 400;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+  line-height: 1.85; color: var(--gray-light);
+  max-width: 760px; margin-bottom: 2.5rem;
+}
 
 /* ============ PILL BUTTON ============ */
 .pill-btn {
@@ -674,11 +681,12 @@ body.menu-open footer {
 }
 .services-headline em { font-style: italic; }
 .services-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 3rem; max-width: 1200px;
 }
 .service-pill {
   display: inline-block;
+  min-width: 150px; text-align: center;
   border: 1px solid var(--accent); color: var(--accent);
   padding: 0.3rem 1rem; border-radius: 100px;
   font-family: var(--font-sans); font-size: 0.7rem;
@@ -737,6 +745,9 @@ body.menu-open footer {
   transition: opacity 0.3s; flex-shrink: 0;
 }
 .logo-ticker-inner img:hover { opacity: 0.8; }
+/* Charles Schwab is white-on-blue; the default brightness(2) wash makes it
+   invisible. Invert instead so the wordmark reads on the cream background. */
+.logo-ticker-inner img.logo-schwab { filter: grayscale(100%) invert(1); }
 @keyframes tickerScroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -748,8 +759,8 @@ body.menu-open footer {
 .contact-block { display: flex; flex-direction: column; gap: 0.6rem; }
 .contact-label-pill {
   display: inline-block;
-  border: 1px solid var(--accent); color: var(--accent);
-  padding: 0.25rem 0.9rem; border-radius: 100px;
+  color: var(--accent);
+  padding: 0.25rem 0; border-radius: 0;
   font-size: 0.65rem; text-transform: uppercase;
   letter-spacing: 0.12em; width: fit-content;
   font-weight: 500;
@@ -1620,9 +1631,10 @@ body.menu-open footer {
 /* Agency Description */
 .studio-about {
   padding: 10rem var(--pad) 6rem;
+  min-height: 100vh;
 }
 .studio-about-main {
-  max-width: 1100px; margin-bottom: 6rem;
+  max-width: 1100px;
 }
 .studio-about-large {
   font-family: var(--font-serif); font-weight: 400;
@@ -1630,19 +1642,30 @@ body.menu-open footer {
   line-height: 1.3;
 }
 .studio-about-large em { font-style: italic; color: var(--orange); }
-.studio-about-secondary {
-  max-width: 550px; margin-left: auto;
-  position: relative;
+.studio-about-sub {
+  font-family: var(--font-sans); font-weight: 300;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  line-height: 1.85; color: var(--gray-light);
+  max-width: 760px; margin-top: 2.25rem;
 }
-.studio-about-dot {
-  width: 10px; height: 10px;
-  background: var(--accent); border-radius: 50%;
-  margin-bottom: 2rem;
+/* Editorial statement — its own centered section between the lead and "What We Do". */
+.studio-statement {
+  padding: 7rem var(--pad);
 }
-.studio-about-secondary p {
-  font-size: 0.95rem; line-height: 1.85;
-  color: var(--gray-light); margin-bottom: 1.5rem;
+.studio-statement-heading {
+  font-family: var(--font-serif); font-weight: 400;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  text-align: center; margin-bottom: 2.5rem;
 }
+.studio-statement-heading em { color: var(--orange); }
+.studio-statement-body { max-width: 1040px; margin: 0 auto; text-align: center; }
+.studio-statement-body p {
+  font-family: var(--font-sans); font-weight: 300;
+  font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+  line-height: 1.85; color: var(--gray-light);
+  margin-bottom: 1.75rem;
+}
+.studio-statement-body p:last-child { margin-bottom: 0; }
 
 /* Client Logo Grid */
 .studio-logos {
@@ -1757,6 +1780,18 @@ body.menu-open footer {
   100% { opacity: 1; transform: translateY(0); }
 }
 
+/* Hero headline: no per-character float — just a single, unified fade-in,
+   paced (2.8s) to settle in as the goat relief rises behind it. */
+.hero .hero-headline h1.split-chars .char { transform: none; }
+.hero .hero-headline h1.split-chars.animated .char {
+  animation: heroHeadlineFade 2.8s ease 1.2s forwards;
+  animation-delay: 1.2s;
+}
+@keyframes heroHeadlineFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 /* Split words - word-by-word animation */
 .split-words .word {
   display: inline-block;
@@ -1796,6 +1831,40 @@ body.menu-open footer {
   transform: translateY(0);
 }
 
+/* Intro section fades in like the hero headline — pure opacity, no slide,
+   paced at 2.8s ease. */
+.intro .reveal {
+  transform: none;
+  transition: opacity 2.8s ease;
+}
+.intro .reveal.visible { transform: none; }
+
+/* ===== Unified hero-style fade-in for Work / About / AI / Contact pages =====
+   On .page-fade pages, every reveal/split/line animation collapses to a single
+   pure opacity fade (2.8s ease) — no slide, no per-word/char stagger. */
+.page-fade .reveal { transform: none; transition: opacity 2.8s ease; }
+.page-fade .reveal.visible { transform: none; opacity: 1; }
+
+.page-fade .split-words .word {
+  transform: none;
+  transition: opacity 2.8s ease;
+  transition-delay: 0s !important;
+}
+.page-fade .split-words.animated .word { transform: none; opacity: 1; }
+
+.page-fade .split-chars .char { transform: none; }
+.page-fade .split-chars.animated .char {
+  animation: heroHeadlineFade 2.8s ease forwards;
+}
+
+.page-fade .line-reveal { overflow: visible; }
+.page-fade .line-reveal-inner {
+  transform: none;
+  opacity: 0;
+  transition: opacity 2.8s ease;
+}
+.page-fade .line-reveal.revealed .line-reveal-inner { transform: none; opacity: 1; }
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .line-inner,
@@ -1817,6 +1886,7 @@ body.menu-open footer {
 }
 
 @media (max-width: 1024px) {
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
   .process-steps { grid-template-columns: repeat(3, 1fr); }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .about-approach-grid { grid-template-columns: repeat(2, 1fr); }
@@ -2270,7 +2340,7 @@ body.menu-open footer {
 }
 .ai-works-eyebrow {
   position: absolute;
-  top: 6rem;
+  top: 9rem;
   left: var(--pad);
   font-family: var(--font-sans);
   font-size: 0.7rem;
@@ -2302,6 +2372,7 @@ body.menu-open footer {
   position: relative;
   background: rgba(23, 21, 18, 0.04);
   border: 1px solid var(--line);
+  border-radius: 12px;
   overflow: hidden;
   height: min(44vh, 420px);
   max-width: min(34vw, 460px);
@@ -2311,6 +2382,9 @@ body.menu-open footer {
 .ai-works-card[data-aspect="tall"]        { aspect-ratio: 3 / 5; }
 .ai-works-card[data-aspect="landscape"]   { aspect-ratio: 16 / 10; }
 .ai-works-card[data-aspect="square-wide"] { aspect-ratio: 6 / 5; }
+.ai-works-card[data-aspect="standard"]    { aspect-ratio: 4 / 3; max-width: min(46vw, 600px); }
+.ai-works-card[data-aspect="wide"]        { aspect-ratio: 3 / 2; max-width: min(52vw, 640px); }
+.ai-works-card[data-aspect="phone"]       { aspect-ratio: 3 / 4; }
 .ai-works-card::after {
   position: absolute;
   inset: 0;
@@ -2438,6 +2512,14 @@ body.menu-open footer {
 .ai-big-cta {
   padding: 14rem 0 10rem;
 }
+/* When reused at the bottom of the home/about contact section, the section
+   already provides outer padding — drop the CTA's own vertical padding. */
+.contact .ai-big-cta { padding: 5rem 0 3rem; }
+/* The .contact section already supplies var(--pad); drop the CTA elements'
+   own horizontal padding so they left-align with the content above. */
+.contact .ai-cta-pretitle,
+.contact .ai-cta-display,
+.contact .ai-cta-sub { padding-left: 0; padding-right: 0; }
 .ai-cta-pretitle {
   padding: 0 var(--pad);
   font-family: var(--font-sans);

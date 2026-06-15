@@ -351,18 +351,26 @@
     const heroEl = pageHero || caseHero;
 
     if (heroEl) {
+      // On .page-fade pages the hero uses the same unified opacity fade as the
+      // homepage hero headline — no slide, no stagger.
+      const fade = document.body.classList.contains('page-fade');
       const children = heroEl.querySelectorAll(
         '.section-label, .page-hero-title, .page-hero-sub, .case-label, .case-title, .case-hero-right, .case-hero-tags'
       );
       children.forEach((el, i) => {
         el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s`;
+        if (fade) {
+          el.style.transform = 'none';
+          el.style.transition = 'opacity 2.8s ease';
+        } else {
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s`;
+        }
       });
       setTimeout(() => {
         children.forEach((el) => {
           el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
+          if (!fade) el.style.transform = 'translateY(0)';
         });
       }, 50);
     }
@@ -440,7 +448,7 @@
     });
 
     const revealSelectors = [
-      '.section-label', '.intro-head', '.intro-rule', '.intro-content h2', '.pill-btn',
+      '.section-label', '.intro-head', '.intro-rule', '.intro-content h2', '.intro-sub', '.pill-btn',
       '.stat',
       '.services-headline', '.service-col',
       '.process-title', '.process-subtitle', '.process-step',

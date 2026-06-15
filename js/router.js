@@ -147,11 +147,12 @@
     // A newer click won the race — bail before mutating the DOM.
     if (myGen !== navGen) { navigating = false; return; }
 
-    let newMain, newTitle;
+    let newMain, newTitle, newFade = false;
     try {
       const doc = new DOMParser().parseFromString(html, 'text/html');
       newMain = doc.querySelector('main');
       newTitle = doc.querySelector('title');
+      newFade = !!(doc.body && doc.body.classList.contains('page-fade'));
     } catch (e) {
       console.warn('[router] parse failed; falling back to hard nav', e);
       window.location.href = href;
@@ -177,6 +178,10 @@
     //   8. Close the menu if the navigation was initiated from it.
     history.pushState({ amf: true, href: href }, '', href);
     if (newTitle) document.title = newTitle.textContent;
+
+    // Mirror the destination page's body class so the per-page fade-in scope
+    // (.page-fade) follows SPA navigation, not just the initial page load.
+    document.body.classList.toggle('page-fade', newFade);
 
     const currentMain = document.querySelector('main');
     if (currentMain) currentMain.replaceWith(newMain);
