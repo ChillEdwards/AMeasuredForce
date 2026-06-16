@@ -308,8 +308,17 @@
   }, { passive: true });
 
   /* ---- Resize ---- */
+  // Mobile browsers change window.innerHeight as the URL bar slides in/out
+  // during scroll, firing resize and shifting the scroll→world mapping — which
+  // makes the wall + reliefs jitter. On narrow/touch viewports we lock to a
+  // stable height and only re-fit when the WIDTH actually changes (orientation).
+  // Desktop is unaffected: NARROW is false, so behavior is identical to before.
+  let stableVW = window.innerWidth;
+  let stableVH = window.innerHeight;
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
+    if (NARROW && w === stableVW) return;   // ignore URL-bar height-only changes
+    stableVW = w; stableVH = h;
     renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -324,10 +333,12 @@
   // follows the camera so it always fills the current viewport.
   let scrollCamY = 0;
   function onScroll() {
-    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    // Use the locked height on mobile so the URL-bar show/hide doesn't yank the
+    // mapping mid-scroll. Desktop keeps the live innerHeight (NARROW is false).
+    const vh = NARROW ? stableVH : window.innerHeight;
     const scrollPx = window.scrollY || document.documentElement.scrollTop || 0;
     // One viewport of page scroll = one viewport of world Y.
-    scrollCamY = -(scrollPx / window.innerHeight) * VIEWPORT_WORLD_H;
+    scrollCamY = -(scrollPx / vh) * VIEWPORT_WORLD_H;
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
