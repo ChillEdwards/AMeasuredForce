@@ -142,7 +142,21 @@
     const s = cfg.size / (faceExtent || 1);
     holder.scale.set(cfg.mirror ? -s : s, s, s * cfg.flat);
 
-    holder.position.set(cfg.x, cfg.y, cfg.z || 0);
+    // Narrow/touch viewports: the camera sees a far thinner slice of the world,
+    // so desktop-tuned x positions land off to the edges / over the text. Pull
+    // each relief toward center in proportion to how much narrower the view is,
+    // shrink it to fit the column, and sit it near the wall plane so it reads as
+    // a faint embedded backdrop behind the copy rather than competing with it.
+    let effX = cfg.x;
+    let effZ = cfg.z || 0;
+    if (NARROW) {
+      const xScale = Math.min(1, visibleAtZ(0).w / 7.2);  // 7.2 ≈ desktop visible width
+      effX = cfg.x * xScale;
+      effZ = 0.05;                       // closer to the wall → flatter, subtler
+      holder.scale.multiplyScalar(0.7);  // smaller so it doesn't crowd the column
+    }
+
+    holder.position.set(effX, cfg.y, effZ);
     holder.rotation.y = cfg.spin || 0;  // world-Y turntable spin
     holder.rotation.z = cfg.rz || 0;
 
@@ -161,7 +175,7 @@
     // target z (fully behind the opaque wall plane). The animate loop only
     // begins easing it forward once the sculpture scrolls into viewport, so
     // each one rises as the user reaches it. Skipped on reduced-motion.
-    const targetZ = cfg.z || 0;
+    const targetZ = effZ;
     if (prefersReducedMotion) {
       holder.position.z = targetZ;
     } else {
@@ -189,9 +203,10 @@
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Relief world-x positions are tuned for the wide desktop camera. On narrow
   // (mobile/tablet) or touch viewports the camera sees a much narrower slice of
-  // world space, so reliefs drift to the edges and overlap text. Skip loading
-  // the decorative reliefs there — the wall, lighting and cursor still render.
-  const SKIP_RELIEFS =
+  // world space, so reliefs drift to the edges and clutter the full-width text.
+  // We still show them there, but prepareFragment pulls them toward center,
+  // shrinks them, and sits them near the wall so they read as a faint backdrop.
+  const NARROW =
     window.innerWidth <= 900 || window.matchMedia('(pointer: coarse)').matches;
 
   // Map URL path → relief set key. Pages not listed get wall + cursor only.
@@ -224,7 +239,6 @@
   let loadGeneration = 0;
   function loadReliefsForKey(pageKey) {
     const gen = ++loadGeneration;
-    if (SKIP_RELIEFS) return;
     const pageFragments = fragmentsByPage[pageKey] || [];
     if (!pageFragments.length || !THREE.GLTFLoader) return;
     const loader = new THREE.GLTFLoader();
