@@ -30,6 +30,32 @@
   }
   let lockedW = window.innerWidth;
 
+  // Mobile render-pause: keep the canvas a STATIC composited layer once the
+  // scene settles, so iOS keeps it pinned during scroll (a fixed canvas that
+  // repaints every frame is re-rasterized and drifts/judders with the swipe).
+  // wake() opens a short render window after discrete changes (relief load,
+  // page swap, resize, inverted toggle); sceneIsAnimating() keeps drawing while
+  // an emerge/retreat/light transition is in flight. Desktop ignores all this
+  // and renders every frame as before.
+  let forceRenderUntil = 0;
+  let mobileSettledFrame = false;
+  function wake() {
+    forceRenderUntil = performance.now() / 1000 + 0.3;
+    mobileSettledFrame = false;
+  }
+  function sceneIsAnimating(tNow) {
+    if (Math.abs(targetPos.x - currentPos.x) > 1e-3 ||
+        Math.abs(targetPos.y - currentPos.y) > 1e-3 ||
+        Math.abs(WALL_LIGHT_Z - currentPos.z) > 1e-3) return true;
+    for (let i = 0; i < emerging.length; i++) {
+      const e = emerging[i].userData.emerge;
+      if (!e) continue;
+      if (e.retreatStart >= 0 && (tNow - e.retreatStart) / e.retreatDuration < 1) return true;
+      if (e.startTime >= 0 && !e.done) return true;
+    }
+    return false;
+  }
+
   renderer.setSize(window.innerWidth, stableHeight());
   renderer.setClearColor(0xf1ede7, 1);
 
@@ -42,7 +68,7 @@
 
   /* ---- Wall plane (plaster) ---- */
   const texLoader = new THREE.TextureLoader();
-  const normal = texLoader.load('/assets/wall-normal.jpg');
+  const normal = texLoader.load('/assets/wall-normal.jpg', () => wake());
   normal.wrapS = normal.wrapT = THREE.RepeatWrapping;
   normal.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
@@ -212,6 +238,7 @@
     }
 
     scene.add(holder);
+    wake();  // a relief just loaded — draw its emerge (mobile may be paused)
     return holder;
   }
   const emerging = [];
@@ -254,12 +281,6 @@
   let loadGeneration = 0;
   function loadReliefsForKey(pageKey) {
     const gen = ++loadGeneration;
-    // Mobile/touch: skip the relief sculptures. iOS Safari doesn't keep a
-    // full-screen WebGL canvas perfectly fixed during scroll, so a distinct
-    // sculpture visibly drifts/snaps with the swipe. The uniform plaster wall
-    // (which stays) hides that, so mobile gets a calm wall + the sculptures
-    // remain the centerpiece on desktop where they behave correctly.
-    if (NARROW) return;
     const pageFragments = fragmentsByPage[pageKey] || [];
     if (!pageFragments.length || !THREE.GLTFLoader) return;
     const loader = new THREE.GLTFLoader();
@@ -310,6 +331,7 @@
     hemi.intensity         = inv ? 0.02 : LIGHT_DEFAULTS.hemi;
     cursorLight.intensity  = inv ? 1.1  : LIGHT_DEFAULTS.cursorIntensity;
     cursorLight.distance   = inv ? 3.2  : LIGHT_DEFAULTS.cursorDist;
+    wake();  // light intensities changed — draw a frame (mobile may be paused)
   }
   applyInvertedLights();
   new MutationObserver(applyInvertedLights).observe(document.documentElement, {
@@ -341,6 +363,7 @@
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     fitWall();
+    wake();  // re-fit needs a fresh draw (mobile may be paused)
   }
   window.addEventListener('resize', resize);
   fitWall();
@@ -362,6 +385,7 @@
   /* ---- Animation loop ---- */
   function animate() {
     requestAnimationFrame(animate);
+    const tNow = performance.now() / 1000;
 
     // Camera scroll follow. On desktop a trailing lerp gives a soft parallax of
     // the reliefs against the wall. On mobile we FREEZE the camera: iOS
@@ -403,7 +427,6 @@
     // z over `duration` with easeOutCubic. Sculptures above/below the
     // viewport simply wait at their start z.
     if (emerging.length) {
-      const tNow = performance.now() / 1000;
       const visibleH = visibleAtZ(0).h;
       const cameraY = camera.position.y;
       const viewTop = cameraY + visibleH / 2 + 1.5;
@@ -442,9 +465,22 @@
       }
     }
 
-    renderer.render(scene, camera);
+    if (!NARROW) {
+      // Desktop: render every frame (live parallax + cursor light).
+      renderer.render(scene, camera);
+    } else if (sceneIsAnimating(tNow) || tNow < forceRenderUntil) {
+      // Mobile, still animating (emerge / retreat / light easing) → keep drawing.
+      renderer.render(scene, camera);
+      mobileSettledFrame = false;
+    } else if (!mobileSettledFrame) {
+      // Mobile just settled → draw one last frame, then leave the canvas static
+      // so iOS composites it as a pinned fixed layer (no scroll drift).
+      renderer.render(scene, camera);
+      mobileSettledFrame = true;
+    }
   }
 
+  wake();
   animate();
 
   // Public hook for the SPA router.
@@ -468,12 +504,14 @@
         e.retreatDuration = dur;
         e.retreatFromZ = emerging[i].position.z;
       }
+      wake();  // drive the retreat frames (mobile may be paused)
     },
     swapPage: function (pageKey) {
       clearReliefs();
       camera.position.y = 0;
       scrollCamY = 0;
       loadReliefsForKey(pageKey || pageKeyFromPath(window.location.pathname));
+      wake();  // draw the cleared scene + the new page's emerge
     }
   };
 })();

@@ -462,11 +462,16 @@ body.menu-open .invert-dot {
   /* Keep each word's glyphs together so split-char headings never break
      mid-word on narrow screens (desktop keeps the .cw unstyled = no-op). */
   .split-chars .cw { white-space: nowrap; }
+  /* Promote the shader canvas to its own compositor layer so iOS keeps it
+     pinned as a fixed background during scroll (paired with the JS render-pause
+     that leaves it a static layer). */
+  #shaderBg { transform: translateZ(0); will-change: transform; backface-visibility: hidden; }
 }
 @media (pointer: coarse) {
   .menu-submenu-wrap { display: none; }
   .menu-overlay-list { padding-right: 0; width: auto; align-items: center; text-align: center; }
   .menu-overlay-list li.has-submenu { align-self: center; }
+  #shaderBg { transform: translateZ(0); will-change: transform; backface-visibility: hidden; }
 }
 
 @media (prefers-reduced-motion: reduce) {
