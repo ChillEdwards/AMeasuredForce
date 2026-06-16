@@ -19,10 +19,7 @@
   const _narrowDevice =
     window.innerWidth <= 900 || window.matchMedia('(pointer: coarse)').matches;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, _narrowDevice ? 1.25 : 2));
-  // updateStyle=false: don't let three.js write inline px width/height on the
-  // canvas — CSS (#shaderBg { inset:0 }) keeps it pinned to the full viewport
-  // even as the mobile URL bar changes innerHeight, so it always covers.
-  renderer.setSize(window.innerWidth, window.innerHeight, false);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0xf1ede7, 1);
 
   const scene = new THREE.Scene();
@@ -315,18 +312,12 @@
   }, { passive: true });
 
   /* ---- Resize ---- */
-  // Mobile browsers change window.innerHeight as the URL bar slides in/out
-  // during scroll, firing resize and shifting the scroll→world mapping — which
-  // makes the wall + reliefs jitter. On narrow/touch viewports we lock to a
-  // stable height and only re-fit when the WIDTH actually changes (orientation).
-  // Desktop is unaffected: NARROW is false, so behavior is identical to before.
-  let stableVW = window.innerWidth;
-  let stableVH = window.innerHeight;
+  // Always resize the renderer to the viewport so the canvas keeps covering it
+  // (the canvas is a fixed full-screen backdrop). On mobile the camera is frozen
+  // (see the animation loop), so re-fitting here doesn't introduce scroll jitter.
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
-    if (NARROW && w === stableVW) return;   // ignore URL-bar height-only changes
-    stableVW = w; stableVH = h;
-    renderer.setSize(w, h, false);
+    renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     fitWall();
@@ -337,15 +328,13 @@
   /* ---- Scroll → camera Y ---- */
   // As the user scrolls down the page, the camera slides down in world space.
   // Fragments stay at fixed world positions → they scroll past. The wall plane
-  // follows the camera so it always fills the current viewport.
+  // follows the camera so it always fills the current viewport. (Mobile freezes
+  // this — see the animation loop — so the backdrop stays perfectly still.)
   let scrollCamY = 0;
   function onScroll() {
-    // Use the locked height on mobile so the URL-bar show/hide doesn't yank the
-    // mapping mid-scroll. Desktop keeps the live innerHeight (NARROW is false).
-    const vh = NARROW ? stableVH : window.innerHeight;
     const scrollPx = window.scrollY || document.documentElement.scrollTop || 0;
     // One viewport of page scroll = one viewport of world Y.
-    scrollCamY = -(scrollPx / vh) * VIEWPORT_WORLD_H;
+    scrollCamY = -(scrollPx / window.innerHeight) * VIEWPORT_WORLD_H;
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
@@ -354,14 +343,12 @@
   function animate() {
     requestAnimationFrame(animate);
 
-    // Camera scroll follow. On desktop a trailing lerp gives a soft parallax.
-    // On mobile that lerp wobbles against momentum scrolling, so lock the camera
-    // 1:1 to the live scroll position each frame — the reliefs then move in
-    // lockstep with the page instead of shaking.
-    if (NARROW) {
-      const sp = window.scrollY || document.documentElement.scrollTop || 0;
-      camera.position.y = -(sp / stableVH) * VIEWPORT_WORLD_H;
-    } else {
+    // Camera scroll follow. On desktop a trailing lerp gives a soft parallax of
+    // the reliefs against the wall. On mobile we FREEZE the camera: iOS
+    // composites the fixed canvas smoothly but the JS redraw lags behind native
+    // momentum scroll, so any scroll-driven motion makes the wall judder and
+    // feel like it's dragging with the swipe. Frozen = a calm static backdrop.
+    if (!NARROW) {
       camera.position.y += (scrollCamY - camera.position.y) * 0.18;
     }
     wall.position.y = camera.position.y;
