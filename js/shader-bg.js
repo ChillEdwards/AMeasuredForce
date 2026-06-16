@@ -14,7 +14,11 @@
   const renderer = new THREE.WebGLRenderer({
     canvas, antialias: true, alpha: false, preserveDrawingBuffer: true,
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // Cap device-pixel-ratio lower on phones/tablets — rendering the relief
+  // meshes at 2-3x on a mobile GPU tanks the frame rate and makes scroll stutter.
+  const _narrowDevice =
+    window.innerWidth <= 900 || window.matchMedia('(pointer: coarse)').matches;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, _narrowDevice ? 1.25 : 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0xf1ede7, 1);
 
@@ -347,8 +351,16 @@
   function animate() {
     requestAnimationFrame(animate);
 
-    // Smooth camera scroll follow.
-    camera.position.y += (scrollCamY - camera.position.y) * 0.18;
+    // Camera scroll follow. On desktop a trailing lerp gives a soft parallax.
+    // On mobile that lerp wobbles against momentum scrolling, so lock the camera
+    // 1:1 to the live scroll position each frame — the reliefs then move in
+    // lockstep with the page instead of shaking.
+    if (NARROW) {
+      const sp = window.scrollY || document.documentElement.scrollTop || 0;
+      camera.position.y = -(sp / stableVH) * VIEWPORT_WORLD_H;
+    } else {
+      camera.position.y += (scrollCamY - camera.position.y) * 0.18;
+    }
     wall.position.y = camera.position.y;
 
     raycaster.setFromCamera(mouse, camera);
