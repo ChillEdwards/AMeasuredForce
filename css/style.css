@@ -474,6 +474,24 @@ body.menu-open .invert-dot {
   #shaderBg { transform: translateZ(0); will-change: transform; backface-visibility: hidden; }
 }
 
+/* Mobile/tablet inner scroll container: the page content scrolls inside
+   #scroll-root so the document/body never scrolls — keeping the fixed WebGL
+   canvas truly pinned (no iOS drift) while the shader camera follows the
+   container's scroll for parallax. Desktop sets nothing on #scroll-root, so it
+   stays an inert passthrough div and the window scrolls exactly as before. */
+@media (max-width: 900px), (pointer: coarse) {
+  html, body { height: 100%; overflow: hidden; }
+  #scroll-root {
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+  }
+  /* The menu lock must target the wrapper, since body no longer scrolls here. */
+  body.menu-open #scroll-root { overflow: hidden; }
+}
+
 @media (prefers-reduced-motion: reduce) {
 }
 .menu-overlay-num { display: none; }

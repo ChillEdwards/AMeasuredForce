@@ -44,6 +44,8 @@
     mobileSettledFrame = false;
   }
   function sceneIsAnimating(tNow) {
+    // Camera still easing toward the scroll target (parallax in flight).
+    if (Math.abs(scrollCamY - camera.position.y) > 1e-3) return true;
     if (Math.abs(targetPos.x - currentPos.x) > 1e-3 ||
         Math.abs(targetPos.y - currentPos.y) > 1e-3 ||
         Math.abs(WALL_LIGHT_Z - currentPos.z) > 1e-3) return true;
@@ -375,11 +377,17 @@
   // this — see the animation loop — so the backdrop stays perfectly still.)
   let scrollCamY = 0;
   function onScroll() {
-    const scrollPx = window.scrollY || document.documentElement.scrollTop || 0;
+    // Read the active scroller: window on desktop, #scroll-root on mobile (where
+    // the document doesn't scroll so the fixed canvas stays truly pinned).
+    const scrollPx = window.AMFScroll ? window.AMFScroll.y()
+                   : (window.scrollY || document.documentElement.scrollTop || 0);
+    const vh = window.AMFScroll ? window.AMFScroll.vh() : window.innerHeight;
     // One viewport of page scroll = one viewport of world Y.
-    scrollCamY = -(scrollPx / window.innerHeight) * VIEWPORT_WORLD_H;
+    scrollCamY = -(scrollPx / vh) * VIEWPORT_WORLD_H;
+    wake();  // a scroll opens a render window so the parallax redraws (mobile)
   }
-  window.addEventListener('scroll', onScroll, { passive: true });
+  if (window.AMFScroll) window.AMFScroll.onScroll(onScroll, { passive: true });
+  else window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
   /* ---- Animation loop ---- */
@@ -387,14 +395,12 @@
     requestAnimationFrame(animate);
     const tNow = performance.now() / 1000;
 
-    // Camera scroll follow. On desktop a trailing lerp gives a soft parallax of
-    // the reliefs against the wall. On mobile we FREEZE the camera: iOS
-    // composites the fixed canvas smoothly but the JS redraw lags behind native
-    // momentum scroll, so any scroll-driven motion makes the wall judder and
-    // feel like it's dragging with the swipe. Frozen = a calm static backdrop.
-    if (!NARROW) {
-      camera.position.y += (scrollCamY - camera.position.y) * 0.18;
-    }
+    // Camera scroll follow — trailing lerp gives a soft parallax of the reliefs
+    // against the wall. Now enabled on mobile too: with the content scrolling
+    // inside #scroll-root, the document doesn't scroll, so the fixed canvas is
+    // genuinely pinned (no iOS drift) and the camera can follow the wrapper's
+    // scroll to slide the sculptures past at their world-Y positions.
+    camera.position.y += (scrollCamY - camera.position.y) * 0.18;
     wall.position.y = camera.position.y;
 
     raycaster.setFromCamera(mouse, camera);

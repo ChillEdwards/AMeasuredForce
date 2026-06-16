@@ -191,7 +191,13 @@
     // scrollTo(0,0) would animate over hundreds of ms, often outlasting the
     // wipe and surfacing as a visible "scroll to top" after the new page
     // reveals.
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    if (window.AMFScroll && window.AMFScroll.isMobile()) {
+      // Mobile: the document doesn't scroll — reset the inner scroll container.
+      const sr = document.getElementById('scroll-root');
+      if (sr) sr.scrollTop = 0;
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
 
     const newKey = pageKeyFromPath(new URL(href, location.href).pathname);
     if (window.AMFShaderBg && window.AMFShaderBg.swapPage) {
@@ -250,8 +256,11 @@
         if (isHomeHref && isOnHome) {
           e.preventDefault();
           e.stopImmediatePropagation();
-          if ((window.scrollY || 0) > window.innerHeight * 0.8) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+          const sy = window.AMFScroll ? window.AMFScroll.y() : (window.scrollY || 0);
+          const vh = window.AMFScroll ? window.AMFScroll.vh() : window.innerHeight;
+          if (sy > vh * 0.8) {
+            if (window.AMFScroll) window.AMFScroll.to(0, 'smooth');
+            else window.scrollTo({ top: 0, behavior: 'smooth' });
           }
           return;
         }

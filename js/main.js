@@ -19,6 +19,17 @@
 
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
+  /* ---- Scroll source (window on desktop, #scroll-root on mobile) -------
+     AMFScroll (js/scroll.js) is loaded first; these wrappers stay defensive
+     in case it's missing, falling back to window = current desktop behavior. */
+  function scrollPos() { return window.AMFScroll ? window.AMFScroll.y() : (window.scrollY || 0); }
+  function scrollVH()  { return window.AMFScroll ? window.AMFScroll.vh() : window.innerHeight; }
+  function obsRoot()   { return window.AMFScroll ? window.AMFScroll.obsRoot() : null; }
+  function scrollToY(y, b) {
+    if (window.AMFScroll) window.AMFScroll.to(y, b);
+    else window.scrollTo({ top: y, behavior: b || 'auto' });
+  }
+
   /* ---- Page-scoped teardown registry --------------------------------- */
   let pageController = null;
   let pageRafIds = [];
@@ -207,7 +218,7 @@
       const link = el && el.closest && (el.closest('.header-logo a') || el.closest('.header-center-name a'));
       if (!link) return false;
       const onHome = location.pathname === '/' || /\/index\.html?$/.test(location.pathname);
-      return onHome && (window.scrollY || 0) <= window.innerHeight * 0.8;
+      return onHome && scrollPos() <= scrollVH() * 0.8;
     }
 
     document.addEventListener('mouseover', (e) => {
@@ -420,7 +431,7 @@
           scrollRevealObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+    }, { root: obsRoot(), threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
     trackObs(scrollRevealObserver);
     root.querySelectorAll('.scroll-reveal').forEach((el) => scrollRevealObserver.observe(el));
 
@@ -431,7 +442,7 @@
           charObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.2, rootMargin: '0px 0px -80px 0px' });
+    }, { root: obsRoot(), threshold: 0.2, rootMargin: '0px 0px -80px 0px' });
     trackObs(charObserver);
     const studioHero = root.querySelector('.studio-hero');
     root.querySelectorAll('.split-chars').forEach((el) => {
@@ -445,7 +456,7 @@
           wordObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    }, { root: obsRoot(), threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
     trackObs(wordObserver);
     root.querySelectorAll('.split-words').forEach((el) => wordObserver.observe(el));
 
@@ -456,7 +467,7 @@
           lineObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    }, { root: obsRoot(), threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     trackObs(lineObserver);
     root.querySelectorAll('.line-reveal').forEach((el, i) => {
       const inner = el.querySelector('.line-reveal-inner');
@@ -492,7 +503,7 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+    }, { root: obsRoot(), threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
     trackObs(observer);
     revealEls.forEach((el) => observer.observe(el));
 
@@ -528,10 +539,10 @@
 
     let rafId = null, isVisible = false, lastScroll = -1;
     function tick() {
-      const sy = window.scrollY;
+      const sy = scrollPos();
       if (sy !== lastScroll) {
         lastScroll = sy;
-        const center = window.innerHeight / 2;
+        const center = scrollVH() / 2;
         let bestIdx = activeIdx >= 0 ? activeIdx : 0;
         let bestDist = Infinity;
         for (let i = 0; i < items.length; i++) {
@@ -553,7 +564,7 @@
           cancelAnimationFrame(rafId); rafId = null;
         }
       });
-    }, { threshold: 0 });
+    }, { root: obsRoot(), threshold: 0 });
     trackObs(visObs);
     visObs.observe(section);
 
@@ -563,8 +574,8 @@
         const target = items[i];
         if (!target) return;
         const r = target.getBoundingClientRect();
-        const targetY = window.scrollY + r.top - (window.innerHeight - r.height) / 2;
-        window.scrollTo({ top: targetY, behavior: 'smooth' });
+        const targetY = scrollPos() + r.top - (scrollVH() - r.height) / 2;
+        scrollToY(targetY, 'smooth');
       }, { signal: pageSignal() });
     });
   }
@@ -600,7 +611,7 @@
       if (disabled) { rail.style.transform = ''; return; }
       vw = window.innerWidth; vh = window.innerHeight;
       const rect = section.getBoundingClientRect();
-      sectionTop = rect.top + window.scrollY;
+      sectionTop = rect.top + scrollPos();
       sectionHeight = section.offsetHeight;
       cardCenters = cards.map((c) => c.offsetLeft + c.offsetWidth / 2);
       railWidth = rail.scrollWidth;
@@ -620,7 +631,7 @@
 
     let rafId = null, isVisible = false, lastScroll = -1;
     function tick() {
-      const sy = window.scrollY;
+      const sy = scrollPos();
       if (sy !== lastScroll) {
         lastScroll = sy;
         const denom = Math.max(1, sectionHeight - vh);
@@ -660,7 +671,7 @@
           cancelAnimationFrame(rafId); rafId = null;
         }
       });
-    }, { threshold: 0 });
+    }, { root: obsRoot(), threshold: 0 });
     trackObs(visObs);
     visObs.observe(section);
 
@@ -835,7 +846,7 @@
             imgObs.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.1 });
+      }, { root: obsRoot(), threshold: 0.1 });
       trackObs(imgObs);
       imgObs.observe(img);
     });
@@ -853,7 +864,13 @@
         if (target) {
           e.preventDefault();
           e.stopPropagation();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (window.AMFScroll && window.AMFScroll.isMobile()) {
+            // Document doesn't scroll on mobile — scroll the wrapper explicitly.
+            const r = target.getBoundingClientRect();
+            scrollToY(scrollPos() + r.top, 'smooth');
+          } else {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         }
       }, { signal });
     });
@@ -874,7 +891,7 @@
         const item = items.find((i) => i.el === e.target);
         if (item) item.inView = e.isIntersecting;
       });
-    }, { rootMargin: '50px 0px' });
+    }, { root: obsRoot(), rootMargin: '50px 0px' });
     trackObs(io);
     items.forEach((i) => io.observe(i.el));
 
@@ -952,7 +969,7 @@
     let inView = false;
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => { inView = e.isIntersecting; });
-    }, { rootMargin: '0px' });
+    }, { root: obsRoot(), rootMargin: '0px' });
     trackObs(io);
     io.observe(section);
 
@@ -1019,11 +1036,12 @@
   // Hide the left logo + right actions while scrolling down past a small
   // top guard; show them again on scroll-up. Center wordmark is untouched.
   function bootHeaderScrollHide() {
-    let lastY = window.scrollY || 0;
     const TOP_GUARD = 80;
     const DELTA = 6;
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY || 0;
+    let lastY = scrollPos();
+    let detach = null;
+    function onScroll() {
+      const y = scrollPos();
       if (Math.abs(y - lastY) < DELTA) return;
       if (y > lastY && y > TOP_GUARD) {
         document.body.classList.add('header-hidden');
@@ -1031,7 +1049,21 @@
         document.body.classList.remove('header-hidden');
       }
       lastY = y;
-    }, { passive: true });
+    }
+    function bind() {
+      if (detach) detach();
+      lastY = scrollPos();
+      detach = window.AMFScroll
+        ? window.AMFScroll.onScroll(onScroll, { passive: true })
+        : (window.addEventListener('scroll', onScroll, { passive: true }),
+           () => window.removeEventListener('scroll', onScroll, { passive: true }));
+    }
+    bind();
+    // Re-bind to the correct scroller if the breakpoint flips (e.g. desktop
+    // window resized across 900px) — this is the only once-bound scroll listener.
+    if (window.AMFScroll && window.AMFScroll._mq.addEventListener) {
+      window.AMFScroll._mq.addEventListener('change', bind);
+    }
   }
 
   function bootOnce() {
