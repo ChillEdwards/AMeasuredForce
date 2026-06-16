@@ -453,9 +453,17 @@ body.menu-open .invert-dot {
 }
 @media (max-width: 900px) {
   .menu-submenu-wrap { display: none; }
+  /* Submenu is gone here — drop its reserved space so the nav re-centers
+     instead of being shoved off-canvas by the desktop padding-right. */
+  .menu-overlay-list { padding-right: 0; width: auto; align-items: center; text-align: center; }
+  .menu-overlay-list li.has-submenu { align-self: center; }
+  /* The sticky 3-column works-cycle frame is cramped at this width. */
+  .works-cycle-frame { display: none; }
 }
 @media (pointer: coarse) {
   .menu-submenu-wrap { display: none; }
+  .menu-overlay-list { padding-right: 0; width: auto; align-items: center; text-align: center; }
+  .menu-overlay-list li.has-submenu { align-self: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1921,11 +1929,15 @@ body.menu-open footer {
   .header-logo-img { height: 75px; }
   .header { padding: 1rem var(--pad); }
 
-  .hero { padding: 6rem var(--pad) var(--pad); }
+  .hero { min-height: auto; padding: 6rem var(--pad) var(--pad); }
   .hero-meta {
     position: relative; bottom: auto; right: auto;
     text-align: left; margin-top: 2rem;
   }
+  /* Drop forced full-viewport heights so phone content isn't cramped. */
+  .studio-hero { min-height: auto; padding: 7rem var(--pad) 3rem; }
+  .studio-about { min-height: auto; padding: 6rem var(--pad) 3rem; }
+  .studio-statement { min-height: auto; padding: 5rem var(--pad); }
 
   .intro, .services, .process, .contact,
   .about-detail, .about-philosophy, .about-approach,
@@ -1945,6 +1957,7 @@ body.menu-open footer {
   .form-row { grid-template-columns: 1fr; }
   .contact-info-row { flex-direction: column; gap: 2rem; }
   .footer-row { flex-direction: column; gap: 0.75rem; text-align: center; }
+  .lightbox-close { padding: 0.5rem; font-size: 2.4rem; top: 1rem; right: 1rem; }
 
   /* Mobile: drop the sticky frame; just stack images with project name +
      tags below each one. Cleanest readable list pattern on a phone. */
@@ -1992,6 +2005,8 @@ body.menu-open footer {
   .about-detail, .about-philosophy, .about-approach,
   .about-services-full, .contact-page,
   .studio-about, .studio-approach, .studio-services { padding: 4.5rem var(--pad); }
+  .logo-ticker-inner { gap: 2.5rem; }
+  .logo-ticker-inner img { height: 28px; }
   .case-hero { padding-top: 7rem; }
   .contact-info-row { gap: 1.5rem; }
 }
@@ -2325,6 +2340,25 @@ body.menu-open footer {
   }
   .ai-principles-progress { display: none; }
 }
+/* Mobile: same static stack as the reduced-motion fallback. The JS guard in
+   initAiPrinciplesStage stops the per-frame inline opacity/transform writes so
+   these rules win. */
+@media (max-width: 768px) {
+  .ai-principles { height: auto; }
+  .ai-principles-stage { position: static; height: auto; display: block; padding: 5rem var(--pad); overflow: visible; }
+  .ai-principle-card {
+    position: static; inset: auto; width: auto; max-width: 100%;
+    opacity: 1; transform: none; padding: 3.5rem 0;
+    pointer-events: auto; text-align: left; margin: 0;
+  }
+  .ai-principle-card[data-index="0"],
+  .ai-principle-card[data-index="1"],
+  .ai-principle-card[data-index="2"] { left: auto; right: auto; text-align: left; }
+  .ai-principle-card[data-index="1"] .ai-principle-title,
+  .ai-principle-card[data-index="1"] .ai-principle-body { margin-left: 0; }
+  .ai-principles-eyebrow { position: static; top: auto; left: auto; margin-bottom: 2rem; }
+  .ai-principles-progress { display: none; }
+}
 
 /* AI WORKS — full-width horizontal travel
    .ai-works-pin is a tall outer container. Inside, the .ai-works-stage
@@ -2580,8 +2614,8 @@ body.menu-open footer {
   .ai-big-cta { padding: 8rem 0 6rem; }
 }
 @media (max-width: 768px) {
-  .ai-hero { padding: 7rem var(--pad) 4rem; min-height: 100vh; }
-  .ai-beat { min-height: 60vh; padding: 4rem var(--pad); }
+  .ai-hero { padding: 7rem var(--pad) 4rem; min-height: auto; }
+  .ai-beat { min-height: auto; padding: 4rem var(--pad); }
   .ai-beat--right .ai-beat-inner { text-align: left; }
   .ai-beat--right .ai-beat-line { margin-left: 0; }
   .ai-build-beat { padding: 4rem var(--pad); }

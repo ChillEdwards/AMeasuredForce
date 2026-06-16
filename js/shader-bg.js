@@ -187,6 +187,12 @@
   }
   const emerging = [];
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Relief world-x positions are tuned for the wide desktop camera. On narrow
+  // (mobile/tablet) or touch viewports the camera sees a much narrower slice of
+  // world space, so reliefs drift to the edges and overlap text. Skip loading
+  // the decorative reliefs there — the wall, lighting and cursor still render.
+  const SKIP_RELIEFS =
+    window.innerWidth <= 900 || window.matchMedia('(pointer: coarse)').matches;
 
   // Map URL path → relief set key. Pages not listed get wall + cursor only.
   function pageKeyFromPath(path) {
@@ -218,6 +224,7 @@
   let loadGeneration = 0;
   function loadReliefsForKey(pageKey) {
     const gen = ++loadGeneration;
+    if (SKIP_RELIEFS) return;
     const pageFragments = fragmentsByPage[pageKey] || [];
     if (!pageFragments.length || !THREE.GLTFLoader) return;
     const loader = new THREE.GLTFLoader();

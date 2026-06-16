@@ -929,6 +929,14 @@
       segs.forEach((s) => s.classList.add('is-active'));
       return;
     }
+    // Mobile: skip the sticky parallax (whose per-frame inline opacity/transform
+    // writes would otherwise overlap the cards in their absolute 50% columns).
+    // CSS stacks the cards in normal flow; just mark them all visible.
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      cards.forEach((c) => c.classList.add('is-active'));
+      segs.forEach((s) => s.classList.add('is-active'));
+      return;
+    }
 
     let inView = false;
     const io = new IntersectionObserver((entries) => {
