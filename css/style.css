@@ -313,10 +313,14 @@ body.menu-open .invert-dot {
 .menu-overlay-list {
   list-style: none; padding: 0; margin: 0;
   display: flex; flex-direction: column;
+  align-items: flex-start;
   gap: clamp(1rem, 2.5vh, 2.2rem);
-  max-width: 1100px;
+  /* Box = nav text + reserved space for the submenu/preview that fly out to
+     the right of "Brand Work". Centering this padded box centers the whole
+     composition (nav + submenu + image) as one cell on the page. */
+  width: fit-content;
   margin-inline: auto;
-  width: 100%;
+  padding-right: calc(clamp(2rem, 4vw, 4rem) + 27rem + clamp(16rem, 22vw, 26rem));
   position: relative;
   z-index: 1;
 }
@@ -361,18 +365,19 @@ body.menu-open .invert-dot {
   align-self: flex-start;   /* shrink to text width so submenu sits next to it */
   position: relative;
 }
-/* Wrap holds the project list + hero preview, pushed toward the middle
-   of the page and lowered slightly to align with Work's optical baseline. */
+/* Wrap holds the project list + hero preview, sitting just right of "Brand
+   Work" and vertically centered on it. */
 .menu-submenu-wrap {
   position: absolute;
-  top: clamp(0.45rem, 1vw, 1rem);
+  top: 50%;
+  transform: translateY(-50%);
   left: 100%;
-  padding-left: clamp(7rem, 15vw, 16rem);  /* doubles as the hover bridge */
+  padding-left: clamp(2rem, 4vw, 4rem);  /* doubles as the hover bridge */
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.45s ease;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 3rem;
 }
 .menu-overlay-list li.has-submenu:hover .menu-submenu-wrap,
@@ -443,7 +448,7 @@ body.menu-open .invert-dot {
 /* Responsive: tighten then drop the preview, then hide the whole thing on
    narrow viewports where it doesn't fit. */
 @media (max-width: 1280px) {
-  .menu-submenu-wrap { padding-left: clamp(4rem, 9vw, 9rem); }
+  .menu-submenu-wrap { padding-left: clamp(1.5rem, 3vw, 3rem); }
   .menu-submenu-preview { display: none; }
 }
 @media (max-width: 900px) {
@@ -1651,6 +1656,10 @@ body.menu-open footer {
 /* Editorial statement — its own centered section between the lead and "What We Do". */
 .studio-statement {
   padding: 7rem var(--pad);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .studio-statement-heading {
   font-family: var(--font-serif); font-weight: 400;
@@ -1715,6 +1724,8 @@ body.menu-open footer {
   max-width: 600px; margin-bottom: 6rem;
   line-height: 1.7;
 }
+.studio-services .studio-approach-sub { max-width: none; }
+.studio-services .studio-section-heading { margin-bottom: 1rem; }
 .studio-approach-grid {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem; max-width: 1200px;

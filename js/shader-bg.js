@@ -64,6 +64,11 @@
     metalness: 0.0,
     side: THREE.DoubleSide,
   });
+  // Faceted variant — opt-in per relief (cfg.flatShade) to give a smooth,
+  // low-detail sculpt crisp surface definition so its planes catch the
+  // raking cursor light like the high-detail scans do.
+  const reliefMatFlat = reliefMat.clone();
+  reliefMatFlat.flatShading = true;
 
   /* ---- Load the ruins fragments ---- */
   // Each entry: file, target diameter in world units, flatten-z factor,
@@ -84,7 +89,8 @@
     ],
     about: [
       { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0,                         z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI },
-      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 3.5 + 3.0, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
+      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 3.5 - 2.0, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
+      { src: '/assets/reliefs/bosio.glb',      size: 6.0,  flat: 0.22, x:  2.6, y: -VIEWPORT_WORLD_H * 3.0 + 2.0, z:  0.25, rz: Math.PI, rx:  0.0, ry: -Math.PI / 6, flatShade: true },
     ],
     work: [
       { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
@@ -104,7 +110,7 @@
     const group = gltf.scene || gltf.scenes[0];
     group.traverse((o) => {
       if (o.isMesh) {
-        o.material = reliefMat;
+        o.material = cfg.flatShade ? reliefMatFlat : reliefMat;
         // gltfpack's meshopt filter can strip vertex normals → pitch-black
         // lighting. Recompute them from face winding.
         if (o.geometry) {

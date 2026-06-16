@@ -264,10 +264,12 @@
   (function injectSubmenu() {
     const list = document.querySelector('#menuOverlay .menu-overlay-list');
     if (!list) return;
-    const workLi = list.firstElementChild;
+    const workLink = Array.from(list.querySelectorAll('a')).find(
+      (a) => /work\.html$/i.test(a.getAttribute('href') || '')
+    );
+    if (!workLink) return;
+    const workLi = workLink.closest('li');
     if (!workLi || workLi.classList.contains('has-submenu')) return;
-    const workLink = workLi.querySelector('a');
-    if (!workLink || !/work\.html$/i.test(workLink.getAttribute('href') || '')) return;
 
     const wix = (slug, ext) =>
       'https://static.wixstatic.com/media/' + slug + '/v1/fill/w_900,h_560,al_c,q_85/image.' + ext;
@@ -279,7 +281,7 @@
       ['/work/clif-kid.html',         '04', 'CLIF KID',                         wix('1f7c26_6d025a7a72c04f848e1735face0b2826~mv2.png',  'png')],
       ['/work/therasurf.html',        '05', 'THERAsurf',                        wix('1f7c26_f10586a72d9541eaa93616084c133358~mv2.jpg',  'jpg')],
       ['/work/johnson-johnson.html',  '06', 'Johnson & Johnson',                '/assets/work/johnson-johnson-hero.png'],
-      ['/work/obama-fatherhood.html', '07', 'A Conversation About Fatherhood',  '/assets/work/obama-fatherhood-hero.png'],
+      ['/work/obama-fatherhood.html', '07', 'The Obama Foundation',  '/assets/work/obama-fatherhood-hero.png'],
       ['/work/fab-tech.html',         '08', 'Fab Tech',                         wix('1f7c26_4e7fa9745ca2452cbeaedad443a8ef23~mv2.jpeg', 'jpg')],
       ['/work/custom-packaging.html', '09', 'Custom Packaging',                 wix('1f7c26_03d7e8e8aee649d6bd9273916c969a4a~mv2.png',  'png')],
     ];

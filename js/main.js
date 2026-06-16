@@ -122,6 +122,12 @@
             wordIndex++;
           }
         });
+        // Drop the trailing space inside the inline element so punctuation
+        // immediately following it (e.g. "<em>…Force</em>,") isn't pushed off.
+        const last = clone.lastChild;
+        if (last && last.nodeType === Node.TEXT_NODE && last.textContent === ' ') {
+          clone.removeChild(last);
+        }
         el.appendChild(clone);
       }
     });
