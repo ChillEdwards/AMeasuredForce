@@ -254,6 +254,12 @@
   let loadGeneration = 0;
   function loadReliefsForKey(pageKey) {
     const gen = ++loadGeneration;
+    // Mobile/touch: skip the relief sculptures. iOS Safari doesn't keep a
+    // full-screen WebGL canvas perfectly fixed during scroll, so a distinct
+    // sculpture visibly drifts/snaps with the swipe. The uniform plaster wall
+    // (which stays) hides that, so mobile gets a calm wall + the sculptures
+    // remain the centerpiece on desktop where they behave correctly.
+    if (NARROW) return;
     const pageFragments = fragmentsByPage[pageKey] || [];
     if (!pageFragments.length || !THREE.GLTFLoader) return;
     const loader = new THREE.GLTFLoader();
