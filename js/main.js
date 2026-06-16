@@ -52,32 +52,43 @@
     el.innerHTML = '';
     let charIndex = 0;
 
+    // Emit one span.char per glyph, wrapping each word's glyphs in a span.cw so
+    // the word can't break across lines (the .cw gets white-space:nowrap on
+    // small screens — a no-op on desktop where words already fit). Spaces stay
+    // as standalone .char spans so the line still breaks between words.
+    function emit(target, text) {
+      let word = null;
+      for (let i = 0; i < text.length; i++) {
+        const isSpace = text[i] === ' ';
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = isSpace ? '\u00a0' : text[i];
+        span.style.setProperty('--char-delay', (charIndex * 0.08) + 's');
+        if (isSpace) {
+          word = null;
+          target.appendChild(span);
+        } else {
+          if (!word) {
+            word = document.createElement('span');
+            word.className = 'cw';
+            target.appendChild(word);
+          }
+          word.appendChild(span);
+        }
+        charIndex++;
+      }
+    }
+
     nodes.forEach((node) => {
       if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.textContent;
-        for (let i = 0; i < text.length; i++) {
-          const span = document.createElement('span');
-          span.className = 'char';
-          span.textContent = text[i] === ' ' ? ' ' : text[i];
-          span.style.setProperty('--char-delay', (charIndex * 0.08) + 's');
-          el.appendChild(span);
-          charIndex++;
-        }
+        emit(el, node.textContent);
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         if (node.tagName === 'BR') {
           el.appendChild(node.cloneNode());
           return;
         }
         const clone = node.cloneNode(false);
-        const innerText = node.textContent;
-        for (let i = 0; i < innerText.length; i++) {
-          const span = document.createElement('span');
-          span.className = 'char';
-          span.textContent = innerText[i] === ' ' ? ' ' : innerText[i];
-          span.style.setProperty('--char-delay', (charIndex * 0.08) + 's');
-          clone.appendChild(span);
-          charIndex++;
-        }
+        emit(clone, node.textContent);
         el.appendChild(clone);
       }
     });

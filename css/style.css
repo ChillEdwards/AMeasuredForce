@@ -459,6 +459,9 @@ body.menu-open .invert-dot {
   .menu-overlay-list li.has-submenu { align-self: center; }
   /* The sticky 3-column works-cycle frame is cramped at this width. */
   .works-cycle-frame { display: none; }
+  /* Keep each word's glyphs together so split-char headings never break
+     mid-word on narrow screens (desktop keeps the .cw unstyled = no-op). */
+  .split-chars .cw { white-space: nowrap; }
 }
 @media (pointer: coarse) {
   .menu-submenu-wrap { display: none; }
@@ -1929,7 +1932,12 @@ body.menu-open footer {
   .header-logo-img { height: 75px; }
   .header { padding: 1rem var(--pad); }
 
-  .hero { min-height: auto; padding: 6rem var(--pad) var(--pad); }
+  /* Top-align the hero and give it clearance below the fixed header (the big
+     headline was colliding with the logo), and shrink the display type so long
+     words fit the column. */
+  .hero { min-height: auto; justify-content: flex-start; padding: 8.5rem var(--pad) 3rem; }
+  .hero-headline { margin-top: 0; }
+  .hero-headline h1 { font-size: clamp(2.1rem, 9vw, 3.4rem); }
   .hero-meta {
     position: relative; bottom: auto; right: auto;
     text-align: left; margin-top: 2rem;
@@ -1938,6 +1946,17 @@ body.menu-open footer {
   .studio-hero { min-height: auto; padding: 7rem var(--pad) 3rem; }
   .studio-about { min-height: auto; padding: 6rem var(--pad) 3rem; }
   .studio-statement { min-height: auto; padding: 5rem var(--pad); }
+  /* Rein in the largest display headings so they don't dominate the phone. */
+  .page-hero-title { font-size: clamp(2.4rem, 11vw, 4rem); }
+  .case-title,
+  .studio-heading,
+  .studio-tagline-h2,
+  .studio-section-heading,
+  .studio-statement-heading,
+  .process-title,
+  .about-philosophy h2,
+  .about-approach-title,
+  .about-services-title { font-size: clamp(1.9rem, 7.5vw, 3rem); }
 
   .intro, .services, .process, .contact,
   .about-detail, .about-philosophy, .about-approach,
