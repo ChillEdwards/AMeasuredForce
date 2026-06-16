@@ -19,7 +19,10 @@
   const _narrowDevice =
     window.innerWidth <= 900 || window.matchMedia('(pointer: coarse)').matches;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, _narrowDevice ? 1.25 : 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  // updateStyle=false: don't let three.js write inline px width/height on the
+  // canvas — CSS (#shaderBg { inset:0 }) keeps it pinned to the full viewport
+  // even as the mobile URL bar changes innerHeight, so it always covers.
+  renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.setClearColor(0xf1ede7, 1);
 
   const scene = new THREE.Scene();
@@ -323,7 +326,7 @@
     const w = window.innerWidth, h = window.innerHeight;
     if (NARROW && w === stableVW) return;   // ignore URL-bar height-only changes
     stableVW = w; stableVH = h;
-    renderer.setSize(w, h);
+    renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     fitWall();
