@@ -19,13 +19,24 @@
   const _narrowDevice =
     window.innerWidth <= 900 || window.matchMedia('(pointer: coarse)').matches;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, _narrowDevice ? 1.25 : 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  // Largest plausible viewport height (URL bar retracted). Locked on mobile so
+  // the URL bar sliding in/out during scroll can't resize the canvas and
+  // re-stretch the scene. Desktop just uses the live innerHeight.
+  function stableHeight() {
+    return _narrowDevice
+      ? Math.max(window.innerHeight, document.documentElement.clientHeight, window.screen.height)
+      : window.innerHeight;
+  }
+  let lockedW = window.innerWidth;
+
+  renderer.setSize(window.innerWidth, stableHeight());
   renderer.setClearColor(0xf1ede7, 1);
 
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
-    42, window.innerWidth / window.innerHeight, 0.1, 100
+    42, window.innerWidth / stableHeight(), 0.1, 100
   );
   camera.position.set(0, 0, 6);
 
@@ -316,7 +327,10 @@
   // (the canvas is a fixed full-screen backdrop). On mobile the camera is frozen
   // (see the animation loop), so re-fitting here doesn't introduce scroll jitter.
   function resize() {
-    const w = window.innerWidth, h = window.innerHeight;
+    const w = window.innerWidth;
+    if (_narrowDevice && w === lockedW) return;  // URL-bar height-only change → skip
+    lockedW = w;
+    const h = stableHeight();
     renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
