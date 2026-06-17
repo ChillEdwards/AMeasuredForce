@@ -490,6 +490,8 @@ body.menu-open .invert-dot {
   }
   /* The menu lock must target the wrapper, since body no longer scrolls here. */
   body.menu-open #scroll-root { overflow: hidden; }
+  /* (Client-logo mobile swipe override lives AFTER the base .logo-ticker rules
+     so it wins the cascade — see the block just below the tickerScroll keyframe.) */
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -790,6 +792,28 @@ body.menu-open footer {
 @keyframes tickerScroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+/* Client logos on mobile/tablet: the CSS transform marquee both slid logos off
+   ("cutoff/disappear") and blocked touch. Instead make the row a real scroller
+   (swipeable) and drive an infinite auto-loop in JS via scrollLeft (see
+   initLogoTicker in main.js) — that coexists with manual dragging. The two
+   duplicated logo sets stay (the loop wraps seamlessly between them). Placed
+   AFTER the base rules so it wins the cascade. */
+@media (max-width: 900px), (pointer: coarse) {
+  .logo-ticker {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    touch-action: pan-x;
+  }
+  .logo-ticker::-webkit-scrollbar { display: none; }
+  .logo-ticker-inner {
+    animation: none;
+    transform: none;
+    padding: 0 var(--pad);
+  }
+  .logo-ticker-inner img { opacity: 0.5; }
 }
 
 /* ============ CONTACT ============ */
@@ -1951,7 +1975,7 @@ body.menu-open footer {
 }
 
 @media (max-width: 768px) {
-  .header-center-name { display: none; }
+  /* Keep the desktop header design on mobile — center wordmark stays visible. */
   .header-logo-img { height: 75px; }
   .header { padding: 1rem var(--pad); }
 
@@ -2022,29 +2046,52 @@ body.menu-open footer {
     gap: 6rem;            /* generous space between cards */
   }
   /* Let the item grow past the image so the caption below isn't clipped; the
-     image link keeps the 4:5 tile shape + rounded clip. */
+     image link keeps the 4:5 tile shape + rounded clip. Flex column with `order`
+     lets both pseudo-element caption lines sit BELOW the image, left-aligned to
+     the card: ::before = project name (bolder), ::after = context (lighter). */
   .works-cycle-item {
     width: min(80vw, 360px);
     aspect-ratio: auto;
     height: auto;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
   }
   .works-cycle-item a {
+    order: 0;
+    width: 100%;
     aspect-ratio: 4 / 5;
     overflow: hidden;
     border-radius: 2px;
+    /* Scale is driven continuously per-frame in JS (initWorksCycle tick) from
+       each card's distance to viewport center, so it grows/shrinks fluidly as
+       you scroll. transform-origin centered; no CSS transition so the per-frame
+       updates stay smooth (a transition would lag them). */
+    transform-origin: center;
   }
-  .works-cycle-item img { filter: grayscale(0); }
-  .works-cycle-item::after {
-    content: attr(data-name) " — " attr(data-tags);
-    display: block;
-    margin-top: 1.5rem;   /* more space between image and its caption */
+  .works-cycle-item::before {
+    order: 1;
+    content: attr(data-name);
+    margin-top: 1.5rem;
     font-family: var(--font-sans);
-    font-size: 0.78rem;
+    font-size: 0.9rem;
+    font-weight: 500;        /* project name — slightly bolder */
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .works-cycle-item::after {
+    order: 2;
+    content: attr(data-tags);
+    margin-top: 0.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 300;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--ash);
-    text-align: center;
   }
 
   /* Case study — editorial layout collapses to single column */
@@ -2069,8 +2116,8 @@ body.menu-open footer {
   .about-detail, .about-philosophy, .about-approach,
   .about-services-full, .contact-page,
   .studio-about, .studio-approach, .studio-services { padding: 4.5rem var(--pad); }
-  .logo-ticker-inner { gap: 2.5rem; }
-  .logo-ticker-inner img { height: 28px; }
+  .logo-ticker-inner { gap: 2.75rem; }
+  .logo-ticker-inner img { height: 32px; }
   .case-hero { padding-top: 7rem; }
   .contact-info-row { gap: 1.5rem; }
 }

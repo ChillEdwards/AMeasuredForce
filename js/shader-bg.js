@@ -69,8 +69,22 @@
   camera.position.set(0, 0, 6);
 
   /* ---- Wall plane (plaster) ---- */
+  // The wall's normal-map JPG loads async, so the first paint shows a flat wall
+  // that then "snaps" to textured when it arrives. Hide the canvas until the
+  // texture is in + a textured frame has rendered, then fade it in — masking the
+  // staged load. Applied on all devices.
+  let canvasRevealed = false;
+  function revealCanvas() {
+    if (canvasRevealed) return;
+    canvasRevealed = true;
+    requestAnimationFrame(() => requestAnimationFrame(() => { canvas.style.opacity = '1'; }));
+  }
+  canvas.style.opacity = '0';
+  canvas.style.transition = 'opacity 0.9s ease';
+  setTimeout(revealCanvas, 1400);   // fallback if the texture is cached/fails
+
   const texLoader = new THREE.TextureLoader();
-  const normal = texLoader.load('/assets/wall-normal.jpg', () => wake());
+  const normal = texLoader.load('/assets/wall-normal.jpg', () => { wake(); revealCanvas(); });
   normal.wrapS = normal.wrapT = THREE.RepeatWrapping;
   normal.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
@@ -123,11 +137,13 @@
   const fragmentsByPage = {
     home: [
       { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -1.0,                         rz: 0.0, rx: 0.0,      ry: 0.0,
-        mobile: { x: 1.0, y: 0.2, z: 0.25, size: 4.2 } },
+        mobile: { x: 1.2, y: -0.1, z: 0.25, size: 4.7 } },
       { src: '/assets/reliefs/oceanus.glb',        size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0,
-        mobile: { x: 0.5, y: -7.0, z: 0.15, size: 5.0 } },
-      { src: '/assets/reliefs/nymph.glb',          size: 6.0, flat: 0.35, x: -3.0, y: -VIEWPORT_WORLD_H * 7.5 - 2,   z: 0.3, rz: 0.0, rx: 0.0,      ry: Math.PI / 2 },
-      { src: '/assets/reliefs/puck.glb',           size: 6.0, flat: 0.23, x:  2.5, y: -VIEWPORT_WORLD_H * 5.5 - 4,   z: 0.25, rz: 0.0, rx: -Math.PI / 2, ry: 0.0 },
+        mobile: { x: 0.5, y: -7.5, z: 0.3, size: 5.0 } },
+      { src: '/assets/reliefs/nymph.glb',          size: 6.0, flat: 0.35, x: -3.0, y: -VIEWPORT_WORLD_H * 7.5 - 2,   z: 0.3, rz: 0.0, rx: 0.0,      ry: Math.PI / 2,
+        mobile: { x: -1.0, y: -VIEWPORT_WORLD_H * 9.0 - 6.5, z: 0.3, size: 6.0 } },
+      { src: '/assets/reliefs/puck.glb',           size: 6.0, flat: 0.23, x:  2.5, y: -VIEWPORT_WORLD_H * 5.5 - 4,   z: 0.25, rz: 0.0, rx: -Math.PI / 2, ry: 0.0,
+        mobile: { x: 0.2, y: -VIEWPORT_WORLD_H * 5.5 - 4, z: 0.05, size: 6.3 } },
     ],
     contact: [
       { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0,                         z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
@@ -353,7 +369,10 @@
   /* ---- Cursor tracking ---- */
   const mouse = new THREE.Vector2(0, 0);
   const targetPos = new THREE.Vector3();
-  const currentPos = new THREE.Vector3(0, 0, 0);
+  // Start the light already settled at the wall depth (centered) so there's no
+  // load-time sweep from z=0 (a light on the wall plane makes a hard hotspot
+  // edge — the "cut in half" flash on first paint).
+  const currentPos = new THREE.Vector3(0, 0, 0.6);
   const raycaster = new THREE.Raycaster();
   const wallPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
 

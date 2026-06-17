@@ -319,13 +319,16 @@
     }
 
     if (meta) {
+      // Fade the meta in AFTER the headline has faded in. The headline starts
+      // at 1.2s and fades over 2.8s, so begin the meta around 2.4s so it trails
+      // in just behind the headline.
       meta.style.opacity = '0';
       meta.style.transform = 'translateY(15px)';
-      meta.style.transition = 'opacity 0.8s cubic-bezier(0.16,1,0.3,1) 0.4s, transform 0.8s cubic-bezier(0.16,1,0.3,1) 0.4s';
+      meta.style.transition = 'opacity 1.1s cubic-bezier(0.16,1,0.3,1), transform 1.1s cubic-bezier(0.16,1,0.3,1)';
       setTimeout(() => {
         meta.style.opacity = '1';
         meta.style.transform = 'translateY(0)';
-      }, 50);
+      }, 2400);
     }
   }
 
@@ -537,18 +540,31 @@
 
     const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
 
+    const mobileFocus = () => window.AMFScroll && window.AMFScroll.isMobile();
     let rafId = null, isVisible = false, lastScroll = -1;
     function tick() {
       const sy = scrollPos();
       if (sy !== lastScroll) {
         lastScroll = sy;
-        const center = scrollVH() / 2;
+        const vh = scrollVH();
+        const center = vh / 2;
         let bestIdx = activeIdx >= 0 ? activeIdx : 0;
         let bestDist = Infinity;
+        const onMobile = mobileFocus();
         for (let i = 0; i < items.length; i++) {
           const r = items[i].getBoundingClientRect();
           const d = Math.abs((r.top + r.bottom) / 2 - center);
           if (d < bestDist) { bestDist = d; bestIdx = i; }
+          if (onMobile) {
+            // Continuous scale tied to distance from viewport center — cards
+            // grow/shrink fluidly as you scroll instead of snapping. Full size
+            // at center, easing down to 0.9 ~one viewport away.
+            const t = Math.min(1, d / (vh * 0.6));
+            const eased = t * t * (3 - 2 * t);          // smoothstep
+            const scale = 1 - eased * 0.1;
+            const a = items[i].firstElementChild;       // the image <a>
+            if (a) a.style.transform = 'scale(' + scale.toFixed(4) + ')';
+          }
         }
         setActive(bestIdx);
       }
@@ -558,7 +574,7 @@
     const visObs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         isVisible = e.isIntersecting;
-        if (isVisible && !rafId && !isMobile()) {
+        if (isVisible && !rafId) {
           rafId = trackRaf(requestAnimationFrame(tick));
         } else if (!isVisible && rafId) {
           cancelAnimationFrame(rafId); rafId = null;
@@ -1009,6 +1025,44 @@
 
   /* ============ BOOT ORCHESTRATION ============ */
 
+  /* ============ CLIENT LOGO TICKER (mobile infinite + swipe) ============ */
+  // Desktop uses the CSS transform marquee. On mobile the row is a native
+  // horizontal scroller (swipeable); here we auto-advance scrollLeft for an
+  // infinite loop that coexists with manual dragging. The logo list is
+  // duplicated (two identical halves), so wrapping at half-width is seamless.
+  function initLogoTicker(root) {
+    if (!(window.AMFScroll && window.AMFScroll.isMobile())) return;
+    const ticker = root.querySelector('.logo-ticker');
+    const inner = ticker && ticker.querySelector('.logo-ticker-inner');
+    if (!ticker || !inner) return;
+    const signal = pageSignal();
+    const SPEED = 0.8;            // px per frame (~48px/s at 60fps)
+    let paused = false;
+    let resumeAt = 0;
+    // Accumulate position as a FLOAT: element.scrollLeft reads back rounded to an
+    // integer, so sub-pixel increments would floor away and never advance.
+    let pos = 0;
+    ticker.addEventListener('touchstart', () => { paused = true; resumeAt = Infinity; }, { passive: true, signal });
+    const release = () => { resumeAt = performance.now() + 450; };
+    ticker.addEventListener('touchend', release, { passive: true, signal });
+    ticker.addEventListener('touchcancel', release, { passive: true, signal });
+    function step(now) {
+      const half = inner.scrollWidth / 2;
+      if (half > 0) {
+        if (paused && now >= resumeAt) { paused = false; pos = ticker.scrollLeft; }
+        if (!paused) {
+          pos += SPEED;
+          if (pos >= half) pos -= half;
+          ticker.scrollLeft = pos;
+        } else if (ticker.scrollLeft >= half) {
+          ticker.scrollLeft -= half;   // keep manual position in the seamless range
+        }
+      }
+      trackRaf(requestAnimationFrame(step));
+    }
+    trackRaf(requestAnimationFrame(step));
+  }
+
   function bootPage(mainEl) {
     if (!mainEl) return;
     teardownPage();
@@ -1029,6 +1083,7 @@
     initContactForm(mainEl);
     initSystemDiagram(mainEl);
     initAiPrinciplesStage(mainEl);
+    initLogoTicker(mainEl);
   }
 
   /* ============ HEADER SCROLL-HIDE (persistent) ============ */
