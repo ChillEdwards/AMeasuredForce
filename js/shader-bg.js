@@ -122,8 +122,10 @@
   const VIEWPORT_WORLD_H = 4.6;   // rough world-space height of one viewport
   const fragmentsByPage = {
     home: [
-      { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -1.0,                         rz: 0.0, rx: 0.0,      ry: 0.0 },
-      { src: '/assets/reliefs/oceanus.glb',        size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0 },
+      { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -1.0,                         rz: 0.0, rx: 0.0,      ry: 0.0,
+        mobile: { x: 1.0, y: 0.2, z: 0.25, size: 4.2 } },
+      { src: '/assets/reliefs/oceanus.glb',        size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0,
+        mobile: { x: 0.5, y: -7.0, z: 0.15, size: 5.0 } },
       { src: '/assets/reliefs/nymph.glb',          size: 6.0, flat: 0.35, x: -3.0, y: -VIEWPORT_WORLD_H * 7.5 - 2,   z: 0.3, rz: 0.0, rx: 0.0,      ry: Math.PI / 2 },
       { src: '/assets/reliefs/puck.glb',           size: 6.0, flat: 0.23, x:  2.5, y: -VIEWPORT_WORLD_H * 5.5 - 4,   z: 0.25, rz: 0.0, rx: -Math.PI / 2, ry: 0.0 },
     ],
@@ -182,24 +184,32 @@
     // cfg.mirror flips horizontally without spinning the sculpture into the
     // wall — keeps the detailed side toward the camera.
     const faceExtent = Math.max(size.x, size.y);
-    const s = cfg.size / (faceExtent || 1);
+    // A relief may carry an explicit `mobile: { x, y, z, size }` override used on
+    // narrow/touch viewports (for hero pieces we want deliberately placed).
+    const mob = (NARROW && cfg.mobile) ? cfg.mobile : null;
+    const sizeUsed = (mob && mob.size != null) ? mob.size : cfg.size;
+    const s = sizeUsed / (faceExtent || 1);
     holder.scale.set(cfg.mirror ? -s : s, s, s * cfg.flat);
 
     // Narrow/touch viewports: the camera sees a far thinner slice of the world,
-    // so desktop-tuned x positions land off to the edges / over the text. Pull
-    // each relief toward center in proportion to how much narrower the view is,
-    // shrink it to fit the column, and sit it near the wall plane so it reads as
-    // a faint embedded backdrop behind the copy rather than competing with it.
+    // so desktop-tuned x positions land off the edges / over the text. With an
+    // explicit `mobile` override, use it; otherwise pull the relief toward
+    // center, shrink it, and sit it near the wall as a faint backdrop.
     let effX = cfg.x;
+    let effY = cfg.y;
     let effZ = cfg.z || 0;
-    if (NARROW) {
+    if (mob) {
+      if (mob.x != null) effX = mob.x;
+      if (mob.y != null) effY = mob.y;
+      effZ = (mob.z != null) ? mob.z : (cfg.z || 0);
+    } else if (NARROW) {
       const xScale = Math.min(1, visibleAtZ(0).w / 7.2);  // 7.2 ≈ desktop visible width
       effX = cfg.x * xScale;
       effZ = 0.05;                       // closer to the wall → flatter, subtler
       holder.scale.multiplyScalar(0.7);  // smaller so it doesn't crowd the column
     }
 
-    holder.position.set(effX, cfg.y, effZ);
+    holder.position.set(effX, effY, effZ);
     holder.rotation.y = cfg.spin || 0;  // world-Y turntable spin
     holder.rotation.z = cfg.rz || 0;
 
