@@ -136,7 +136,7 @@
   const VIEWPORT_WORLD_H = 4.6;   // rough world-space height of one viewport
   const fragmentsByPage = {
     home: [
-      { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -1.0,                         rz: 0.0, rx: 0.0,      ry: 0.0,
+      { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -0.6,                         rz: 0.0, rx: 0.0,      ry: 0.0,
         mobile: { x: 1.2, y: -0.1, z: 0.25, size: 4.7 } },
       { src: '/assets/reliefs/oceanus.glb',        size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0,
         mobile: { x: 0.5, y: -7.5, z: 0.3, size: 5.0 } },
