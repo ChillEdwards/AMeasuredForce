@@ -149,9 +149,9 @@
       { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0,                         z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
     ],
     about: [
-      { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0,                         z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI },
-      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 3.5 - 2.0, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
-      { src: '/assets/reliefs/bosio.glb',      size: 6.0,  flat: 0.22, x:  2.6, y: -VIEWPORT_WORLD_H * 3.0 + 2.0, z:  0.25, rz: Math.PI, rx:  0.0, ry: -Math.PI / 6, flatShade: true },
+      { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0, mobileY: -2.5, mobileScale: 1.3, z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI },
+      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 5.6, mobileDX: -1.2, emergeMargin: -1.5, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
+      { src: '/assets/reliefs/bosio.glb',      size: 6.0,  flat: 0.22, x:  2.6, y: -VIEWPORT_WORLD_H * 3.0 + 2.0, mobileScale: 1.5, mobileDX: -0.3, z:  0.25, rz: Math.PI, rx:  0.0, ry: -Math.PI / 6, flatShade: true },
     ],
     work: [
       { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
@@ -223,6 +223,11 @@
       effX = cfg.x * xScale;
       effZ = 0.05;                       // closer to the wall → flatter, subtler
       holder.scale.multiplyScalar(0.7);  // smaller so it doesn't crowd the column
+      // Optional mobile-only nudges that keep the auto-center/shrink (unlike a
+      // full `mobile` override). Desktop is untouched.
+      if (cfg.mobileY != null) effY = cfg.mobileY;
+      if (cfg.mobileDX != null) effX += cfg.mobileDX;  // nudge left/right in world units
+      if (cfg.mobileScale != null) holder.scale.multiplyScalar(cfg.mobileScale);
     }
 
     holder.position.set(effX, effY, effZ);
@@ -239,19 +244,25 @@
     if (cfg.pin) {
       holder.userData.pin = cfg.pin;
     }
+    // Mobile-only emerge-trigger override (see the animate loop). Negative delays
+    // the rise until the relief is well into view. Desktop keeps the default.
+    if (NARROW && cfg.emergeMargin != null) holder.userData.emergeMargin = cfg.emergeMargin;
 
-    // Emerge animation — start the holder ~1.6 world units deeper than its
-    // target z (fully behind the opaque wall plane). The animate loop only
-    // begins easing it forward once the sculpture scrolls into viewport, so
-    // each one rises as the user reaches it. Skipped on reduced-motion.
+    // Emerge animation — start the holder deeper than its target z (fully behind
+    // the opaque wall plane). The animate loop only begins easing it forward once
+    // the sculpture scrolls into viewport, so each one rises as the user reaches
+    // it. Skipped on reduced-motion. Mobile uses a shallower start + shorter
+    // duration so the relief surfaces past the wall quickly (the deep desktop
+    // rise spends ~1.9s hidden behind the wall before it's visible); desktop
+    // keeps the slow, weighty rise.
     const targetZ = effZ;
     if (prefersReducedMotion) {
       holder.position.z = targetZ;
     } else {
-      const emergeStartZ = targetZ - 1.6;
+      const emergeStartZ = targetZ - (NARROW ? 0.7 : 1.6);
       holder.userData.emerge = {
         startTime: -1,
-        duration: 2.8,        // slow rise — sculpture feels weighty
+        duration: NARROW ? 1.3 : 2.8,   // mobile surfaces quicker; desktop weighty
         startZ: emergeStartZ,
         targetZ: targetZ,
         done: false,
@@ -307,8 +318,13 @@
   // user has already navigated to another page — a stale callback would
   // otherwise add an extra relief to the new scene.
   let loadGeneration = 0;
+  // Fires 'amf:relief-emerged' once per page load when the first in-view relief
+  // has surfaced past the wall — main.js uses it to sequence the about hero text
+  // after the sculpture. Reset on each page's relief load.
+  let heroEmergeSignaled = false;
   function loadReliefsForKey(pageKey) {
     const gen = ++loadGeneration;
+    heroEmergeSignaled = false;
     const pageFragments = fragmentsByPage[pageKey] || [];
     if (!pageFragments.length || !THREE.GLTFLoader) return;
     const loader = new THREE.GLTFLoader();
@@ -464,8 +480,6 @@
     if (emerging.length) {
       const visibleH = visibleAtZ(0).h;
       const cameraY = camera.position.y;
-      const viewTop = cameraY + visibleH / 2 + 1.5;
-      const viewBot = cameraY - visibleH / 2 - 1.5;
       for (let i = 0; i < emerging.length; i++) {
         const h = emerging[i];
         const e = h.userData.emerge;
@@ -484,11 +498,24 @@
         }
         if (e.done) continue;
         if (e.startTime < 0) {
+          // Lead margin: default 1.5 starts the rise a touch before the relief is
+          // fully on screen. A per-relief override can tighten it (negative =
+          // start later, only once it's well into view) — used for the bottom CTA
+          // relief so it visibly rises as you arrive instead of pre-emerging.
+          const margin = (h.userData.emergeMargin != null) ? h.userData.emergeMargin : 1.5;
+          const viewTop = cameraY + visibleH / 2 + margin;
+          const viewBot = cameraY - visibleH / 2 - margin;
           const sy = h.position.y;
           if (sy < viewBot || sy > viewTop) continue;
           e.startTime = tNow;
         }
         const t = (tNow - e.startTime) / e.duration;
+        // Signal once the first relief is clearly past the wall (~visible) so the
+        // hero text can sequence in after it.
+        if (!heroEmergeSignaled && t >= 0.55) {
+          heroEmergeSignaled = true;
+          window.dispatchEvent(new Event('amf:relief-emerged'));
+        }
         if (t >= 1) {
           h.position.z = e.targetZ;
           e.done = true;

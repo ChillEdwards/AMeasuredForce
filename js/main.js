@@ -63,29 +63,46 @@
     el.innerHTML = '';
     let charIndex = 0;
 
+    // MOBILE ONLY: emit inter-word spaces as real (breakable) text nodes so long
+    // headings wrap between words on phones. Desktop keeps the nbsp .char span
+    // (adjacent inline-blocks with no source whitespace give no break point) — but
+    // desktop is wide enough that these headings never need to wrap, so it stays
+    // byte-identical. charIndex still advances on spaces so the stagger matches.
+    const breakSpaces = !!(window.AMFScroll && window.AMFScroll.isMobile());
+
     // Emit one span.char per glyph, wrapping each word's glyphs in a span.cw so
     // the word can't break across lines (the .cw gets white-space:nowrap on
-    // small screens — a no-op on desktop where words already fit). Spaces stay
-    // as standalone .char spans so the line still breaks between words.
+    // small screens — a no-op on desktop where words already fit). Inter-word
+    // spaces are breakable text nodes on mobile / nbsp .char spans on desktop
+    // (see breakSpaces above).
     function emit(target, text) {
       let word = null;
       for (let i = 0; i < text.length; i++) {
         const isSpace = text[i] === ' ';
-        const span = document.createElement('span');
-        span.className = 'char';
-        span.textContent = isSpace ? '\u00a0' : text[i];
-        span.style.setProperty('--char-delay', (charIndex * 0.08) + 's');
         if (isSpace) {
           word = null;
-          target.appendChild(span);
-        } else {
-          if (!word) {
-            word = document.createElement('span');
-            word.className = 'cw';
-            target.appendChild(word);
+          if (breakSpaces) {
+            target.appendChild(document.createTextNode(' '));
+          } else {
+            const span = document.createElement('span');
+            span.className = 'char';
+            span.textContent = '\u00a0';
+            span.style.setProperty('--char-delay', (charIndex * 0.08) + 's');
+            target.appendChild(span);
           }
-          word.appendChild(span);
+          charIndex++;
+          continue;
         }
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = text[i];
+        span.style.setProperty('--char-delay', (charIndex * 0.08) + 's');
+        if (!word) {
+          word = document.createElement('span');
+          word.className = 'cw';
+          target.appendChild(word);
+        }
+        word.appendChild(span);
         charIndex++;
       }
     }
@@ -461,7 +478,37 @@
       });
     }, { root: obsRoot(), threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
     trackObs(wordObserver);
-    root.querySelectorAll('.split-words').forEach((el) => wordObserver.observe(el));
+
+    // About hero (mobile): play the intro in sequence — (1) the sculpture emerges
+    // (WebGL), then (2) the headline fades in, then (3) the sub-paragraph. Hold
+    // both lines out of the generic word observer and trigger them off the
+    // 'amf:relief-emerged' signal that shader-bg fires once the relief surfaces,
+    // with a timer fallback for reduced motion (where the emerge is skipped).
+    // Desktop keeps the simultaneous page-fade.
+    const aboutLarge = root.querySelector('.studio-about-large');
+    const aboutSub = root.querySelector('.studio-about-sub');
+    const sequenceAboutHero = aboutLarge && aboutSub &&
+      window.AMFScroll && window.AMFScroll.isMobile();
+
+    root.querySelectorAll('.split-words').forEach((el) => {
+      if (sequenceAboutHero && (el === aboutLarge || el === aboutSub)) return;  // sequenced below
+      wordObserver.observe(el);
+    });
+
+    if (sequenceAboutHero) {
+      let started = false;
+      let fallback;
+      const startSequence = () => {
+        if (started) return;
+        started = true;
+        clearTimeout(fallback);
+        window.removeEventListener('amf:relief-emerged', startSequence);
+        aboutLarge.classList.add('animated');                                // 2. header
+        setTimeout(() => aboutSub.classList.add('animated'), 1000);          // 3. sub
+      };
+      window.addEventListener('amf:relief-emerged', startSequence);
+      fallback = setTimeout(startSequence, 1600);  // sculpture missing/instant → don't stall the text
+    }
 
     const lineObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
