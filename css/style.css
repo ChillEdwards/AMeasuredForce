@@ -969,6 +969,89 @@ body.menu-open footer {
 }
 .works-card:hover h3 { color: #fff; }
 
+/* ---- Brand Work cards on mobile ----
+   Match the homepage / AI work cards: a normal vertical stack of 4:5 rounded
+   tiles with the project name beneath each (no desktop infinite-loop scroll).
+   Greyscale by default → full colour when scroll-focused (is-active); scale is
+   driven per-frame in JS (initWorksScrollMobileFocus), so no transition on it. */
+@media (max-width: 900px), (pointer: coarse) {
+  /* Taller top padding so there's a larger gap between the top nav and the
+     BRAND WORK section label. Scoped via .works-split to outrank the
+     max-width:1024px padding shorthand that comes later in the file. */
+  .works-split .works-left { padding-top: 13rem; border-bottom: none; }
+  /* Divider line re-added as a pseudo-element so it can fade in with the
+     entrance sequence (instead of the static border popping in instantly).
+     Revealed via .revealed, toggled in initWorksSplitEntrance after the
+     sculpture emerges. */
+  .works-split .works-left::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--border);
+    opacity: 0;
+    /* 0.7s delay = the next step in the hero's 0.35s stagger (label 0s, title
+       0.35s), so the line fades in last, after the "We partner" title. */
+    transition: opacity 0.9s ease 0.7s;
+  }
+  .works-split .works-left.revealed::after { opacity: 1; }
+  .works-right::before { display: none; }
+  .works-scroll {
+    flex-direction: column;
+    align-items: center;
+    gap: 5rem;
+    padding: 0 0 4rem;
+    transform: none !important;
+  }
+  .works-card {
+    width: min(80vw, 360px);
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    cursor: pointer;
+  }
+  .works-card img {
+    order: 0;
+    width: 100%;
+    height: auto;          /* show each image at its natural aspect — no crop */
+    aspect-ratio: auto;
+    object-fit: contain;
+    border-radius: 2px;
+    filter: grayscale(1);
+    transition: filter 0.5s ease;
+    transform-origin: center;
+  }
+  .works-card.is-active img { filter: grayscale(0); }
+  .works-card h3 {
+    order: 1;
+    position: static;
+    margin: 1.5rem 0 0;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: none;
+  }
+  .works-card[data-tags]::after {
+    order: 2;
+    content: attr(data-tags);
+    margin-top: 0.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ash);
+  }
+  /* When the real caption span is injected, switch off the data-attr pseudo. */
+  .works-card[data-tags].has-cap::after { content: none; }
+  .works-card .card-cap-tags { display: block; }
+}
+
 /* ============ ABOUT DETAIL ============ */
 .about-detail {
   padding: 8rem var(--pad) 10rem;
@@ -1695,10 +1778,24 @@ body.menu-open footer {
 .studio-about {
   padding: 10rem var(--pad) 6rem;
   min-height: 100vh;
+  /* desktop: sit the hero block lower (vertically centered) rather than
+     top-aligned. Mobile re-anchors it to the bottom in the 768px block. */
+  display: flex; flex-direction: column; justify-content: center;
 }
 .studio-about-main {
   max-width: 1100px;
 }
+/* "Info" eyebrow above the lead paragraph (mirrors the homepage intro). The
+   divider line below it shows on mobile only — see the max-width:768px block. */
+.studio-about-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ash);
+  margin-bottom: 1.25rem;
+}
+.studio-about-rule { display: none; }   /* desktop: label only, no line */
 .studio-about-large {
   font-family: var(--font-serif); font-weight: 400;
   font-size: clamp(2rem, 4vw, 3.8rem);
@@ -2005,6 +2102,11 @@ body.menu-open footer {
     display: flex; flex-direction: column; justify-content: flex-end;
     padding: 7rem var(--pad) 3rem;
   }
+  .studio-about-rule {                        /* mobile only: divider line under "Info" */
+    display: block;
+    border-top: 1px solid var(--line);
+    margin: 0 0 1.75rem;
+  }
   .studio-about-large {
     font-size: clamp(1.5rem, 6.2vw, 2rem);    /* lower the header font on mobile */
   }
@@ -2023,12 +2125,22 @@ body.menu-open footer {
   .studio-statement-body p { text-align: left; }
   .studio-statement-heading { margin-bottom: 1.5rem; }
   .studio-statement-body p { margin-bottom: 1rem; }
+  /* Divider between the "A Measured Force?" statement and "Core Capabilities"
+     (mobile only). Sits at the top of the services section, inset to content
+     width by the section's var(--pad) padding. */
+  .studio-services::before {
+    content: '';
+    display: block;
+    border-top: 1px solid var(--line);
+    margin: 0 0 4.5rem;
+  }
   /* "Core Capabilities" — close the big gap between the sub-line and the lists
      so the lists sit up near the subheader (desktop keeps the 6rem). */
   .studio-services .studio-approach-sub { margin-bottom: 1.75rem; }
   /* Bottom CTA email: shrink so the full address stays on one line on phones.
-     Scoped to .contact for specificity over the later base .ai-cta-display rule. */
-  .contact .ai-cta-display { font-size: clamp(1.5rem, 7.4vw, 2rem); white-space: nowrap; word-break: normal; }
+     Scoped to .ai-big-cta (the CTA wrapper on both About and AI pages) for
+     specificity over the later base .ai-cta-display rule. */
+  .ai-big-cta .ai-cta-display { font-size: clamp(1.5rem, 7.4vw, 2rem); white-space: nowrap; word-break: normal; }
   /* Rein in the largest display headings so they don't dominate the phone. */
   .page-hero-title { font-size: clamp(2.4rem, 11vw, 4rem); }
   .case-title,
@@ -2047,7 +2159,11 @@ body.menu-open footer {
     padding: 6rem var(--pad);
   }
 
-  .page-hero { padding: 6rem var(--pad) 2rem; min-height: 40vh; }
+  .page-hero { padding: 6rem var(--pad) 1.5rem; min-height: 42vh; }
+  /* Contact page: tighten the "Contact" → "Let's Talk" gap, but keep a clear gap
+     between the sub-line and the contact info (email/phone/location) below. */
+  .page-hero .section-label { margin-bottom: 1rem; }
+  .contact-page { padding-top: 3.5rem; }
   .services-grid { grid-template-columns: 1fr; }
   .process-steps { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
@@ -2123,6 +2239,11 @@ body.menu-open footer {
     text-transform: uppercase;
     color: var(--ash);
   }
+  /* Real injected captions replace the data-attr pseudo versions on mobile. */
+  .works-cycle-item.has-cap::before,
+  .works-cycle-item.has-cap::after { content: none; }
+  .works-cycle-item .card-cap-name,
+  .works-cycle-item .card-cap-tags { display: block; }
 
   /* Case study — editorial layout collapses to single column */
   .case-hero { padding: 8rem var(--pad) 2rem; }
@@ -2147,6 +2268,7 @@ body.menu-open footer {
   .about-services-full, .contact-page,
   .studio-approach, .studio-services { padding: 4.5rem var(--pad); }
   /* .studio-about manages its own padding (two-screen hero); excluded above. */
+  .contact-page { padding-top: 3.5rem; }  /* clear gap between sub-line and contact info */
   .logo-ticker-inner { gap: 2.75rem; }
   .logo-ticker-inner img { height: 32px; }
   .case-hero { padding-top: 7rem; }
@@ -2364,6 +2486,24 @@ body.menu-open footer {
   color: var(--ash);
   margin-bottom: 1.5rem;
   will-change: transform;
+}
+/* Reverted: the "I" in "AI" renders as the normal sans letter (no special
+   treatment). The .serif-i spans remain in the markup but are unstyled. */
+
+/* Real caption spans injected on mobile (injectCardCaptions) to replace the
+   data-attr ::before/::after captions — needed so the serif "I" can be applied.
+   Hidden by default; each card system flips them to `display:block` inside its
+   own mobile breakpoint (and switches off its pseudo captions via .has-cap). */
+.card-cap-name, .card-cap-tags { display: none; }
+.card-cap-name {
+  order: 1; margin-top: 1.5rem;
+  font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink);
+}
+.card-cap-tags {
+  order: 2; margin-top: 0.4rem;
+  font-family: var(--font-sans); font-size: 0.75rem; font-weight: 300;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ash);
 }
 
 /* PRINCIPLES — each principle is its own ~100vh block with sticky left rail */
@@ -2682,15 +2822,74 @@ body.menu-open footer {
   .ai-works-rail {
     position: static;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 2.5rem;
+    align-items: center;
+    gap: 5rem;
     transform: none !important;
   }
+  /* Match the homepage work cards: a 4:5 rounded tile with the project name
+     (bold) and tags (light) stacked beneath each, instead of the desktop
+     pinned scroll-track + shared labels. */
   .ai-works-card {
-    width: 100% !important;
+    width: min(80vw, 360px) !important;
     max-width: 100% !important;
     height: auto !important;
+    aspect-ratio: auto !important;
+    background: none;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
   }
+  .ai-works-card img {
+    position: static;
+    order: 0;
+    width: 100%;
+    height: auto;          /* show each image at its natural aspect — no crop */
+    border-radius: 2px;
+    /* Scroll-focus like the homepage work cards: greyscale by default, full colour
+       when highlighted; scale is driven per-frame in JS (no transition on it). */
+    filter: grayscale(1);
+    transition: filter 0.5s ease;
+    transform-origin: center;
+  }
+  .ai-works-card.is-active img { filter: grayscale(0); }
+  .ai-works-card::before {
+    order: 1;
+    content: attr(data-name);
+    margin-top: 1.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  /* [data-aspect] raises specificity above the per-aspect "image · 4:5"
+     placeholder rules so the real tag shows (portrait card was showing the
+     placeholder). */
+  .ai-works-card[data-aspect]:has(img)::after {
+    display: block;
+    position: static;
+    inset: auto;
+    order: 2;
+    content: attr(data-tag);
+    margin-top: 0.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ash);
+  }
+  /* Real injected captions replace the data-attr pseudo versions on mobile.
+     The ::after selector needs [data-aspect]…:has(img) to outrank the rule above. */
+  .ai-works-card.has-cap::before { content: none; }
+  .ai-works-card[data-aspect].has-cap:has(img)::after { content: none; }
+  .ai-works-card .card-cap-name,
+  .ai-works-card .card-cap-tags { display: block; }
   .ai-works-label-top,
   .ai-works-label-bottom { display: none; }
 }
@@ -2757,9 +2956,29 @@ body.menu-open footer {
 }
 @media (max-width: 768px) {
   .ai-hero { padding: 7rem var(--pad) 4rem; min-height: auto; }
-  .ai-beat { min-height: auto; padding: 4rem var(--pad); }
-  .ai-beat--right .ai-beat-inner { text-align: left; }
-  .ai-beat--right .ai-beat-line { margin-left: 0; }
+  /* Keep each aphorism its own "breathing moment" on phones (don't collapse the
+     beats into one another) — restore a tall, centered block per beat. */
+  /* Even rhythm: after the opening beat, each beat is a fixed slot so the gaps
+     On approach → Failure mode → Our way → diagram stay equal (~the gap the
+     centered opening beat creates to the failure-mode line). */
+  .ai-beat { min-height: 70vh; padding: 4rem var(--pad); }
+  /* Match the home hero headline size on mobile. */
+  .ai-beat-line { font-size: clamp(2.05rem, 9vw, 3.2rem); }
+  /* First beat ("On approach") fills the opening viewport; the copy sits a little
+     below centre so its gap to the failure-mode line matches Failure → Our way. */
+  .ai-beat--left { min-height: 100dvh; align-items: flex-start; padding-top: calc(50dvh + 64px); }
+  /* Second beat ("failure mode"): top-anchored, right-aligned to the right side.
+     Tighter slot so failure mode sits closer to "Our way" with the dog between.
+     Extra top padding nudges it down so the whitespace above/below it is even
+     (its block is shorter than the neighbours, which skewed the visual gaps). */
+  .ai-beat--right { min-height: 50vh; align-items: flex-start; padding-top: 5.3rem; }
+  .ai-beat--right .ai-beat-inner { text-align: right; margin-top: 0; }
+  .ai-beat--right .ai-beat-line { margin-left: auto; margin-right: 0; }
+  /* Third beat ("Our way"): top-anchored, left-aligned on the left side, same slot
+     height as the failure mode so the gap down to the Built-In section matches. */
+  .ai-beat--center { min-height: 50vh; align-items: flex-start; }
+  .ai-beat--center .ai-beat-inner { text-align: left; max-width: none; }
+  .ai-beat--center .ai-beat-line { margin: 0; }
   .ai-build-beat { padding: 4rem var(--pad); }
   .ai-big-cta { padding: 5rem 0 3rem; }
   .ai-cta-pretitle { margin-bottom: 2rem; }
@@ -2825,5 +3044,20 @@ body.menu-open footer {
 /* Narrow viewports: shrink padding so the diagram + labels breathe. */
 @media (max-width: 768px) {
   .amf-wired-in__header { padding: 6px 20px 4px; }
-  .amf-wired-in__claim { font-size: 18px; }
+  /* Claim as large as the other section headers (home/beat headline size). */
+  .amf-wired-in__claim { font-size: clamp(2.05rem, 9vw, 3.2rem); line-height: 1.1; }
+  /* Enlarge the SVG text (in viewBox units) so it's readable on a phone. Targeted
+     by their presentation font-size so labels and the AI centre scale separately;
+     mobile-only via the media query (desktop SVG attributes untouched). */
+  .amf-wired-in__diagram text[font-size="8.5"] { font-size: 19px; }
+  .amf-wired-in__diagram text[font-size="78"] { font-size: 88px; }
+  /* The hexagon sits in the middle ~third of a wide 1300x720 viewBox, so at full
+     container width it reads small. Trim the dead vertical band and let the SVG
+     run wider than the column (empty side-margins of the viewBox spill off-screen)
+     so the hexagon itself reads as a presence. */
+  /* Top padding offsets the diagram header to where a beat line sits (beats have
+     a label above their line, the diagram doesn't) so the Our way → diagram gap
+     matches the beat-to-beat rhythm. */
+  .amf-wired-in { padding: 5.3rem 0 clamp(16px, 3vh, 28px); overflow: hidden; }
+  .amf-wired-in__diagram { width: 160%; margin-left: -30%; }
 }

@@ -405,6 +405,39 @@
       const children = heroEl.querySelectorAll(
         '.section-label, .page-hero-title, .page-hero-sub, .case-label, .case-title, .case-hero-right, .case-hero-tags'
       );
+      // Contact page (mobile): the sculpture emerges first, THEN everything fades
+      // in one by one, top-down — Contact → Let's Talk → subheader → email → phone
+      // → location → form. Hold them all hidden and reveal staggered on the
+      // 'amf:relief-emerged' signal (fallback timer if no relief).
+      const seqContact = !!(pageHero && root.querySelector('.contact-page') &&
+        window.AMFScroll && window.AMFScroll.isMobile());
+      if (seqContact) {
+        const seqEls = [
+          heroEl.querySelector('.section-label'),
+          heroEl.querySelector('.page-hero-title'),
+          heroEl.querySelector('.page-hero-sub'),
+          ...root.querySelectorAll('.contact-page-info .contact-block'),
+          root.querySelector('.contact-page-form'),
+        ].filter(Boolean);
+        seqEls.forEach((el) => {              // hard-hide instantly (no fade-out)
+          el.style.transform = 'none';
+          el.style.transition = 'none';
+          el.style.opacity = '0';
+        });
+        let done = false;
+        let fb;
+        const go = () => {
+          if (done) return;
+          done = true;
+          clearTimeout(fb);
+          window.removeEventListener('amf:relief-emerged', go);
+          seqEls.forEach((el, i) => { el.style.transition = `opacity 0.9s ease ${i * 0.35}s`; });
+          requestAnimationFrame(() => seqEls.forEach((el) => { el.style.opacity = '1'; }));
+        };
+        window.addEventListener('amf:relief-emerged', go);
+        fb = setTimeout(go, 2000);
+        return;
+      }
       children.forEach((el, i) => {
         el.style.opacity = '0';
         if (fade) {
@@ -490,12 +523,45 @@
     const sequenceAboutHero = aboutLarge && aboutSub &&
       window.AMFScroll && window.AMFScroll.isMobile();
 
+    // AI page (mobile): mercury appears first, then the opening beat's text fades
+    // in after it (held out of the word observer, triggered on 'amf:relief-emerged').
+    const isMobileNow = window.AMFScroll && window.AMFScroll.isMobile();
+    const aiFirstLine = isMobileNow ? root.querySelector('.ai-beat--left .ai-beat-line') : null;
+    const aiFirstLabel = aiFirstLine ? root.querySelector('.ai-beat--left .ai-beat-label') : null;
+
     root.querySelectorAll('.split-words').forEach((el) => {
       if (sequenceAboutHero && (el === aboutLarge || el === aboutSub)) return;  // sequenced below
+      if (el === aiFirstLine) return;                                           // sequenced below (AI)
       wordObserver.observe(el);
     });
 
+    if (aiFirstLine) {
+      if (aiFirstLabel) { aiFirstLabel.style.transition = 'none'; aiFirstLabel.style.opacity = '0'; }
+      let aiStarted = false;
+      let aiFb;
+      const aiStart = () => {
+        if (aiStarted) return;
+        aiStarted = true;
+        clearTimeout(aiFb);
+        window.removeEventListener('amf:relief-emerged', aiStart);
+        if (aiFirstLabel) {
+          aiFirstLabel.style.transition = 'opacity 0.9s ease';
+          requestAnimationFrame(() => { aiFirstLabel.style.opacity = '1'; });
+        }
+        aiFirstLine.classList.add('animated');
+      };
+      window.addEventListener('amf:relief-emerged', aiStart);
+      aiFb = setTimeout(aiStart, 1800);  // sculpture missing/instant → don't stall the text
+    }
+
     if (sequenceAboutHero) {
+      // Hide the Info eyebrow + rule so they fade in at the top of the cascade
+      // (sculpture → Info → line → header → sub), like the other pages.
+      const aboutEyebrow = root.querySelector('.studio-about-eyebrow');
+      const aboutRule = root.querySelector('.studio-about-rule');
+      [aboutEyebrow, aboutRule].forEach((el) => {
+        if (el) { el.style.transition = 'none'; el.style.opacity = '0'; }
+      });
       let started = false;
       let fallback;
       const startSequence = () => {
@@ -503,8 +569,16 @@
         started = true;
         clearTimeout(fallback);
         window.removeEventListener('amf:relief-emerged', startSequence);
-        aboutLarge.classList.add('animated');                                // 2. header
-        setTimeout(() => aboutSub.classList.add('animated'), 1000);          // 3. sub
+        if (aboutEyebrow) {                                                  // 1. Info eyebrow
+          aboutEyebrow.style.transition = 'opacity 0.9s ease';
+          requestAnimationFrame(() => { aboutEyebrow.style.opacity = '1'; });
+        }
+        if (aboutRule) {                                                     // 1b. line, just after
+          aboutRule.style.transition = 'opacity 0.9s ease 0.35s';
+          requestAnimationFrame(() => { aboutRule.style.opacity = '1'; });
+        }
+        setTimeout(() => aboutLarge.classList.add('animated'), 600);         // 2. header
+        setTimeout(() => aboutSub.classList.add('animated'), 1600);          // 3. sub
       };
       window.addEventListener('amf:relief-emerged', startSequence);
       fallback = setTimeout(startSequence, 1600);  // sculpture missing/instant → don't stall the text
@@ -538,7 +612,13 @@
       '.studio-tagline-h2', '.studio-tagline-pills', '.studio-about-dot',
       '.studio-logos',
       '.logo-cell',
-      '.ai-beat-line', '.ai-principle-title', '.ai-principle-body',
+      /* .ai-beat-line is split-words — let that single page-fade handle it; adding
+         .reveal too made it double-animate (two observers → uneven/out-of-order). */
+      '.ai-beat-label',
+      '.amf-wired-in__header', '.amf-wired-in__diagram',
+      '.ai-principles-eyebrow', '.ai-principle-num',
+      '.ai-principle-title', '.ai-principle-body',
+      '.ai-works-eyebrow',
       '.ai-build-name', '.ai-build-outcome',
       '.ai-cta-pretitle', '.ai-cta-display'
     ].join(', ');
@@ -555,11 +635,57 @@
       });
     }, { root: obsRoot(), threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
     trackObs(observer);
-    revealEls.forEach((el) => observer.observe(el));
+    revealEls.forEach((el) => { if (el !== aiFirstLabel) observer.observe(el); });
 
     root.querySelectorAll('.logo-cell').forEach((cell, i) => {
       cell.style.transitionDelay = (i * 0.04) + 's';
     });
+  }
+
+  /* ============ "AI" SERIF-I ============ */
+  // In sans label/caption text, render the "I" of the word "AI" in the serif
+  // face (the bracketed capital-I with top + bottom bars). Used for static
+  // labels (applySerifAI) and for dynamically-bound captions (serifAIHtml).
+  function serifAIHtml(str) {
+    const esc = String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return esc.replace(/\bAI\b/g, 'A<span class="serif-i">I</span>');
+  }
+  function applySerifAI(root) {
+    const SEL = '.section-label, .ai-beat-label, .intro-eyebrow, .studio-about-eyebrow,' +
+      ' .works-cycle-label, .works-cycle-names a, .works-cycle-tags, .ai-works-eyebrow, .ai-works-label-tag,' +
+      ' .ai-works-label-index, .service-pill, .ai-principles-eyebrow';
+    root.querySelectorAll(SEL).forEach((el) => {
+      // Only plain-text labels (no child markup) that contain the standalone word AI.
+      if (el.children.length === 0 && /\bAI\b/.test(el.textContent)) {
+        el.innerHTML = serifAIHtml(el.textContent);
+      }
+    });
+  }
+
+  // Mobile card captions (home works-cycle, AI works, brand-work cards) are
+  // normally drawn from data-* attributes via CSS ::before/::after, which can't
+  // hold a styled letter. On mobile, replace them with real caption spans (so
+  // the serif "I" works) and flag the card so the pseudo versions switch off.
+  function injectCardCaptions(root) {
+    if (!(window.AMFScroll && window.AMFScroll.isMobile())) return;
+    const mk = (cls, val) => {
+      const s = document.createElement('span');
+      s.className = cls;
+      s.innerHTML = serifAIHtml(val);
+      return s;
+    };
+    const add = (sel, nameAttr, tagAttr) => {
+      root.querySelectorAll(sel).forEach((c) => {
+        if (c.classList.contains('has-cap')) return;       // already injected
+        if (nameAttr && c.dataset[nameAttr]) c.appendChild(mk('card-cap-name', c.dataset[nameAttr]));
+        if (tagAttr && c.dataset[tagAttr])   c.appendChild(mk('card-cap-tags', c.dataset[tagAttr]));
+        c.classList.add('has-cap');
+      });
+    };
+    add('.works-cycle-item[data-name]', 'name', 'tags');
+    add('.ai-works-card[data-name]',    'name', 'tag');
+    add('.works-card[data-tags]',       null,   'tags');   // brand-work name is the <h3>
   }
 
   /* ============ WORKS CYCLE (vertical scroll-through) ============ */
@@ -581,7 +707,7 @@
       items.forEach((el, i) => el.classList.toggle('is-active', i === idx));
       nameLinks.forEach((a, i) => a.classList.toggle('is-active', i === idx));
       const item = items[idx];
-      if (tagsEl)  tagsEl.textContent  = item.dataset.tags  || '';
+      if (tagsEl)  tagsEl.innerHTML   = serifAIHtml(item.dataset.tags || '');
       if (indexEl) indexEl.textContent = item.dataset.index || '';
     }
 
@@ -643,6 +769,97 @@
     });
   }
 
+  /* ============ AI WORKS — MOBILE SCROLL FOCUS ============ */
+  /* On mobile the AI work cards are a vertical stack; give them the same focus
+     behaviour as the homepage work cards — the card nearest the viewport centre
+     goes full colour and full size, the others grey out and shrink slightly. */
+  function initAiWorksMobileFocus(root) {
+    if (!(window.AMFScroll && window.AMFScroll.isMobile())) return;
+    const rail = root.querySelector('.ai-works-rail');
+    if (!rail) return;
+    const cards = Array.from(rail.querySelectorAll('.ai-works-card'));
+    if (!cards.length) return;
+    let activeIdx = -1, rafId = null, isVisible = false, lastScroll = -1;
+    function tick() {
+      const sy = scrollPos();
+      if (sy !== lastScroll) {
+        lastScroll = sy;
+        const vh = scrollVH();
+        const center = vh / 2;
+        let bestIdx = 0, bestDist = Infinity;
+        for (let i = 0; i < cards.length; i++) {
+          const r = cards[i].getBoundingClientRect();
+          const d = Math.abs((r.top + r.bottom) / 2 - center);
+          if (d < bestDist) { bestDist = d; bestIdx = i; }
+          const t = Math.min(1, d / (vh * 0.6));
+          const eased = t * t * (3 - 2 * t);            // smoothstep
+          const scale = 1 - eased * 0.12;               // 1.0 at centre → 0.88 away
+          const img = cards[i].querySelector('img');
+          if (img) img.style.transform = 'scale(' + scale.toFixed(4) + ')';
+        }
+        if (bestIdx !== activeIdx) {
+          activeIdx = bestIdx;
+          cards.forEach((c, i) => c.classList.toggle('is-active', i === bestIdx));
+        }
+      }
+      if (isVisible) rafId = trackRaf(requestAnimationFrame(tick));
+    }
+    const visObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        isVisible = e.isIntersecting;
+        if (isVisible && !rafId) rafId = trackRaf(requestAnimationFrame(tick));
+        else if (!isVisible && rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      });
+    }, { root: obsRoot(), threshold: 0 });
+    trackObs(visObs);
+    visObs.observe(rail);
+  }
+
+  /* Brand Work page — mobile scroll-focus (mirrors initAiWorksMobileFocus):
+     the card nearest viewport centre gets is-active (full colour) + grows,
+     others fade to greyscale + shrink. Plain vertical stack, no loop. */
+  function initWorksScrollMobileFocus(root) {
+    if (!(window.AMFScroll && window.AMFScroll.isMobile())) return;
+    const scroll = root.querySelector('#worksScroll');
+    if (!scroll) return;
+    const cards = Array.from(scroll.querySelectorAll('.works-card'));
+    if (!cards.length) return;
+    let activeIdx = -1, rafId = null, isVisible = false, lastScroll = -1;
+    function tick() {
+      const sy = scrollPos();
+      if (sy !== lastScroll) {
+        lastScroll = sy;
+        const vh = scrollVH();
+        const center = vh / 2;
+        let bestIdx = 0, bestDist = Infinity;
+        for (let i = 0; i < cards.length; i++) {
+          const r = cards[i].getBoundingClientRect();
+          const d = Math.abs((r.top + r.bottom) / 2 - center);
+          if (d < bestDist) { bestDist = d; bestIdx = i; }
+          const t = Math.min(1, d / (vh * 0.6));
+          const eased = t * t * (3 - 2 * t);            // smoothstep
+          const scale = 1 - eased * 0.12;               // 1.0 at centre → 0.88 away
+          const img = cards[i].querySelector('img');
+          if (img) img.style.transform = 'scale(' + scale.toFixed(4) + ')';
+        }
+        if (bestIdx !== activeIdx) {
+          activeIdx = bestIdx;
+          cards.forEach((c, i) => c.classList.toggle('is-active', i === bestIdx));
+        }
+      }
+      if (isVisible) rafId = trackRaf(requestAnimationFrame(tick));
+    }
+    const visObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        isVisible = e.isIntersecting;
+        if (isVisible && !rafId) rafId = trackRaf(requestAnimationFrame(tick));
+        else if (!isVisible && rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      });
+    }, { root: obsRoot(), threshold: 0 });
+    trackObs(visObs);
+    visObs.observe(scroll);
+  }
+
   /* ============ AI WORKS HORIZONTAL ============ */
 
   function initAiWorks(root) {
@@ -687,9 +904,9 @@
       activeIdx = idx;
       const card = cards[idx];
       if (!card) return;
-      if (nameEl)  nameEl.textContent  = card.dataset.name || '';
+      if (nameEl)  nameEl.innerHTML   = serifAIHtml(card.dataset.name || '');
       if (indexEl) indexEl.textContent = card.dataset.index || '';
-      if (tagEl)   tagEl.textContent   = card.dataset.tag ? '— ' + card.dataset.tag : '';
+      if (tagEl)   tagEl.innerHTML    = card.dataset.tag ? serifAIHtml('— ' + card.dataset.tag) : '';
     }
 
     let rafId = null, isVisible = false, lastScroll = -1;
@@ -759,6 +976,9 @@
   /* ============ WORKS PAGE — Studio375-style infinite scroll ============ */
 
   function initWorksScroll(root) {
+    // Mobile uses a plain vertical stack with scroll-focus (initWorksScrollMobileFocus),
+    // not the desktop infinite-loop / wheel-hijack scroll.
+    if (window.AMFScroll && window.AMFScroll.isMobile()) return;
     const worksScroll = root.querySelector('#worksScroll');
     const worksRight  = root.querySelector('.works-right');
     if (!worksScroll || !worksRight) return;
@@ -868,28 +1088,88 @@
 
   function initWorksSplitEntrance(root) {
     const worksLeft = root.querySelector('.works-left');
+    const mobileSeq = !!(window.AMFScroll && window.AMFScroll.isMobile());
     if (worksLeft) {
       const els = worksLeft.querySelectorAll('.section-label, .works-left-title, .works-left-sub, .works-count');
-      els.forEach((el, i) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.12}s, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.12}s`;
-      });
-      setTimeout(() => {
-        els.forEach((el) => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
-      }, 50);
+      if (mobileSeq) {
+        // Mobile: the sculpture emerges first, THEN the Brand Work label + title
+        // fade in one by one — matching the AI / contact pages. Hold them hidden
+        // and reveal staggered on 'amf:relief-emerged' (fallback timer if none).
+        els.forEach((el) => {
+          el.style.transform = 'none';
+          el.style.transition = 'none';
+          el.style.opacity = '0';
+        });
+        let done = false, fb;
+        const go = () => {
+          if (done) return;
+          done = true;
+          clearTimeout(fb);
+          window.removeEventListener('amf:relief-emerged', go);
+          els.forEach((el, i) => { el.style.transition = `opacity 0.9s ease ${i * 0.35}s`; });
+          requestAnimationFrame(() => els.forEach((el) => { el.style.opacity = '1'; }));
+          worksLeft.classList.add('revealed');   // fade in the divider line too
+        };
+        window.addEventListener('amf:relief-emerged', go);
+        fb = setTimeout(go, 2000);
+      } else {
+        els.forEach((el, i) => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.12}s, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.12}s`;
+        });
+        setTimeout(() => {
+          els.forEach((el) => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
+        }, 50);
+      }
     }
 
     const worksCards = root.querySelectorAll('.works-card');
-    worksCards.forEach((card, i) => {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(30px)';
-      card.style.transition = `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${0.2 + i * 0.08}s, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${0.2 + i * 0.08}s`;
-    });
-    if (worksCards.length) {
-      setTimeout(() => {
-        worksCards.forEach((card) => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; });
-      }, 50);
+    if (mobileSeq) {
+      // Mobile: hold the cards hidden until just after the sculpture emerges and
+      // the hero text has begun, THEN each card fades up as it scrolls into view
+      // (no pop-in on load) — so the order is statue → hero text → cards.
+      worksCards.forEach((card) => {       // hard-hide instantly (no fade-out flash)
+        card.style.transition = 'none';
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+      });
+      let started = false, fb;
+      const startCards = () => {
+        if (started) return;
+        started = true;
+        clearTimeout(fb);
+        window.removeEventListener('amf:relief-emerged', onEmerge);
+        worksCards.forEach((card) => {
+          card.style.transition = 'opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)';
+        });
+        const cardObs = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+              cardObs.unobserve(entry.target);
+            }
+          });
+        }, { root: obsRoot(), threshold: 0.15 });
+        trackObs(cardObs);
+        worksCards.forEach((card) => cardObs.observe(card));
+      };
+      // Trail the hero text by ~0.7s so cards come after the label/title.
+      const onEmerge = () => setTimeout(startCards, 700);
+      window.addEventListener('amf:relief-emerged', onEmerge);
+      fb = setTimeout(startCards, 2700);
+    } else {
+      worksCards.forEach((card, i) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${0.2 + i * 0.08}s, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${0.2 + i * 0.08}s`;
+      });
+      if (worksCards.length) {
+        setTimeout(() => {
+          worksCards.forEach((card) => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; });
+        }, 50);
+      }
     }
   }
 
@@ -1122,8 +1402,12 @@
     initScrollReveals(mainEl);
     initWorksCycle(mainEl);
     initAiWorks(mainEl);
+    initAiWorksMobileFocus(mainEl);
     initWorksScroll(mainEl);
+    initWorksScrollMobileFocus(mainEl);
     initWorksSplitEntrance(mainEl);
+    injectCardCaptions(mainEl);
+    applySerifAI(mainEl);
     initCaseImages(mainEl);
     initSmoothAnchors(mainEl);
     initParallax(mainEl);

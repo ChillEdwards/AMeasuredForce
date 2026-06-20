@@ -146,21 +146,24 @@
         mobile: { x: 0.2, y: -VIEWPORT_WORLD_H * 5.5 - 4, z: 0.05, size: 6.3 } },
     ],
     contact: [
-      { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0,                         z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
+      { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0, mobileY: -1.5,           z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
     ],
     about: [
       { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0, mobileY: -2.5, mobileScale: 1.3, z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI },
-      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.0, y: -VIEWPORT_WORLD_H * 5.6, mobileDX: -1.2, emergeMargin: -1.5, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
+      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.5, mobileX: -1.0, y: -VIEWPORT_WORLD_H * 4.2 + 1.3, mobileY: -VIEWPORT_WORLD_H * 5.6 - 0.5, mobileDX: -1.2, emergeMargin: -1.5, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
       { src: '/assets/reliefs/bosio.glb',      size: 6.0,  flat: 0.22, x:  2.6, y: -VIEWPORT_WORLD_H * 3.0 + 2.0, mobileScale: 1.5, mobileDX: -0.3, z:  0.25, rz: Math.PI, rx:  0.0, ry: -Math.PI / 6, flatShade: true },
     ],
     work: [
-      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2,                         z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
+      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2, mobileDX: 0.7, mobileY: -0.5, mobileMirror: true, mobilePin: { startY: 5, endY: -400, offsetY: -0.5 }, z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
     ],
     ai: [
-      { src: '/assets/reliefs/mercury.glb',    size: 5.0, flat: 0.25, x: 2.0, y: -0.5,                          z:  0.25, rz: 0.0, rx: 0.0, ry: Math.PI },
-      { src: '/assets/reliefs/vacossin.glb',   size: 6.0, flat: 0.25, x: -2.0, y: -VIEWPORT_WORLD_H * 2.0 + 2.5, z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0 },
+      { src: '/assets/reliefs/mercury.glb',    size: 5.0, flat: 0.25, x: 2.0, y: -0.5, mobileY: -0.3, mobileScale: 1.15, mobileZ: 0.2, z:  0.25, rz: 0.0, rx: 0.0, ry: Math.PI },
+      { src: '/assets/reliefs/vacossin.glb',   size: 6.0, flat: 0.25, x: -2.0, y: -VIEWPORT_WORLD_H * 2.0 + 2.5, mobileY: -5.3, mobileDX: -1.0, emergeMargin: 0.5, z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0 },
       { src: '/assets/reliefs/bearded-man.glb', size: 5.0, flat: 0.25, x: 2.5, y: -VIEWPORT_WORLD_H * 4.0,        z:  0.25, rz: 0.0, rx: Math.PI, ry: Math.PI - Math.PI / 3,
-        pin: { startY: -VIEWPORT_WORLD_H * 4.0, endY: -VIEWPORT_WORLD_H * 7.0, offsetY: 0 } },
+        mobileY: -14,
+        emergeMargin: -1.6,   // delay the rise until we're into the Approach section
+        pin: { startY: -VIEWPORT_WORLD_H * 4.0, endY: -VIEWPORT_WORLD_H * 7.0, offsetY: 0 },
+        mobilePin: { startY: -11, endY: -17, offsetY: 0 } },
       { src: '/assets/reliefs/fullbody.glb',   size: 9.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 10.0 - 6.5,  z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
     ],
   };
@@ -220,14 +223,20 @@
       effZ = (mob.z != null) ? mob.z : (cfg.z || 0);
     } else if (NARROW) {
       const xScale = Math.min(1, visibleAtZ(0).w / 7.2);  // 7.2 ≈ desktop visible width
-      effX = cfg.x * xScale;
+      // cfg.mobileX lets a relief use a different x base on narrow viewports, so
+      // a desktop-only x change doesn't drag the mobile auto-centered position.
+      effX = (cfg.mobileX != null ? cfg.mobileX : cfg.x) * xScale;
       effZ = 0.05;                       // closer to the wall → flatter, subtler
       holder.scale.multiplyScalar(0.7);  // smaller so it doesn't crowd the column
       // Optional mobile-only nudges that keep the auto-center/shrink (unlike a
       // full `mobile` override). Desktop is untouched.
       if (cfg.mobileY != null) effY = cfg.mobileY;
       if (cfg.mobileDX != null) effX += cfg.mobileDX;  // nudge left/right in world units
+      if (cfg.mobileZ != null) effZ = cfg.mobileZ;     // pull forward out of the wall
       if (cfg.mobileScale != null) holder.scale.multiplyScalar(cfg.mobileScale);
+      // Flip facing on narrow/touch only (desktop keeps cfg.mirror). cupid's
+      // axis-swapping rotations mean scale.x reads as upside-down, so flip Y.
+      if (cfg.mobileMirror) holder.scale.y *= -1;
     }
 
     holder.position.set(effX, effY, effZ);
@@ -241,8 +250,12 @@
     // camera scrolls down into the section, and getting left behind above
     // after the camera scrolls out the bottom. Note pin.startY > pin.endY
     // because scrolling down makes camera.y more negative.
-    if (cfg.pin) {
-      holder.userData.pin = cfg.pin;
+    // Mobile sections sit at different world-Y than desktop. On narrow viewports
+    // a relief pins only if it declares a `mobilePin`; otherwise it scrolls/
+    // parallaxes like the others (desktop keeps cfg.pin).
+    const pinCfg = NARROW ? cfg.mobilePin : cfg.pin;
+    if (pinCfg) {
+      holder.userData.pin = pinCfg;
     }
     // Mobile-only emerge-trigger override (see the animate loop). Negative delays
     // the rise until the relief is well into view. Desktop keeps the default.
@@ -483,6 +496,8 @@
       for (let i = 0; i < emerging.length; i++) {
         const h = emerging[i];
         const e = h.userData.emerge;
+        // Wireframe emergence — slow crossfade from wireframe overlay to solid
+        // surface once the emerge has entered viewport. Runs past the z-rise.
         // Retreat takes priority over emerge — once a relief is sinking
         // back into the wall, we don't want the emerge math to fight it.
         if (e.retreatStart >= 0) {
