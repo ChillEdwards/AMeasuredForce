@@ -732,6 +732,7 @@ body.menu-open footer {
   padding: 0.3rem 1rem; border-radius: 100px;
   font-family: var(--font-sans); font-size: 0.7rem;
   text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;
+  text-decoration: none; cursor: pointer;
   transition: background 0.3s, color 0.3s;
 }
 .service-col:hover .service-pill { background: var(--ink); color: var(--paper); }
@@ -2165,6 +2166,8 @@ body.menu-open footer {
   .page-hero .section-label { margin-bottom: 1rem; }
   .contact-page { padding-top: 3.5rem; }
   .services-grid { grid-template-columns: 1fr; }
+  /* Mobile: pull the services headline in from the right edge while keeping 3 lines */
+  .services-headline { font-size: 1.55rem; max-width: 16rem; }
   .process-steps { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .about-approach-grid { grid-template-columns: 1fr; }

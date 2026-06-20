@@ -607,6 +607,7 @@
       '.contact-block', '.contact-cta',
       '.about-detail-left', '.about-detail-right',
       '.contact-page-info', '.contact-page-form',
+      '.case-hero', '.case-meta', '.case-bleed', '.case-story-block', '.case-impact',
       '.case-section', '.case-results', '.case-next',
       '.logo-ticker',
       '.studio-tagline-h2', '.studio-tagline-pills', '.studio-about-dot',
