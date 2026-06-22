@@ -30,6 +30,39 @@
     else window.scrollTo({ top: y, behavior: b || 'auto' });
   }
 
+  /* ---- Statue-first hero cascade timings ------------------------------
+     Every page's relief/statue emerges first, then the hero text fades in
+     after it (triggered by the 'amf:relief-emerged' event from shader-bg).
+     The reveal mechanics are identical across breakpoints — only these
+     magic numbers differ. Desktop's relief emerges slower (2.8s vs mobile's
+     1.3s) and the GLB is heavier to load, so desktop needs longer staggers
+     and a longer fallback safety timer (the fallback is measured from boot,
+     not from relief load, so a short one could fire before the statue
+     surfaces). Under reduced motion the relief snaps to its target and
+     'amf:relief-emerged' never fires — the fallback is the ONLY reveal, so
+     collapse it to near-instant. */
+  function seqTimings() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return { fallback: 120, cardsFallback: 120, step: 0, aboutHeader: 0, aboutSub: 0,
+               cardsTrail: 0, aiFallback: 120, aboutFallback: 120 };
+    }
+    const mobile = !!(window.AMFScroll && window.AMFScroll.isMobile());
+    return mobile
+      ? { fallback: 2000, cardsFallback: 2700, step: 0.35, aboutHeader: 600, aboutSub: 1600,
+          cardsTrail: 700,  aiFallback: 1800, aboutFallback: 1600 }
+      : { fallback: 3600, cardsFallback: 4400, step: 0.45, aboutHeader: 550, aboutSub: 1300,
+          cardsTrail: 1000, aiFallback: 3600, aboutFallback: 3600 };
+  }
+
+  /* The About-page "Core Capabilities" / "Operating Principles" coordinated
+     top-to-bottom cascade is desktop-only — its row grouping assumes the
+     4-column layout. On mobile the columns stack tall, so we keep the natural
+     per-element scroll reveal (the generic observers) instead. */
+  function studioCascadeActive() { return !(window.AMFScroll && window.AMFScroll.isMobile()); }
+  function inStudioCascadeSection(el) {
+    return studioCascadeActive() && !!el.closest('.studio-services, .studio-approach');
+  }
+
   /* ---- Page-scoped teardown registry --------------------------------- */
   let pageController = null;
   let pageRafIds = [];
@@ -315,37 +348,39 @@
   function initHero(root) {
     const headline = root.querySelector('.hero-headline h1');
     const meta = root.querySelector('.hero-meta');
+    const t = seqTimings();
 
-    if (headline) {
-      // Defer to next frame so split spans exist before adding .animated.
-      requestAnimationFrame(() => {
-        headline.classList.add('animated');
-        const allChars = headline.querySelectorAll('.char');
-        const lastChar = allChars[allChars.length - 1];
-        if (lastChar) {
-          lastChar.addEventListener('animationend', () => {
-            allChars.forEach((ch) => {
-              ch.style.animation = 'none';
-              ch.style.opacity = '1';
-              ch.style.transform = '';
-            });
-          }, { once: true });
-        }
-      });
-    }
-
+    // Statue-first: the headline is hidden from first paint (CSS holds the h1 at
+    // opacity:0) and is the SOLE responsibility of initHero — it's excluded from
+    // the generic char observer so nothing animates it early. Once the goat
+    // relief has emerged we add .hero-revealed to fade the whole h1 in as one
+    // unit (CSS 2.8s ease), then the meta trails behind. Fallback covers
+    // reduced-motion / missing relief.
     if (meta) {
-      // Fade the meta in AFTER the headline has faded in. The headline starts
-      // at 1.2s and fades over 2.8s, so begin the meta around 2.4s so it trails
-      // in just behind the headline.
       meta.style.opacity = '0';
       meta.style.transform = 'translateY(15px)';
       meta.style.transition = 'opacity 1.1s cubic-bezier(0.16,1,0.3,1), transform 1.1s cubic-bezier(0.16,1,0.3,1)';
-      setTimeout(() => {
-        meta.style.opacity = '1';
-        meta.style.transform = 'translateY(0)';
-      }, 2400);
     }
+
+    let started = false;
+    let fb;
+    const start = () => {
+      if (started) return;
+      started = true;
+      clearTimeout(fb);
+      window.removeEventListener('amf:relief-emerged', start);
+      if (headline) {
+        requestAnimationFrame(() => headline.classList.add('hero-revealed'));
+      }
+      if (meta) {
+        setTimeout(() => {
+          meta.style.opacity = '1';
+          meta.style.transform = 'translateY(0)';
+        }, 600);
+      }
+    };
+    window.addEventListener('amf:relief-emerged', start);
+    fb = setTimeout(start, t.fallback);
   }
 
   /* ============ PAGE HERO / STUDIO HERO ============ */
@@ -363,13 +398,13 @@
       const children = heroEl.querySelectorAll(
         '.section-label, .page-hero-title, .page-hero-sub, .case-label, .case-title, .case-hero-right, .case-hero-tags'
       );
-      // Contact page (mobile): the sculpture emerges first, THEN everything fades
+      // Contact page: the sculpture emerges first, THEN everything fades
       // in one by one, top-down — Contact → Let's Talk → subheader → email → phone
       // → location → form. Hold them all hidden and reveal staggered on the
       // 'amf:relief-emerged' signal (fallback timer if no relief).
-      const seqContact = !!(pageHero && root.querySelector('.contact-page') &&
-        window.AMFScroll && window.AMFScroll.isMobile());
+      const seqContact = !!(pageHero && root.querySelector('.contact-page'));
       if (seqContact) {
+        const t = seqTimings();
         const seqEls = [
           heroEl.querySelector('.section-label'),
           heroEl.querySelector('.page-hero-title'),
@@ -389,11 +424,11 @@
           done = true;
           clearTimeout(fb);
           window.removeEventListener('amf:relief-emerged', go);
-          seqEls.forEach((el, i) => { el.style.transition = `opacity 0.9s ease ${i * 0.35}s`; });
+          seqEls.forEach((el, i) => { el.style.transition = `opacity 0.9s ease ${i * t.step}s`; });
           requestAnimationFrame(() => seqEls.forEach((el) => { el.style.opacity = '1'; }));
         };
         window.addEventListener('amf:relief-emerged', go);
-        fb = setTimeout(go, 2000);
+        fb = setTimeout(go, t.fallback);
         return;
       }
       children.forEach((el, i) => {
@@ -457,6 +492,8 @@
     trackObs(charObserver);
     const studioHero = root.querySelector('.studio-hero');
     root.querySelectorAll('.split-chars').forEach((el) => {
+      if (inStudioCascadeSection(el)) return;   // studio cascade handles these
+      if (el.closest('.hero-headline')) return; // home hero — initHero is its sole controller
       if (!studioHero || !studioHero.contains(el)) charObserver.observe(el);
     });
 
@@ -476,20 +513,20 @@
     // 'amf:relief-emerged' signal that shader-bg fires once the relief surfaces,
     // with a timer fallback for reduced motion (where the emerge is skipped).
     // Desktop keeps the simultaneous page-fade.
+    const t = seqTimings();
     const aboutLarge = root.querySelector('.studio-about-large');
     const aboutSub = root.querySelector('.studio-about-sub');
-    const sequenceAboutHero = aboutLarge && aboutSub &&
-      window.AMFScroll && window.AMFScroll.isMobile();
+    const sequenceAboutHero = aboutLarge && aboutSub;
 
-    // AI page (mobile): mercury appears first, then the opening beat's text fades
+    // AI page: mercury appears first, then the opening beat's text fades
     // in after it (held out of the word observer, triggered on 'amf:relief-emerged').
-    const isMobileNow = window.AMFScroll && window.AMFScroll.isMobile();
-    const aiFirstLine = isMobileNow ? root.querySelector('.ai-beat--left .ai-beat-line') : null;
+    const aiFirstLine = root.querySelector('.ai-beat--left .ai-beat-line');
     const aiFirstLabel = aiFirstLine ? root.querySelector('.ai-beat--left .ai-beat-label') : null;
 
     root.querySelectorAll('.split-words').forEach((el) => {
       if (sequenceAboutHero && (el === aboutLarge || el === aboutSub)) return;  // sequenced below
       if (el === aiFirstLine) return;                                           // sequenced below (AI)
+      if (inStudioCascadeSection(el)) return;             // studio cascade
       wordObserver.observe(el);
     });
 
@@ -509,7 +546,7 @@
         aiFirstLine.classList.add('animated');
       };
       window.addEventListener('amf:relief-emerged', aiStart);
-      aiFb = setTimeout(aiStart, 1800);  // sculpture missing/instant → don't stall the text
+      aiFb = setTimeout(aiStart, t.aiFallback);  // sculpture missing/instant → don't stall the text
     }
 
     if (sequenceAboutHero) {
@@ -532,14 +569,14 @@
           requestAnimationFrame(() => { aboutEyebrow.style.opacity = '1'; });
         }
         if (aboutRule) {                                                     // 1b. line, just after
-          aboutRule.style.transition = 'opacity 0.9s ease 0.35s';
+          aboutRule.style.transition = `opacity 0.9s ease ${t.step}s`;
           requestAnimationFrame(() => { aboutRule.style.opacity = '1'; });
         }
-        setTimeout(() => aboutLarge.classList.add('animated'), 600);         // 2. header
-        setTimeout(() => aboutSub.classList.add('animated'), 1600);          // 3. sub
+        setTimeout(() => aboutLarge.classList.add('animated'), t.aboutHeader); // 2. header
+        setTimeout(() => aboutSub.classList.add('animated'), t.aboutSub);      // 3. sub
       };
       window.addEventListener('amf:relief-emerged', startSequence);
-      fallback = setTimeout(startSequence, 1600);  // sculpture missing/instant → don't stall the text
+      fallback = setTimeout(startSequence, t.aboutFallback);  // sculpture missing/instant → don't stall the text
     }
 
     const lineObserver = new IntersectionObserver((entries) => {
@@ -552,6 +589,7 @@
     }, { root: obsRoot(), threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     trackObs(lineObserver);
     root.querySelectorAll('.line-reveal').forEach((el, i) => {
+      if (inStudioCascadeSection(el)) return;   // studio cascade handles these
       const inner = el.querySelector('.line-reveal-inner');
       if (inner) inner.style.transitionDelay = (i % 7 * 0.04) + 's';
       lineObserver.observe(el);
@@ -583,7 +621,10 @@
     ].join(', ');
 
     const revealEls = root.querySelectorAll(revealSelectors);
-    revealEls.forEach((el) => el.classList.add('reveal'));
+    revealEls.forEach((el) => {
+      if (inStudioCascadeSection(el)) return;   // studio cascade handles these
+      el.classList.add('reveal');
+    });
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -594,10 +635,81 @@
       });
     }, { root: obsRoot(), threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
     trackObs(observer);
-    revealEls.forEach((el) => { if (el !== aiFirstLabel) observer.observe(el); });
+    revealEls.forEach((el) => {
+      if (el === aiFirstLabel) return;
+      if (inStudioCascadeSection(el)) return;   // studio cascade
+      observer.observe(el);
+    });
 
     root.querySelectorAll('.logo-cell').forEach((cell, i) => {
       cell.style.transitionDelay = (i * 0.04) + 's';
+    });
+  }
+
+  /* ============ STUDIO SECTION CASCADE ============
+     The About page's "Core Capabilities" and "Operating Principles" sections
+     reveal as a coordinated top-to-bottom wave when they scroll into view:
+     heading starts, then the sub-paragraph, then each row of content (the
+     capability pills + their list items, or the approach cards) fades in
+     from top to bottom. These elements are excluded from the generic
+     char/word/line/reveal observers (above) so this is their sole driver. */
+  function initStudioCascade(root) {
+    if (!studioCascadeActive()) return;   // mobile keeps the natural scroll reveal
+    const sections = root.querySelectorAll('.studio-services, .studio-approach');
+    sections.forEach((section) => {
+      const heading = section.querySelector('.studio-section-heading');
+      const sub = section.querySelector('.studio-approach-sub');
+      const isServices = section.classList.contains('studio-services');
+
+      // Ordered groups revealed after the heading + sub, top-to-bottom.
+      const groups = [];
+      if (isServices) {
+        const cols = [...section.querySelectorAll('.service-col')];
+        const pills = cols.map((c) => c.querySelector('.service-pill')).filter(Boolean);
+        if (pills.length) groups.push({ type: 'fade', els: pills });        // the buttons row
+        const maxLi = Math.max(0, ...cols.map((c) => c.querySelectorAll('li').length));
+        for (let i = 0; i < maxLi; i++) {                                    // each list row
+          const rowEls = cols.map((c) => c.querySelectorAll('li')[i]).filter(Boolean);
+          if (rowEls.length) groups.push({ type: 'line', els: rowEls });
+        }
+      } else {
+        [...section.querySelectorAll('.approach-card')].forEach((card) => {
+          groups.push({ type: 'line', els: [card] });
+        });
+      }
+
+      // Hold the fade elements (pills) hidden; line-reveal items + split text
+      // are already hidden by their CSS base.
+      groups.forEach((g) => {
+        if (g.type === 'fade') g.els.forEach((el) => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(14px)';
+          el.style.transition = 'none';
+        });
+      });
+
+      let done = false;
+      const revealGroup = (g) => g.els.forEach((el) => {
+        if (g.type === 'fade') {
+          el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+          requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'none'; });
+        } else {
+          el.classList.add('revealed');
+        }
+      });
+      const run = () => {
+        if (done) return;
+        done = true;
+        if (heading) heading.classList.add('animated');                       // 1. header
+        if (sub) setTimeout(() => sub.classList.add('animated'), 300);         // 2. sub
+        groups.forEach((g, i) => setTimeout(() => revealGroup(g), 550 + i * 150)); // 3+. top→bottom
+      };
+
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) { run(); obs.unobserve(e.target); } });
+      }, { root: obsRoot(), threshold: 0.25 });
+      trackObs(obs);
+      obs.observe(heading || section);
     });
   }
 
@@ -1047,11 +1159,12 @@
 
   function initWorksSplitEntrance(root) {
     const worksLeft = root.querySelector('.works-left');
-    const mobileSeq = !!(window.AMFScroll && window.AMFScroll.isMobile());
+    const t = seqTimings();
+    const mobileSeq = true;   // statue-first cascade on all breakpoints
     if (worksLeft) {
       const els = worksLeft.querySelectorAll('.section-label, .works-left-title, .works-left-sub, .works-count');
       if (mobileSeq) {
-        // Mobile: the sculpture emerges first, THEN the Brand Work label + title
+        // The sculpture emerges first, THEN the Brand Work label + title
         // fade in one by one — matching the AI / contact pages. Hold them hidden
         // and reveal staggered on 'amf:relief-emerged' (fallback timer if none).
         els.forEach((el) => {
@@ -1065,12 +1178,12 @@
           done = true;
           clearTimeout(fb);
           window.removeEventListener('amf:relief-emerged', go);
-          els.forEach((el, i) => { el.style.transition = `opacity 0.9s ease ${i * 0.35}s`; });
+          els.forEach((el, i) => { el.style.transition = `opacity 0.9s ease ${i * t.step}s`; });
           requestAnimationFrame(() => els.forEach((el) => { el.style.opacity = '1'; }));
           worksLeft.classList.add('revealed');   // fade in the divider line too
         };
         window.addEventListener('amf:relief-emerged', go);
-        fb = setTimeout(go, 2000);
+        fb = setTimeout(go, t.fallback);
       } else {
         els.forEach((el, i) => {
           el.style.opacity = '0';
@@ -1114,10 +1227,10 @@
         trackObs(cardObs);
         worksCards.forEach((card) => cardObs.observe(card));
       };
-      // Trail the hero text by ~0.7s so cards come after the label/title.
-      const onEmerge = () => setTimeout(startCards, 700);
+      // Trail the hero text so cards come after the label/title.
+      const onEmerge = () => setTimeout(startCards, t.cardsTrail);
       window.addEventListener('amf:relief-emerged', onEmerge);
-      fb = setTimeout(startCards, 2700);
+      fb = setTimeout(startCards, t.cardsFallback);
     } else {
       worksCards.forEach((card, i) => {
         card.style.opacity = '0';
@@ -1358,6 +1471,7 @@
     initHero(mainEl);
     initPageHero(mainEl);
     initScrollReveals(mainEl);
+    initStudioCascade(mainEl);
     initWorksCycle(mainEl);
     initAiWorks(mainEl);
     initAiWorksMobileFocus(mainEl);

@@ -1947,13 +1947,12 @@ body.menu-open footer {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Hero headline: no per-character float — just a single, unified fade-in,
-   paced (2.8s) to settle in as the goat relief rises behind it. */
-.hero .hero-headline h1.split-chars .char { transform: none; }
-.hero .hero-headline h1.split-chars.animated .char {
-  animation: heroHeadlineFade 2.8s ease 1.2s forwards;
-  animation-delay: 1.2s;
-}
+/* Hero headline: a single, unified fade-in. Hidden from first paint (so there's
+   no flash of raw text before the chars split, and no per-character flicker),
+   then faded in as one unit by initHero once the goat relief has emerged. */
+.hero .hero-headline h1.split-chars { opacity: 0; transition: opacity 2.8s ease; }
+.hero .hero-headline h1.split-chars .char { transform: none; opacity: 1; }
+.hero .hero-headline h1.split-chars.hero-revealed { opacity: 1; }
 @keyframes heroHeadlineFade {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -2038,7 +2037,8 @@ body.menu-open footer {
   .split-chars .char,
   .split-words .word,
   .line-reveal-inner,
-  .reveal {
+  .reveal,
+  .hero .hero-headline h1.split-chars {
     transition-duration: 0.01ms !important;
     transform: none !important;
     opacity: 1 !important;
@@ -2530,7 +2530,7 @@ body.menu-open footer {
 }
 .ai-principles-eyebrow {
   position: absolute;
-  top: 6rem;
+  top: 11rem;
   left: var(--pad);
   font-family: var(--font-sans);
   font-size: 0.7rem;
@@ -2765,7 +2765,7 @@ body.menu-open footer {
   color: var(--ink);
 }
 .ai-works-label-bottom {
-  top: calc(50% + min(22vh, 230px) + 2.5rem);
+  top: calc(50% + min(22vh, 230px) + 1.25rem);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
