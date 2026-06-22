@@ -329,7 +329,6 @@
               ch.style.opacity = '1';
               ch.style.transform = '';
             });
-            if (window._enableHeroGrow) window._enableHeroGrow();
           }, { once: true });
         }
       });
@@ -347,47 +346,6 @@
         meta.style.transform = 'translateY(0)';
       }, 2400);
     }
-  }
-
-  function initHeroGrow(root) {
-    const heroSection = root.querySelector('.hero');
-    const heroH1 = root.querySelector('.hero-headline h1');
-    if (!heroSection || !heroH1) return;
-
-    const radius = 150;
-    let growReady = false;
-    function enableGrow() { growReady = true; }
-    window._enableHeroGrow = enableGrow;
-    trackTeardown(() => { if (window._enableHeroGrow === enableGrow) delete window._enableHeroGrow; });
-
-    const signal = pageSignal();
-    heroSection.addEventListener('mousemove', (e) => {
-      if (!growReady) return;
-      const allChars = heroH1.querySelectorAll('.char');
-      const mx = e.clientX, my = e.clientY;
-      allChars.forEach((ch) => {
-        const r = ch.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const d = Math.sqrt((mx - cx) ** 2 + (my - cy) ** 2);
-        if (d < radius) {
-          const scale = 1 + 0.15 * (1 - d / radius);
-          ch.style.transform = `scale(${scale})`;
-          ch.style.transition = 'transform 0.2s ease-out';
-        } else {
-          ch.style.transform = 'scale(1)';
-          ch.style.transition = 'transform 0.4s ease-out';
-        }
-      });
-    }, { signal });
-
-    heroSection.addEventListener('mouseleave', () => {
-      if (!growReady) return;
-      heroH1.querySelectorAll('.char').forEach((ch) => {
-        ch.style.transform = 'scale(1)';
-        ch.style.transition = 'transform 0.4s ease-out';
-      });
-    }, { signal });
   }
 
   /* ============ PAGE HERO / STUDIO HERO ============ */
@@ -1398,7 +1356,6 @@
 
     initTextSplits(mainEl);
     initHero(mainEl);
-    initHeroGrow(mainEl);
     initPageHero(mainEl);
     initScrollReveals(mainEl);
     initWorksCycle(mainEl);

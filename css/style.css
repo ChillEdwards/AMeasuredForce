@@ -3033,9 +3033,9 @@ body.menu-open footer {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
-  font-size: 22px;
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
   color: var(--ink);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 /* Reduced motion: freeze all SMIL animations to their fully-drawn state. */
