@@ -55,6 +55,14 @@
       if (e.retreatStart >= 0 && (tNow - e.retreatStart) / e.retreatDuration < 1) return true;
       if (e.startTime >= 0 && !e.done) return true;
     }
+    // Mobile floating light is always in gentle motion → keep drawing (it parks
+    // only when a card is open or under reduced motion).
+    if (NARROW && !cardOpen && !prefersReducedMotion) return true;
+    // Lights still easing toward target (card dissipate / inverted fade) → draw.
+    if (Math.abs(lightTarget.ambient - ambient.intensity) > 1e-3 ||
+        Math.abs(lightTarget.hemi - hemi.intensity) > 1e-3 ||
+        Math.abs(lightTarget.cursorIntensity - cursorLight.intensity) > 1e-3 ||
+        Math.abs(lightTarget.cursorDist - cursorLight.distance) > 1e-3) return true;
     return false;
   }
 
@@ -136,35 +144,48 @@
   const VIEWPORT_WORLD_H = 4.6;   // rough world-space height of one viewport
   const fragmentsByPage = {
     home: [
-      { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -0.6, z: 0.2,                rz: 0.0, rx: 0.0,      ry: 0.0,
-        mobile: { x: 1.2, y: -0.1, z: 0.25, size: 4.7 } },
+      { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -0.6, z: 0.185,                rz: 0.0, rx: 0.0,      ry: 0.0,
+        mobile: { x: 1.2, y: -0.1, z: 0.25, size: 4.7 },
+        meta: { name: 'Statue of Resting Goat', artist: 'Robert Slater', period: '3rd century BC', material: 'Marble', location: 'Fondazione Torlonia, Italy' } },
       { src: '/assets/reliefs/oceanus.glb',        size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0,
-        mobile: { x: 0.5, y: -7.5, z: 0.3, size: 5.0 } },
+        mobile: { x: 0.5, y: -7.5, z: 0.3, size: 5.0 },
+        meta: { name: 'Oceanus', artist: 'Caspar Gras', period: '1622/30', material: 'Bronze', location: 'Ferdinandeum Innsbruck, Austria' } },
       { src: '/assets/reliefs/nymph.glb',          size: 6.0, flat: 0.35, x: -3.0, y: -VIEWPORT_WORLD_H * 7.5 - 2,   z: 0.3, rz: 0.0, rx: 0.0,      ry: Math.PI / 2,
-        mobile: { x: -1.0, y: -VIEWPORT_WORLD_H * 9.0 - 6.5, z: 0.3, size: 6.0 } },
+        mobile: { x: -1.0, y: -VIEWPORT_WORLD_H * 9.0 - 6.5, z: 0.3, size: 6.0 },
+        meta: { name: 'Nymph Preparing for the Bath', artist: 'John Gibson', period: '19th century', material: 'Marble', location: 'The Usher Gallery, Lincoln, UK' } },
       { src: '/assets/reliefs/puck.glb',           size: 6.0, flat: 0.23, x:  2.5, y: -VIEWPORT_WORLD_H * 5.5 - 4,   z: 0.25, rz: 0.0, rx: -Math.PI / 2, ry: 0.0,
-        mobile: { x: 0.2, y: -VIEWPORT_WORLD_H * 5.5 - 4, z: 0.05, size: 6.3 } },
+        mobile: { x: 0.2, y: -VIEWPORT_WORLD_H * 5.5 - 4, z: 0.05, size: 6.3 },
+        meta: { name: 'Puck', artist: 'Harriet Hosmer', period: '1856', material: 'Marble', location: 'Walker Art Gallery, UK' } },
     ],
     contact: [
-      { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0, mobileY: -1.5,           z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
+      { src: '/assets/reliefs/triton.glb',  size: 6.5, flat: 0.13, x:  2.0, y: -2.0, mobileY: -1.5,           z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0,
+        meta: { name: 'Triton', artist: 'Caspar Gras', period: '1622/30', material: 'Bronze', location: 'Ferdinandeum Innsbruck, Austria' } },
     ],
     about: [
-      { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0, mobileY: -2.5, mobileScale: 1.3, z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI },
-      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.5, mobileX: -1.0, y: -VIEWPORT_WORLD_H * 4.2 + 1.3, mobileY: -VIEWPORT_WORLD_H * 5.6 - 0.5, mobileDX: -1.2, emergeMargin: -1.5, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2 },
-      { src: '/assets/reliefs/bosio.glb',      size: 6.0,  flat: 0.22, x:  2.6, y: -VIEWPORT_WORLD_H * 3.0 + 2.0, mobileScale: 1.5, mobileDX: -0.3, z:  0.25, rz: Math.PI, rx:  0.0, ry: -Math.PI / 6, flatShade: true },
+      { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0, mobileY: -2.5, mobileScale: 1.3, z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI,
+        meta: { name: 'Athena (Minerva of Arezzo)', artist: 'Unknown', period: '300–270 BCE', material: 'Bronze', location: 'Museo Archeologico Nazionale, Italy' } },
+      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.5, mobileX: -1.0, y: -VIEWPORT_WORLD_H * 4.2 + 1.3, mobileY: -VIEWPORT_WORLD_H * 5.6 - 0.5, mobileDX: -1.2, emergeMargin: -1.5, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2,
+        meta: { name: 'Pan et Oursons', artist: 'Emmanuel Fremiet', period: '1867', material: 'Marble', location: 'Musée d’Orsay, Paris, France' } },
+      { src: '/assets/reliefs/bosio.glb',      size: 6.0,  flat: 0.22, x:  2.6, y: -VIEWPORT_WORLD_H * 3.0 + 2.0, mobileScale: 1.5, mobileDX: -0.3, z:  0.25, rz: Math.PI, rx:  0.0, ry: -Math.PI / 6, flatShade: true,
+        meta: { name: 'La Nymphe Salmacis', artist: 'François Joseph Bosio', period: '1819–1837', material: 'Marble', location: 'Nouveau Musée National de Monaco, Monaco' } },
     ],
     work: [
-      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2, mobileDX: 0.7, mobileY: -0.5, mobileMirror: true, mobilePin: { startY: 5, endY: -400, offsetY: -0.5 }, z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true },
+      { src: '/assets/reliefs/cupid.glb',      size: 6.5, flat: 0.32, x: -1.5, y: -1.2, mobileDX: 0.7, mobileY: -0.5, mobileMirror: true, mobilePin: { startY: 5, endY: -400, offsetY: -0.5 }, z:  0.25, rz: Math.PI / 2, rx: -Math.PI / 2, ry: -Math.PI / 2, mirror: true,
+        meta: { name: 'Cupid Disguised as a Shepherd', artist: 'John Gibson', period: 'Early 1840s', material: 'Marble', location: 'Walker Art Gallery, UK' } },
     ],
     ai: [
-      { src: '/assets/reliefs/mercury.glb',    size: 5.0, flat: 0.25, x: 2.0, y: -0.5, mobileY: -0.3, mobileScale: 1.15, mobileZ: 0.2, z:  0.25, rz: 0.0, rx: 0.0, ry: Math.PI },
-      { src: '/assets/reliefs/vacossin.glb',   size: 6.0, flat: 0.25, x: -2.0, y: -VIEWPORT_WORLD_H * 2.0 + 2.5, mobileY: -5.3, mobileDX: -1.0, emergeMargin: 0.5, z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0 },
+      { src: '/assets/reliefs/mercury.glb',    size: 5.0, flat: 0.25, x: 2.0, y: -0.5, mobileY: -0.3, mobileScale: 1.15, mobileZ: 0.2, z:  0.25, rz: 0.0, rx: 0.0, ry: Math.PI,
+        meta: { name: 'Mercury', artist: 'Joseph Nollekens', period: '18th century', material: 'Marble', location: 'The Usher Gallery, Lincoln, UK' } },
+      { src: '/assets/reliefs/vacossin.glb',   size: 6.0, flat: 0.25, x: -2.0, y: -VIEWPORT_WORLD_H * 2.0 + 2.5, mobileY: -5.3, mobileDX: -1.0, emergeMargin: 0.5, z:  0.25, rz: 0.0, rx: 0.0, ry: 0.0,
+        meta: { name: 'Deux chiens de meute à l’attache', artist: 'Georges Lucien Vacossin', period: '1911', material: '', location: 'Dépôt des sculptures de la Ville de Paris, France' } },
       { src: '/assets/reliefs/bearded-man.glb', size: 5.0, flat: 0.25, x: 2.5, y: -VIEWPORT_WORLD_H * 4.0,        z:  0.25, rz: 0.0, rx: Math.PI, ry: Math.PI - Math.PI / 3,
         mobileY: -14,
         emergeMargin: -1.6,   // delay the rise until we're into the Approach section
         pin: { startY: -VIEWPORT_WORLD_H * 4.0, endY: -VIEWPORT_WORLD_H * 7.0, offsetY: 0 },
-        mobilePin: { startY: -11, endY: -17, offsetY: 0 } },
-      { src: '/assets/reliefs/fullbody.glb',   size: 9.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 10.0 - 6.5,  z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0 },
+        mobilePin: { startY: -11, endY: -17, offsetY: 0 },
+        meta: { name: 'Portrait of a Bearded Man', artist: 'Unknown', period: 'c. 150 B.C.', material: 'Marble', location: 'The J. Paul Getty Museum, USA' } },
+      { src: '/assets/reliefs/fullbody.glb',   size: 9.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 10.0 - 6.5,  z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0,
+        meta: { name: 'Theodoric the Great', artist: 'Peter Vischer the Elder (after Dürer)', period: '1512–13', material: 'Bronze', location: 'Court Church Innsbruck, Austria' } },
     ],
   };
 
@@ -289,11 +310,22 @@
       emerging.push(holder);
     }
 
+    // Interactive reliefs carry a `meta` block (name/artist/period/material/
+    // location). Hovering one grows the cursor; clicking opens an info card
+    // (see relief-info.js). Tracked in its own list so picking works even under
+    // reduced-motion (where holders aren't pushed to `emerging`).
+    if (cfg.meta) {
+      holder.userData.meta = cfg.meta;
+      interactiveReliefs.push(holder);
+    }
+
     scene.add(holder);
     wake();  // a relief just loaded — draw its emerge (mobile may be paused)
     return holder;
   }
   const emerging = [];
+  // Holders with a `meta` block — the raycast-pickable, clickable sculptures.
+  const interactiveReliefs = [];
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Relief world-x positions are tuned for the wide desktop camera. On narrow
   // (mobile/tablet) or touch viewports the camera sees a much narrower slice of
@@ -325,6 +357,13 @@
   function clearReliefs() {
     for (let i = 0; i < emerging.length; i++) disposeReliefHolder(emerging[i]);
     emerging.length = 0;
+    // Reduced-motion holders never enter `emerging` but may be interactive, so
+    // dispose any still attached (the first loop already nulled the parents of
+    // the animated ones), then reset the list.
+    for (let i = 0; i < interactiveReliefs.length; i++) {
+      if (interactiveReliefs[i].parent) disposeReliefHolder(interactiveReliefs[i]);
+    }
+    interactiveReliefs.length = 0;
   }
 
   // Generation counter guards against late GLB callbacks landing after the
@@ -373,25 +412,74 @@
   cursorLight.position.set(0, 0, WALL_LIGHT_Z);
   scene.add(cursorLight);
 
+  // Mobile floating-light state: with no cursor on touch, the light is a screen-
+  // space object that starts at the top (on the goat's head, so its emerge from
+  // the wall is lit) and immediately scans down and around the viewport. It is
+  // NOT affected by touch. Driven in NDC and raycast onto the wall, so it's
+  // always in the viewport.
+  const HOME_NY = 0.0;          // float anchor (NDC; +1 top) — centred to scan all
+  const WANDER_AX = 0.85;       // horizontal wander amplitude (wide sweep)
+  const WANDER_AY = 0.8;        // vertical wander amplitude (scans the whole view)
+  let lightNX = 0;              // eased horizontal NDC
+  let lightNY = 0.8;            // eased vertical NDC — starts at the top (goat head)
+  let cardOpen = false;         // mobile info-card open → REVEAL lighting preset
+  let wanderStart = performance.now() / 1000;  // wander clock origin (scans from load)
+
   // "Lights off" mode — when the page is inverted, kill ambient/hemi so the
   // cursor becomes the only light source (flashlight in a dark room). The
   // cursor light's range is bumped so it still illuminates the reliefs clearly.
+  // Lighting is now TARGET-based: refreshLightTarget() picks a preset and the
+  // animate loop eases the live lights toward it (instant snap on desktop so
+  // the desktop inverted toggle is unchanged). The card-open REVEAL preset
+  // dissipates the spotlight and restores even ambient so the whole sculpture
+  // reads in place — even in inverted mode.
   const LIGHT_DEFAULTS = {
     ambient: ambient.intensity,
     hemi: hemi.intensity,
     cursorIntensity: cursorLight.intensity,
     cursorDist: cursorLight.distance,
   };
-  function applyInvertedLights() {
+  const lightTarget = {
+    ambient: LIGHT_DEFAULTS.ambient,
+    hemi: LIGHT_DEFAULTS.hemi,
+    cursorIntensity: LIGHT_DEFAULTS.cursorIntensity,
+    cursorDist: LIGHT_DEFAULTS.cursorDist,
+  };
+  function refreshLightTarget() {
     const inv = document.documentElement.classList.contains('inverted');
-    ambient.intensity      = inv ? 0.02 : LIGHT_DEFAULTS.ambient;
-    hemi.intensity         = inv ? 0.02 : LIGHT_DEFAULTS.hemi;
-    cursorLight.intensity  = inv ? 1.1  : LIGHT_DEFAULTS.cursorIntensity;
-    cursorLight.distance   = inv ? 3.2  : LIGHT_DEFAULTS.cursorDist;
-    wake();  // light intensities changed — draw a frame (mobile may be paused)
+    if (NARROW && cardOpen) {
+      // REVEAL: even fill, no hot-spot — works in inverted too (ambient back up).
+      lightTarget.ambient = LIGHT_DEFAULTS.ambient;
+      lightTarget.hemi = LIGHT_DEFAULTS.hemi;
+      lightTarget.cursorIntensity = 0;
+      lightTarget.cursorDist = inv ? 3.2 : LIGHT_DEFAULTS.cursorDist;
+    } else if (inv) {
+      lightTarget.ambient = 0.02;
+      lightTarget.hemi = 0.02;
+      lightTarget.cursorIntensity = 1.1;
+      lightTarget.cursorDist = 3.2;
+    } else {
+      lightTarget.ambient = LIGHT_DEFAULTS.ambient;
+      lightTarget.hemi = LIGHT_DEFAULTS.hemi;
+      lightTarget.cursorIntensity = LIGHT_DEFAULTS.cursorIntensity;
+      lightTarget.cursorDist = LIGHT_DEFAULTS.cursorDist;
+    }
+    wake();  // draw the transition frames (mobile may be paused)
   }
-  applyInvertedLights();
-  new MutationObserver(applyInvertedLights).observe(document.documentElement, {
+  // Class observer handles BOTH the inverted toggle and the mobile card
+  // open/close (relief-info.js toggles html.relief-zoom-open).
+  function onHtmlClassChange() {
+    cardOpen = NARROW && document.documentElement.classList.contains('relief-zoom-open');
+    refreshLightTarget();  // card-open dissipates the light; close restores it
+  }
+  // Seed live lights to the initial target instantly (no load-time fade) so the
+  // mobile light is on and scanning from the first frame.
+  refreshLightTarget();
+  ambient.intensity     = lightTarget.ambient;
+  hemi.intensity        = lightTarget.hemi;
+  cursorLight.intensity = lightTarget.cursorIntensity;
+  cursorLight.distance  = lightTarget.cursorDist;
+  new MutationObserver(onHtmlClassChange).observe(document.documentElement, {
     attributes: true, attributeFilter: ['class']
   });
 
@@ -409,6 +497,67 @@
     mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
   }, { passive: true });
+
+  /* ---- Relief picking (hover cursor + click-to-open info card) ---- */
+  // A dedicated raycaster so relief picking never perturbs the cursor-light ray.
+  const pickRay = new THREE.Raycaster();
+  let lastReliefHoverId = 0;  // edge-trigger guard for hover enter/leave events
+
+  // Return the interactive holder under NDC point {x,y}, or null. Only reliefs
+  // that have surfaced enough to read (emerge done, or risen past ~60%) are
+  // pickable, so you can't click one still buried behind the wall.
+  function pickRelief(ndcX, ndcY) {
+    if (!interactiveReliefs.length) return null;
+    pickRay.setFromCamera({ x: ndcX, y: ndcY }, camera);
+    const hits = pickRay.intersectObjects(interactiveReliefs, true);
+    for (let i = 0; i < hits.length; i++) {
+      let o = hits[i].object;
+      while (o && !o.userData.meta && o.parent) o = o.parent;  // climb to holder
+      if (!o || !o.userData.meta) continue;
+      const e = o.userData.emerge;
+      if (e) {
+        if (e.startTime < 0) continue;  // not started rising yet → still buried
+        if (!e.done) {
+          const t = (performance.now() / 1000 - e.startTime) / e.duration;
+          if (t < 0.6) continue;        // barely poking out → not yet clickable
+        }
+      }
+      return o;  // reduced-motion holders have no `emerge` → always pickable
+    }
+    return null;
+  }
+
+  // Project a holder's world position to viewport pixels through the live
+  // camera. Valid at open time because opening the card locks scroll, so the
+  // camera Y stops easing and the projected point stays put.
+  const _projV = new THREE.Vector3();
+  function reliefScreenPos(holder) {
+    holder.getWorldPosition(_projV);
+    _projV.project(camera);
+    return {
+      x: (_projV.x * 0.5 + 0.5) * window.innerWidth,
+      y: (-_projV.y * 0.5 + 0.5) * window.innerHeight,
+    };
+  }
+
+  // Click/tap → open. #shaderBg is pointer-events:none, so canvas clicks fall
+  // through to the document; we raycast here in the handler (not the loop) so a
+  // tap still works on mobile where the render loop is parked. Guard against
+  // clicks that land on real UI overlapping the sculpture.
+  document.addEventListener('click', (e) => {
+    if (document.documentElement.classList.contains('relief-zoom-open')) return;
+    const t = e.target;
+    if (t && t.closest && t.closest('a, button, input, textarea, .menu-overlay')) return;
+    const ndcX =  (e.clientX / window.innerWidth)  * 2 - 1;
+    const ndcY = -(e.clientY / window.innerHeight) * 2 + 1;
+    const holder = pickRelief(ndcX, ndcY);
+    if (!holder) return;
+    // Anchor the card to the click point (card opens to its left), not the
+    // sculpture's center, so it lands where the user actually pointed.
+    window.dispatchEvent(new CustomEvent('amf:relief-click', {
+      detail: { meta: holder.userData.meta, screenPos: { x: e.clientX, y: e.clientY } }
+    }));
+  });
 
   /* ---- Resize ---- */
   // Always resize the renderer to the viewport so the canvas keeps covering it
@@ -461,6 +610,28 @@
     camera.position.y += (scrollCamY - camera.position.y) * 0.18;
     wall.position.y = camera.position.y;
 
+    // Mobile floating light: drive the NDC `mouse` as a screen-space object that
+    // scans the viewport from the moment the page loads. It starts at the top
+    // (on the goat's head, so its emerge from the wall is lit) and works its way
+    // down and around. Vertical uses cosine (starts at the top, descends slowly);
+    // horizontal uses sine (starts centred, sweeps side to side). Detuned second
+    // harmonics keep the path organic/non-repeating. Touch does NOT affect it.
+    // Always in viewport (NDC clamped). Desktop keeps the real mouse;
+    // reduced-motion / card-open leave it off.
+    if (NARROW && !cardOpen && !prefersReducedMotion) {
+      const wt = tNow - wanderStart;
+      const tx = WANDER_AX * (0.7 * Math.sin(wt * 0.8) + 0.3 * Math.sin(wt * 1.4));
+      const ty = HOME_NY + WANDER_AY * (0.7 * Math.cos(wt * 0.4) + 0.3 * Math.cos(wt * 0.72));
+      lightNX += (tx - lightNX) * 0.08;
+      lightNY += (ty - lightNY) * 0.08;
+      if (lightNY >  0.95) lightNY =  0.95;
+      if (lightNY < -0.85) lightNY = -0.85;
+      if (lightNX >  0.92) lightNX =  0.92;
+      if (lightNX < -0.92) lightNX = -0.92;
+      mouse.x = lightNX;
+      mouse.y = lightNY;
+    }
+
     raycaster.setFromCamera(mouse, camera);
     raycaster.ray.intersectPlane(wallPlane, targetPos);
 
@@ -468,6 +639,36 @@
     currentPos.y += (targetPos.y - currentPos.y) * 0.14;
     currentPos.z += (WALL_LIGHT_Z - currentPos.z) * 0.14;
     cursorLight.position.copy(currentPos);
+
+    // Ease lights toward their preset target (mode / inverted / card-reveal).
+    // Mobile eases (smooth card dissipation); desktop snaps so its inverted
+    // toggle stays instant/unchanged.
+    const cursorGoal = lightTarget.cursorIntensity;
+    if (NARROW) {
+      const LK = 0.15;
+      ambient.intensity      += (lightTarget.ambient - ambient.intensity)    * LK;
+      hemi.intensity         += (lightTarget.hemi    - hemi.intensity)       * LK;
+      cursorLight.intensity  += (cursorGoal          - cursorLight.intensity) * LK;
+      cursorLight.distance   += (lightTarget.cursorDist - cursorLight.distance) * LK;
+    } else {
+      ambient.intensity = lightTarget.ambient;
+      hemi.intensity = lightTarget.hemi;
+      cursorLight.intensity = cursorGoal;
+      cursorLight.distance = lightTarget.cursorDist;
+    }
+
+    // Relief hover (desktop only — mobile has no hover and parks this loop).
+    // Raycast the pointer against interactive reliefs and announce enter/leave
+    // so the custom cursor can grow/pulse exactly like over a button. Edge-
+    // triggered on the holder id so we dispatch only on change, not every frame.
+    if (!NARROW) {
+      const hov = pickRelief(mouse.x, mouse.y);
+      const hovId = hov ? hov.id : 0;
+      if (hovId !== lastReliefHoverId) {
+        lastReliefHoverId = hovId;
+        window.dispatchEvent(new CustomEvent(hov ? 'amf:relief-hover' : 'amf:relief-out'));
+      }
+    }
 
     // Sticky pin pass — for any relief that declared a pin range, override
     // its world Y so it tracks the camera through that range and parks at
@@ -588,8 +789,20 @@
       clearReliefs();
       camera.position.y = 0;
       scrollCamY = 0;
+      cardOpen = false;                            // card can't survive a nav
+      lightNX = 0; lightNY = 0.8;                  // light re-enters from the top (goat head)
+      wanderStart = performance.now() / 1000;      // restart the scan for the new page's hero
+      refreshLightTarget();                        // drop any REVEAL preset
       loadReliefsForKey(pageKey || pageKeyFromPath(window.location.pathname));
       wake();  // draw the cleared scene + the new page's emerge
-    }
+    },
+    // Hooks for relief-info.js / console inspection. pickReliefAt takes viewport
+    // pixels and returns the holder under that point (or null); reliefScreenPos
+    // projects a holder back to viewport pixels for card placement.
+    pickReliefAt: function (clientX, clientY) {
+      return pickRelief((clientX / window.innerWidth) * 2 - 1,
+                        -(clientY / window.innerHeight) * 2 + 1);
+    },
+    reliefScreenPos: reliefScreenPos
   };
 })();

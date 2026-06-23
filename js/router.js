@@ -199,6 +199,10 @@
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
 
+    // Force-close an open sculpture info card (pushState nav doesn't fire
+    // popstate, so relief-info.js can't catch SPA nav on its own).
+    if (window.AMFReliefInfo && window.AMFReliefInfo.isOpen()) window.AMFReliefInfo.close();
+
     const newKey = pageKeyFromPath(new URL(href, location.href).pathname);
     if (window.AMFShaderBg && window.AMFShaderBg.swapPage) {
       window.AMFShaderBg.swapPage(newKey);

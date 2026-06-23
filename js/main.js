@@ -293,6 +293,22 @@
         cursorEl.classList.remove('hovering');
       }
     });
+
+    // WebGL sculptures have no DOM element, so shader-bg.js raycasts the pointer
+    // against the reliefs and tells us when it's over a clickable one. Grow the
+    // cursor exactly like over a button (reuses the .hovering class + pulse).
+    window.addEventListener('amf:relief-hover', () => {
+      if (!cursorEl.classList.contains('hovering-work')) cursorEl.classList.add('hovering');
+    });
+    window.addEventListener('amf:relief-out', () => {
+      // Only shrink if a real DOM element under the pointer isn't also keeping
+      // the cursor grown (so leaving the mesh onto a button stays enlarged).
+      const el = document.elementFromPoint(targetX, targetY);
+      const overUi = el && el.closest && el.closest(HOVER_SEL);
+      if (!overUi && !cursorEl.classList.contains('hovering-work')) {
+        cursorEl.classList.remove('hovering');
+      }
+    });
   }
 
   /* ============ MENU OVERLAY (persistent) ============ */
