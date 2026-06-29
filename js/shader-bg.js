@@ -145,7 +145,7 @@
   const fragmentsByPage = {
     home: [
       { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -0.6, z: 0.185,                rz: 0.0, rx: 0.0,      ry: 0.0,
-        mobile: { x: 1.2, y: -0.1, z: 0.25, size: 4.7 },
+        mobile: { x: 0.8, y: -0.1, z: 0.25, size: 4.7 },
         meta: { name: 'Statue of Resting Goat', artist: 'Robert Slater', period: '3rd century BC', material: 'Marble', location: 'Fondazione Torlonia, Italy' } },
       { src: '/assets/reliefs/oceanus.glb',        size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0,
         mobile: { x: 0.5, y: -7.5, z: 0.3, size: 5.0 },
@@ -425,6 +425,28 @@
   let cardOpen = false;         // mobile info-card open → REVEAL lighting preset
   let wanderStart = performance.now() / 1000;  // wander clock origin (scans from load)
 
+  // First-load HOME entrance (both breakpoints): hold the light DARK until the hero
+  // cascade (goat + both text lines) has faded in, then reveal it. main.js fires the
+  // cue event once its cascade completes. Skipped under reduced motion / off home.
+  //   • Mobile: the floating light is parked off-screen, then DROPS in from the top
+  //     and hands off to the scan.
+  //   • Desktop: the cursor light simply IGNITES (intensity ramps up) wherever the
+  //     cursor already is — no positional move.
+  const HOME_ENTRANCE =
+    !prefersReducedMotion && pageKeyFromPath(window.location.pathname) === 'home';
+  let entrance = HOME_ENTRANCE ? 'hold' : 'off';  // 'hold' | 'drop' | 'off'
+  let dropStart = -1;          // perf-time (s) the reveal began
+  let dropEase = 0;            // 0..1 eased reveal progress (drives the drop + ignite)
+  const DROP_DUR = 1.1;        // seconds for the reveal
+  window.addEventListener('amf:hero-entrance-done', function () {
+    if (entrance === 'hold') { entrance = 'drop'; dropStart = performance.now() / 1000; wake(); }
+  });
+  // First-load home: the goat is the FINALE — hold its emerge buried until the intro
+  // timeline fires 'amf:emerge-go'. Cleared on SPA nav (swapPage) so reliefs emerge
+  // normally thereafter. Off the home page / reduced motion: never held.
+  let holdHomeEmerge = HOME_ENTRANCE;
+  window.addEventListener('amf:emerge-go', function () { holdHomeEmerge = false; wake(); });
+
   // "Lights off" mode — when the page is inverted, kill ambient/hemi so the
   // cursor becomes the only light source (flashlight in a dark room). The
   // cursor light's range is bumped so it still illuminates the reliefs clearly.
@@ -602,6 +624,16 @@
     requestAnimationFrame(animate);
     const tNow = performance.now() / 1000;
 
+    // Home entrance reveal — advance the eased ramp on every device (the mobile drop
+    // and the desktop ignite both read dropEase). When it finishes, hand off: mobile
+    // resets the scan clock so it continues from the landing point; desktop just stays
+    // on the cursor at full intensity.
+    if (entrance === 'drop') {
+      const dp = Math.min((tNow - dropStart) / DROP_DUR, 1);
+      dropEase = dp < 0.5 ? 2 * dp * dp : 1 - Math.pow(-2 * dp + 2, 2) / 2;  // easeInOut
+      if (dp >= 1) { entrance = 'off'; wanderStart = tNow; }
+    }
+
     // Camera scroll follow — trailing lerp gives a soft parallax of the reliefs
     // against the wall. Now enabled on mobile too: with the content scrolling
     // inside #scroll-root, the document doesn't scroll, so the fixed canvas is
@@ -610,24 +642,30 @@
     camera.position.y += (scrollCamY - camera.position.y) * 0.18;
     wall.position.y = camera.position.y;
 
-    // Mobile floating light: drive the NDC `mouse` as a screen-space object that
-    // scans the viewport from the moment the page loads. It starts at the top
-    // (on the goat's head, so its emerge from the wall is lit) and works its way
-    // down and around. Vertical uses cosine (starts at the top, descends slowly);
-    // horizontal uses sine (starts centred, sweeps side to side). Detuned second
-    // harmonics keep the path organic/non-repeating. Touch does NOT affect it.
-    // Always in viewport (NDC clamped). Desktop keeps the real mouse;
-    // reduced-motion / card-open leave it off.
+    // Mobile floating light: a screen-space light driven in NDC (no cursor on touch).
+    // DROPS in from the top onto the goat's head (0.8), then courses around the page
+    // via a detuned serpentine wander. Touch does NOT affect it. Always in viewport
+    // (NDC clamped). Desktop keeps the real mouse; reduced motion / card-open off.
     if (NARROW && !cardOpen && !prefersReducedMotion) {
-      const wt = tNow - wanderStart;
-      const tx = WANDER_AX * (0.7 * Math.sin(wt * 0.8) + 0.3 * Math.sin(wt * 1.4));
-      const ty = HOME_NY + WANDER_AY * (0.7 * Math.cos(wt * 0.4) + 0.3 * Math.cos(wt * 0.72));
-      lightNX += (tx - lightNX) * 0.08;
-      lightNY += (ty - lightNY) * 0.08;
-      if (lightNY >  0.95) lightNY =  0.95;
-      if (lightNY < -0.85) lightNY = -0.85;
-      if (lightNX >  0.92) lightNX =  0.92;
-      if (lightNX < -0.92) lightNX = -0.92;
+      if (entrance === 'hold') {
+        // Parked above the top edge while the goat + hero text fade in (lit by ambient).
+        lightNX = 0; lightNY = 1.3;
+      } else if (entrance === 'drop') {
+        // Falls in from above the top down onto the goat's head (0.8); the scan also
+        // begins at 0.8, so it continues seamlessly. dropEase advanced near the top.
+        lightNX = 0;
+        lightNY = 1.3 + (0.8 - 1.3) * dropEase;
+      } else {
+        const wt = tNow - wanderStart;
+        const tx = WANDER_AX * (0.7 * Math.sin(wt * 0.8) + 0.3 * Math.sin(wt * 1.4));
+        const ty = HOME_NY + WANDER_AY * (0.7 * Math.cos(wt * 0.4) + 0.3 * Math.cos(wt * 0.72));
+        lightNX += (tx - lightNX) * 0.08;
+        lightNY += (ty - lightNY) * 0.08;
+        if (lightNY >  0.95) lightNY =  0.95;
+        if (lightNY < -0.85) lightNY = -0.85;
+        if (lightNX >  0.92) lightNX =  0.92;
+        if (lightNX < -0.92) lightNX = -0.92;
+      }
       mouse.x = lightNX;
       mouse.y = lightNY;
     }
@@ -656,6 +694,12 @@
       cursorLight.intensity = cursorGoal;
       cursorLight.distance = lightTarget.cursorDist;
     }
+
+    // Home entrance (both breakpoints): spotlight stays dark while the hero cascade
+    // fades in (scene reads on ambient only), then ignites — in sync with the mobile
+    // drop-in, or as a pure intensity ramp at the cursor on desktop.
+    if (entrance === 'hold') cursorLight.intensity = 0;
+    else if (entrance === 'drop') cursorLight.intensity = lightTarget.cursorIntensity * dropEase;
 
     // Relief hover (desktop only — mobile has no hover and parks this loop).
     // Raycast the pointer against interactive reliefs and announce enter/leave
@@ -714,6 +758,7 @@
         }
         if (e.done) continue;
         if (e.startTime < 0) {
+          if (holdHomeEmerge) continue;  // first-load intro: goat waits for its cue
           // Lead margin: default 1.5 starts the rise a touch before the relief is
           // fully on screen. A per-relief override can tighten it (negative =
           // start later, only once it's well into view) — used for the bottom CTA
@@ -790,6 +835,7 @@
       camera.position.y = 0;
       scrollCamY = 0;
       cardOpen = false;                            // card can't survive a nav
+      holdHomeEmerge = false;                       // intro hold is first-load only
       lightNX = 0; lightNY = 0.8;                  // light re-enters from the top (goat head)
       wanderStart = performance.now() / 1000;      // restart the scan for the new page's hero
       refreshLightTarget();                        // drop any REVEAL preset

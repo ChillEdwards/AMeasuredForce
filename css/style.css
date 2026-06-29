@@ -90,26 +90,26 @@ img { display: block; }
   white-space: nowrap;
   transition: font-size 0.3s cubic-bezier(0.16,1,0.3,1);
 }
+/* Hover: the cursor becomes a thin RING that FRAMES the target instead of a
+   filled blob that covers it — so the hovered element (which also brightens via
+   its own :hover) stays fully visible. mix-blend-mode:difference (from .cursor)
+   keeps the ring legible on any background, light or dark. */
 .cursor.hovering {
-  width: 80px; height: 80px;
+  width: 50px; height: 50px;
+  background: transparent;
+  border: 1.5px solid #fff;
   animation: cursor-pulse 1.8s ease-in-out infinite;
 }
 .cursor.hovering .cursor-text { font-size: 0; }
-/* Over a work image: the circle becomes a warm spotlight — the area under
-   the cursor brightens and takes on a sepia/marble tint, echoing the
-   plaster-wall light theme. A slow breathing pulse signals "clickable"
-   without needing a label. Swap mix-blend-mode for a backdrop-filter so
-   we're not inverting, we're tinting + lighting. */
+/* Over a work image: a slightly larger ring + a "View" label so the affordance
+   is unmistakable (the image itself brightens/zooms via its wrapper :hover). */
 .cursor.hovering-work {
-  width: 120px;
-  height: 120px;
+  width: 64px; height: 64px;
   background: transparent;
-  mix-blend-mode: normal;
-  backdrop-filter: brightness(1.25) sepia(0.7) saturate(0.7);
-  -webkit-backdrop-filter: brightness(1.25) sepia(0.7) saturate(0.7);
+  border: 1.5px solid #fff;
   animation: cursor-pulse 1.8s ease-in-out infinite;
 }
-.cursor.hovering-work .cursor-text { font-size: 0; }
+.cursor.hovering-work .cursor-text { font-size: 9px; }
 @keyframes cursor-pulse {
   0%, 100% { transform: translate(-50%, -50%) scale(1); }
   50%      { transform: translate(-50%, -50%) scale(1.08); }
@@ -121,13 +121,25 @@ img { display: block; }
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: grid; grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 1.1rem var(--pad);
+  /* extra top cushion on desktop so the logo/menu don't hug the viewport top
+     (mobile keeps its own tighter padding via the max-width:768 rule below) */
+  padding: 1.8rem var(--pad) 1.1rem;
   transition: background 0.4s, backdrop-filter 0.4s;
 }
-.header-logo { justify-self: start; }
+/* margin-left pulls the logo's CENTRE left to mirror the menu icon's centre
+   (the logo is wider than the icon, so equal outer margins look lopsided).
+   Per-breakpoint value ≈ (logoHeight - menuBoxWidth) / 2. */
+.header-logo { justify-self: start; margin-left: -3px; }
 .header-logo a { display: flex; align-items: center; }
-.header-logo-img { height: 78px; width: auto; }
-.header-center-name { justify-self: center; }
+.header-logo-img { height: 26px; width: auto; }
+.header-center-name { justify-self: center; transition: opacity 0.8s ease; }
+
+/* First-load intro sequence: the header pieces start hidden and are faded in, in
+   order, by the JS timeline (bootHomeIntro). The class is removed once they're in,
+   so the normal scroll-hide behaviour takes over afterwards. */
+html.intro-seq .header-center-name,
+html.intro-seq .header-logo,
+html.intro-seq .header-actions { opacity: 0; }
 .header-center-name a {
   font-family: var(--font-sans); font-weight: 400;
   font-size: 0.65rem; letter-spacing: 0.22em;
@@ -174,6 +186,11 @@ body.header-hidden .header-actions {
    the page's color flip. */
 html.inverted .invert-dot { transform: scaleX(-1); }
 
+/* Site is locked to dark (inverted) mode — the manual invert toggle is hidden.
+   To restore the light/dark switch: remove this rule and drop the default
+   `class="inverted"` from each page's <html> tag. */
+.invert-dot { display: none !important; }
+
 /* Invert the whole site when active. The canvas and work photos are counter-
    inverted so they stay untouched — pure invert(1) self-cancels cleanly. */
 html.inverted { filter: invert(1); }
@@ -194,7 +211,7 @@ html.inverted .video-lightbox { filter: invert(1) !important; }
 
 /* ============ MENU TRIGGER (two-line hamburger → X) ============ */
 .menu-trigger {
-  width: 22px; height: 22px;
+  width: 26px; height: 26px;
   background: transparent;
   border: none; padding: 0; cursor: pointer;
   color: var(--ash);
@@ -203,7 +220,12 @@ html.inverted .video-lightbox { filter: invert(1) !important; }
   transition: color 0.3s ease;
   position: relative;
 }
-.menu-trigger:hover { color: var(--ink); }
+/* Hover: brighten to the bright theme ink + thicken the hairlines so the icon
+   reads clearly inside the framing cursor ring (the cursor no longer covers it). */
+.menu-trigger:hover { color: var(--ink); transform: scale(1.08); }
+.menu-trigger { transition: color 0.3s ease, transform 0.3s ease; }
+.menu-trigger:hover .menu-trigger-dot::before,
+.menu-trigger:hover .menu-trigger-dot::after { height: 2px; }
 /* Two 1px hairlines stacked — same hairline weight as the invert dot's
    stroke and the site's 1px borders, so the icon shares the design
    language. On open, the lines collapse to center and cross into a
@@ -211,8 +233,8 @@ html.inverted .video-lightbox { filter: invert(1) !important; }
 .menu-trigger-dot {
   display: block;
   position: relative;
-  width: 16px;
-  height: 10px;
+  width: 22px;
+  height: 9px;
 }
 .menu-trigger-dot::before,
 .menu-trigger-dot::after {
@@ -224,7 +246,8 @@ html.inverted .video-lightbox { filter: invert(1) !important; }
   background: currentColor;
   transition:
     top 0.4s cubic-bezier(0.65, 0, 0.35, 1),
-    transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    transform 0.4s cubic-bezier(0.65, 0, 0.35, 1),
+    height 0.3s ease;
 }
 .menu-trigger-dot::before { top: 0; }
 .menu-trigger-dot::after  { top: calc(100% - 1px); }
@@ -711,7 +734,10 @@ body.menu-open footer {
   transition: filter 0.55s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1);
 }
 .works-cycle-item.is-active img { filter: grayscale(0); }
-.works-cycle-item a:hover img { transform: scale(1.04); }
+/* Hover: the img's transform/filter are rewritten inline every frame, so lift the
+   WRAPPER instead — scale it up + a bright frame (var(--ink) displays bright under
+   the page's invert). Pairs with the cursor's ring + "View" label. */
+.works-cycle-item:hover { transform: scale(1.05); box-shadow: 0 0 0 2px var(--ink); }
 
 /* ============ SERVICES ============ */
 .services { padding: 10rem var(--pad); border-top: 1px solid var(--border); }
@@ -968,7 +994,10 @@ body.menu-open footer {
   text-shadow: 0 2px 20px rgba(0,0,0,0.6);
   transition: opacity 0.4s ease;
 }
+/* Hover: a bright frame (the card's transform is inline-driven, so use box-shadow,
+   not transform). Pairs with the brightened title + the cursor's ring + "View" label. */
 .works-card:hover h3 { color: #fff; }
+.works-card:hover { box-shadow: 0 0 0 2px var(--ink); }
 
 /* ---- Brand Work cards on mobile ----
    Match the homepage / AI work cards: a normal vertical stack of 4:5 rounded
@@ -2192,7 +2221,8 @@ html.relief-zoom-open #scroll-root { overflow: hidden !important; }
 
 @media (max-width: 768px) {
   /* Keep the desktop header design on mobile — center wordmark stays visible. */
-  .header-logo-img { height: 75px; }
+  .header-logo-img { height: 24px; }
+  .header-logo { margin-left: -2px; }
   .header { padding: 1rem var(--pad); }
 
   /* Top-align the hero and give it clearance below the fixed header (the big
@@ -2401,7 +2431,10 @@ html.relief-zoom-open #scroll-root { overflow: hidden !important; }
 }
 
 @media (max-width: 400px) {
-  .header-logo-img { height: 60px; }
+  .header-logo-img { height: 17px; }
+  .header-logo { margin-left: 0; }
+  .menu-trigger { width: 22px; height: 22px; }
+  .menu-trigger-dot { width: 18px; height: 7px; }
   .menu-overlay { padding: 7rem var(--pad) 3rem; }
 }
 

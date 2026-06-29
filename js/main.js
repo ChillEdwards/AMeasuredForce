@@ -294,21 +294,10 @@
       }
     });
 
-    // WebGL sculptures have no DOM element, so shader-bg.js raycasts the pointer
-    // against the reliefs and tells us when it's over a clickable one. Grow the
-    // cursor exactly like over a button (reuses the .hovering class + pulse).
-    window.addEventListener('amf:relief-hover', () => {
-      if (!cursorEl.classList.contains('hovering-work')) cursorEl.classList.add('hovering');
-    });
-    window.addEventListener('amf:relief-out', () => {
-      // Only shrink if a real DOM element under the pointer isn't also keeping
-      // the cursor grown (so leaving the mesh onto a button stays enlarged).
-      const el = document.elementFromPoint(targetX, targetY);
-      const overUi = el && el.closest && el.closest(HOVER_SEL);
-      if (!overUi && !cursorEl.classList.contains('hovering-work')) {
-        cursorEl.classList.remove('hovering');
-      }
-    });
+    // WebGL sculptures: deliberately do NOT grow the cursor. In dark mode the
+    // small cursor IS the warm WebGL glow on the statue — enlarging it would just
+    // cover that glow. The sculpture stays clickable (shader-bg dispatches
+    // amf:relief-click → the info card); the cursor simply stays its small self.
   }
 
   /* ============ MENU OVERLAY (persistent) ============ */
@@ -385,6 +374,7 @@
       started = true;
       clearTimeout(fb);
       window.removeEventListener('amf:relief-emerged', start);
+      window.removeEventListener('amf:hero-reveal', start);
       if (headline) {
         requestAnimationFrame(() => headline.classList.add('hero-revealed'));
       }
@@ -395,7 +385,10 @@
         }, 600);
       }
     };
+    // On the home first-load intro the timeline drives this via 'amf:hero-reveal';
+    // otherwise (SPA nav back to home) the relief emerging triggers it as before.
     window.addEventListener('amf:relief-emerged', start);
+    window.addEventListener('amf:hero-reveal', start);
     fb = setTimeout(start, t.fallback);
   }
 
@@ -1547,6 +1540,44 @@
     bootHeaderScrollHide();
   }
 
+  /* ============ FIRST-LOAD HOME INTRO SEQUENCE ============
+     Choreographed entrance, in order: (1) the centred wordmark fades in,
+     (2) the logo + hamburger follow, (3) the hero text, (4) the light ignites
+     (mobile: drops from the top / desktop: ignites at the cursor — shader-bg.js),
+     (5) the goat finally emerges. Runs once, only on a full load of home (the
+     `intro-seq` class is on <html> in index.html). Reduced motion shows it all at
+     once. shader-bg.js holds the goat's emerge until the 'amf:emerge-go' cue. */
+  let homeIntroRan = false;
+  function bootHomeIntro() {
+    const html = document.documentElement;
+    if (homeIntroRan || !html.classList.contains('intro-seq')) return;
+    homeIntroRan = true;
+    const name = document.querySelector('.header-center-name');
+    const logo = document.querySelector('.header-logo');
+    const actions = document.querySelector('.header-actions');
+    const show = (el) => { if (el) el.style.opacity = '1'; };
+    const cleanup = () => {
+      html.classList.remove('intro-seq');
+      [name, logo, actions].forEach((el) => { if (el) el.style.opacity = ''; });
+    };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      show(name); show(logo); show(actions); cleanup();
+      window.dispatchEvent(new Event('amf:emerge-go'));
+      return;
+    }
+    // Timeline (ms) — tunable. Desktop is compressed so the goat arrives sooner.
+    const mobile = !!(window.AMFScroll && window.AMFScroll.isMobile());
+    const T = mobile
+      ? { name: 250, header: 650, heroText: 1300, light: 2200, goat: 2900 }
+      : { name: 250, header: 600, heroText: 1100, light: 1700, goat: 2050 };
+    setTimeout(() => show(name), T.name);                          // 1) wordmark
+    setTimeout(() => { show(logo); show(actions); }, T.header);    // 2) logo + hamburger
+    setTimeout(cleanup, T.header + 1000);                          // release header holds
+    setTimeout(() => window.dispatchEvent(new Event('amf:hero-reveal')), T.heroText);      // 3) hero text
+    setTimeout(() => window.dispatchEvent(new Event('amf:hero-entrance-done')), T.light);  // 4) light
+    setTimeout(() => window.dispatchEvent(new Event('amf:emerge-go')), T.goat);            // 5) goat
+  }
+
   /* ---- Public API used by the SPA router ----------------------------- */
   window.AMFPage = {
     boot: bootPage,
@@ -1557,6 +1588,7 @@
     bootOnce();
     const main = document.querySelector('main');
     bootPage(main);
+    bootHomeIntro();  // after bootPage so initHero's 'amf:hero-reveal' listener is ready
   });
 
 })();
