@@ -788,9 +788,9 @@ body.menu-open footer {
 }
 .works-cycle-item.is-active img { filter: grayscale(0); }
 /* Hover: the img's transform/filter are rewritten inline every frame, so lift the
-   WRAPPER instead — scale it up + a bright frame (var(--ink) displays bright under
-   the page's invert). Pairs with the cursor's ring + "View" label. */
-.works-cycle-item:hover { transform: scale(1.05); box-shadow: 0 0 0 2px var(--ink); }
+   WRAPPER instead — scale it up. Pairs with the cursor's ring + "View" label.
+   (No frame/border — relies on the cursor ring for the affordance.) */
+.works-cycle-item:hover { transform: scale(1.05); }
 
 /* ============ SERVICES ============ */
 .services { padding: 10rem var(--pad); border-top: 1px solid var(--border); }

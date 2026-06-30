@@ -164,7 +164,7 @@
     about: [
       { src: '/assets/reliefs/athena.glb',     size: 10.0, flat: 0.22, x:  1.5, y: -3.0, mobileY: -2.5, mobileScale: 1.3, z:  0.25, rz: Math.PI + 0.06, rx:  0.30, ry: Math.PI,
         meta: { name: 'Athena (Minerva of Arezzo)', artist: 'Unknown', period: '300–270 BCE', material: 'Bronze', location: 'Museo Archeologico Nazionale, Italy' } },
-      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.5, mobileX: -1.0, y: -VIEWPORT_WORLD_H * 4.2 + 1.3, mobileY: -VIEWPORT_WORLD_H * 5.6 - 0.5, mobileDX: -1.2, emergeMargin: -1.5, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2,
+      { src: '/assets/reliefs/pan.glb',        size: 11.5, flat: 0.22, x: -1.5, mobileX: -1.0, y: -VIEWPORT_WORLD_H * 4.2 + 1.3, mobileY: -VIEWPORT_WORLD_H * 5.6 - 1.8, mobileDX: -1.2, emergeMargin: -1.5, z:  0.25, rz: 0.06, rx:  0.20, ry: Math.PI / 2 - 0.2,
         meta: { name: 'Pan et Oursons', artist: 'Emmanuel Fremiet', period: '1867', material: 'Marble', location: 'Musée d’Orsay, Paris, France' } },
       { src: '/assets/reliefs/bosio.glb',      size: 6.0,  flat: 0.22, x:  2.6, y: -VIEWPORT_WORLD_H * 3.0 + 2.0, mobileScale: 1.5, mobileDX: -0.3, z:  0.25, rz: Math.PI, rx:  0.0, ry: -Math.PI / 6, flatShade: true,
         meta: { name: 'La Nymphe Salmacis', artist: 'François Joseph Bosio', period: '1819–1837', material: 'Marble', location: 'Nouveau Musée National de Monaco, Monaco' } },
@@ -184,7 +184,7 @@
         pin: { startY: -VIEWPORT_WORLD_H * 4.0, endY: -VIEWPORT_WORLD_H * 7.0, offsetY: 0 },
         mobilePin: { startY: -11, endY: -17, offsetY: 0 },
         meta: { name: 'Portrait of a Bearded Man', artist: 'Unknown', period: 'c. 150 B.C.', material: 'Marble', location: 'The J. Paul Getty Museum, USA' } },
-      { src: '/assets/reliefs/fullbody.glb',   size: 9.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 10.0 - 6.5,  z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0,
+      { src: '/assets/reliefs/fullbody.glb',   size: 9.0, flat: 0.25, x: 1.5, y: -VIEWPORT_WORLD_H * 10.0 - 6.5, mobileY: -37.3, mobileZ: 0.15, emergeMargin: 0.5,  z:  0.25, rz: 0.0, rx: Math.PI, ry: 0.0,
         meta: { name: 'Theodoric the Great', artist: 'Peter Vischer the Elder (after Dürer)', period: '1512–13', material: 'Bronze', location: 'Court Church Innsbruck, Austria' } },
     ],
   };
