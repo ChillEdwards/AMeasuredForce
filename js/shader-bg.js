@@ -424,12 +424,6 @@
   let lightNY = 0.8;            // eased vertical NDC — starts at the top (goat head)
   let cardOpen = false;         // mobile info-card open → freeze the floating light + park render
   let wanderStart = performance.now() / 1000;  // wander clock origin (scans from load)
-  // Finger tracking: while a finger is on the screen, the light follows it (sitting
-  // slightly ABOVE the fingertip so the glow isn't covered) instead of wandering;
-  // lifting off drifts it back into the autonomous scan.
-  let fingerActive = false;
-  let fingerNX = 0, fingerNY = 0;   // target NDC under (just above) the finger
-  const FINGER_RISE = 0.12;          // NDC upward offset so the glow peeks above the fingertip
 
   // First-load HOME entrance (both breakpoints): hold the light DARK until the hero
   // cascade (goat + both text lines) has faded in, then reveal it. main.js fires the
@@ -519,30 +513,6 @@
     mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
   }, { passive: true });
-
-  // Mobile finger tracking. Lightly touching/dragging anywhere moves the floating
-  // light to (just above) the finger; lifting off resumes the wander. PASSIVE and
-  // never preventDefault, so scrolling/swiping and tap-to-open-card keep working;
-  // we only READ the touch point, so no text selection is triggered.
-  function onFingerMove(e) {
-    const t = e.touches && e.touches[0];
-    if (!t) return;
-    let nx =  (t.clientX / window.innerWidth)  * 2 - 1;
-    let ny = -(t.clientY / window.innerHeight) * 2 + 1 + FINGER_RISE;  // sit above the fingertip
-    if (nx >  0.92) nx =  0.92; else if (nx < -0.92) nx = -0.92;       // same viewport clamps as the wander
-    if (ny >  0.95) ny =  0.95; else if (ny < -0.85) ny = -0.85;
-    fingerNX = nx; fingerNY = ny; fingerActive = true;
-    wake();
-  }
-  function onFingerEnd(e) {
-    if (e.touches && e.touches.length) return;  // other fingers still down → keep tracking
-    fingerActive = false;
-    wake();  // resume the wander
-  }
-  document.addEventListener('touchstart', onFingerMove, { passive: true });
-  document.addEventListener('touchmove',  onFingerMove, { passive: true });
-  document.addEventListener('touchend',   onFingerEnd,  { passive: true });
-  document.addEventListener('touchcancel', onFingerEnd, { passive: true });
 
 
   /* ---- Relief picking (hover cursor + click-to-open info card) ---- */
@@ -669,10 +639,8 @@
 
     // Mobile floating light: a screen-space light driven in NDC (no cursor on touch).
     // DROPS in from the top onto the goat's head (0.8), then courses around the page
-    // via a detuned serpentine wander — UNLESS a finger is on the screen, in which
-    // case it follows the finger (set just above the fingertip in onFingerMove).
-    // Always in viewport (NDC clamped). Desktop keeps the real mouse; reduced motion
-    // / card-open off.
+    // via a detuned serpentine wander. Touch does NOT affect it. Always in viewport
+    // (NDC clamped). Desktop keeps the real mouse; reduced motion / card-open off.
     if (NARROW && !cardOpen && !prefersReducedMotion) {
       if (entrance === 'hold') {
         // Parked above the top edge while the goat + hero text fade in (lit by ambient).
@@ -682,17 +650,10 @@
         // begins at 0.8, so it continues seamlessly. dropEase advanced near the top.
         lightNX = 0;
         lightNY = 1.3 + (0.8 - 1.3) * dropEase;
-      } else if (fingerActive) {
-        // Follow the finger directly (currentPos still eases at 0.14 for smoothness,
-        // exactly like the desktop cursor light). Already clamped in onFingerMove.
-        lightNX = fingerNX;
-        lightNY = fingerNY;
       } else {
         const wt = tNow - wanderStart;
         const tx = WANDER_AX * (0.7 * Math.sin(wt * 0.8) + 0.3 * Math.sin(wt * 1.4));
         const ty = HOME_NY + WANDER_AY * (0.7 * Math.cos(wt * 0.4) + 0.3 * Math.cos(wt * 0.72));
-        // Eases from wherever the light is (incl. a just-released finger) → smooth
-        // hand-off back into the wander, no jump.
         lightNX += (tx - lightNX) * 0.08;
         lightNY += (ty - lightNY) * 0.08;
         if (lightNY >  0.95) lightNY =  0.95;
