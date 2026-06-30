@@ -563,6 +563,7 @@
   // clicks that land on real UI overlapping the sculpture.
   document.addEventListener('click', (e) => {
     if (document.documentElement.classList.contains('relief-zoom-open')) return;
+    if (document.body.classList.contains('menu-open')) return;  // sculptures aren't clickable in the menu
     const t = e.target;
     if (t && t.closest && t.closest('a, button, input, textarea, .menu-overlay')) return;
     const ndcX =  (e.clientX / window.innerWidth)  * 2 - 1;
@@ -701,7 +702,11 @@
     // so the custom cursor can grow/pulse exactly like over a button. Edge-
     // triggered on the holder id so we dispatch only on change, not every frame.
     if (!NARROW) {
-      const hov = pickRelief(mouse.x, mouse.y);
+      // While the menu overlay is open the sculptures aren't clickable, so don't
+      // hover them either — hov stays null, which also clears the ring if the menu
+      // opened mid-hover.
+      const menuOpen = document.body.classList.contains('menu-open');
+      const hov = menuOpen ? null : pickRelief(mouse.x, mouse.y);
       const hovId = hov ? hov.id : 0;
       if (hovId !== lastReliefHoverId) {
         lastReliefHoverId = hovId;
