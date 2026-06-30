@@ -305,26 +305,26 @@
     window.addEventListener('amf:relief-out', () => cursorEl.classList.remove('hovering-relief'));
   }
 
-  /* ============ MOBILE: one-time "tap a sculpture" coach hint ============
-     Mobile has no hover, so first-time visitors don't know the statues are
-     tappable. Apple-style: teach once, then never again. A small pill fades in
-     the first time a sculpture surfaces, then fades out after a few seconds or
-     the moment the visitor scrolls / taps a statue. Gated to one show per device
-     via localStorage. Desktop (which has the hover ring) and reduced-motion users
-     don't need it. */
+  /* ============ One-time "explore a sculpture" coach hint ============
+     First-time visitors don't know the statues are interactive. Apple-style:
+     teach once, then never again. A small pill fades in (bottom-centre) the first
+     time a sculpture surfaces, then fades out after a few seconds or the moment the
+     visitor engages — scrolls, taps/clicks a statue, or (desktop) hovers one and
+     discovers the ring. Gated to one show per device via localStorage. Shown on
+     both breakpoints; the verb adapts (Tap on touch, Click on desktop). */
   let reliefHintBooted = false;
   function bootReliefHint() {
     if (reliefHintBooted) return;
     reliefHintBooted = true;
-    if (!(window.AMFScroll && window.AMFScroll.isMobile())) return;   // mobile only
     let seen = false;
     try { seen = !!localStorage.getItem('amf_relief_hint_seen'); } catch (e) {}
     if (seen) return;                                                 // already taught
 
+    const verb = isTouchDevice ? 'Tap' : 'Click';
     const el = document.createElement('div');
     el.className = 'relief-hint';
     el.setAttribute('aria-hidden', 'true');
-    el.innerHTML = '<span>Tap a sculpture to explore</span>';
+    el.innerHTML = '<span>' + verb + ' a sculpture to explore</span>';
     document.body.appendChild(el);
 
     let shown = false, done = false, hideTimer = 0, offScroll = null;
@@ -346,7 +346,9 @@
     // Appear when the first sculpture surfaces; fall back to a timer if no relief.
     window.addEventListener('amf:relief-emerged', show, { once: true });
     setTimeout(show, 3800);
-    // Dismiss the moment they engage: tap a statue or scroll the page.
+    // Dismiss the moment they engage: click/tap a statue or scroll. (No hover
+    // dismiss — the cursor light's default NDC can sit over a relief and fire
+    // amf:relief-hover with no real interaction, killing the hint before it shows.)
     window.addEventListener('amf:relief-click', hide, { once: true });
     if (window.AMFScroll) offScroll = window.AMFScroll.onScroll(hide, { passive: true });
   }
