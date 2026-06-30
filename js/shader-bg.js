@@ -146,7 +146,7 @@
     home: [
       { src: '/assets/reliefs/goat.glb',           size: 7.0, flat: 0.35, x:  1.0, y: -0.6, z: 0.185,                rz: 0.0, rx: 0.0,      ry: 0.0,
         mobile: { x: 0.8, y: -0.1, z: 0.25, size: 4.7 },
-        meta: { name: 'Statue of Resting Goat', artist: 'Robert Slater', period: '3rd century BC', material: 'Marble', location: 'Fondazione Torlonia, Italy' } },
+        meta: { name: 'Statue of Resting Goat', artist: 'Caelius Slaterius', period: '3rd century BC', material: 'Marble', location: 'Fondazione Torlonia, Italy' } },
       { src: '/assets/reliefs/oceanus.glb',        size: 6.0, flat: 0.22, x: -1.5, y: -VIEWPORT_WORLD_H * 1.0 - 3.5, z: 0.6, rz: 0.0, rx: Math.PI, ry: 0.0,
         mobile: { x: 0.5, y: -7.5, z: 0.3, size: 5.0 },
         meta: { name: 'Oceanus', artist: 'Caspar Gras', period: '1622/30', material: 'Bronze', location: 'Ferdinandeum Innsbruck, Austria' } },
