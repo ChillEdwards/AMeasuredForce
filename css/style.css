@@ -255,6 +255,7 @@ html.inverted .case-grid-two video,
 html.inverted .case-video video,
 html.inverted .case-film-thumb img,
 html.inverted .menu-submenu-preview img,
+html.inverted .case-embed iframe,
 html.inverted .ai-works-card img { filter: invert(1) !important; }
 html.inverted .video-lightbox { filter: invert(1) !important; }
 
@@ -1448,6 +1449,21 @@ body.menu-open footer {
   height: auto;
   display: block;
   border-radius: 2px;
+}
+/* Inline embedded player (e.g. a YouTube spot) — responsive 16:9 box. */
+.case-embed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.case-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 .case-video figcaption {
   margin-top: 0.85rem;

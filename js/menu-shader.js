@@ -278,7 +278,7 @@
       ['/work/clif-kid.html',         '01', 'CLIF KID',                         wix('1f7c26_6d025a7a72c04f848e1735face0b2826~mv2.png',  'png')],
       ['/work/johnson-johnson.html',  '02', 'Johnson & Johnson',                '/assets/work/johnson-johnson-hero.png'],
       ['/work/obama-fatherhood.html', '03', 'The Obama Foundation',  '/assets/work/obama-fatherhood-hero.png'],
-      ['/work/rep-materials.html',    '04', 'Rep Materials Co.',                wix('1f7c26_7c659f0d2eb04829b2dbc0ffc7a16160~mv2.jpg',  'jpg')],
+      ['/work/rep-materials.html',    '04', 'Rep Materials Co.',                '/assets/work/rep-materials-hero.jpg'],
       ['/work/zuma-lighting.html',    '05', 'Zuma Lighting',                    wix('1f7c26_a0fa6951377940a69f23ff743cbc1615~mv2.jpeg', 'jpg')],
       ['/work/luxxev.html',           '06', 'LUXXEV',                           wix('1f7c26_77672e88ad814f4da0616bdb7f153133~mv2.jpeg', 'jpg')],
       ['/work/fab-tech.html',         '07', 'Fab Tech',                         wix('1f7c26_4e7fa9745ca2452cbeaedad443a8ef23~mv2.jpeg', 'jpg')],
