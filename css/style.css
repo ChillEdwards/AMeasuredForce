@@ -42,6 +42,10 @@
 }
 
 html { scroll-behavior: smooth; font-size: 16px; background: var(--paper); }
+/* Permanent dark mode: the page backdrop (seen during page transitions / overscroll)
+   should read pure black, not the dark blue that paper inverts to. A white source
+   becomes black under the global html.inverted filter. */
+html.inverted { background: #fff; }
 
 body {
   background: transparent;
@@ -364,7 +368,9 @@ body.menu-open .invert-dot {
   position: fixed;
   inset: 0;
   z-index: 8000;
-  background: var(--paper);
+  /* White source → pure black under the global invert, matching the near-black
+     dark-mode wall (paper would invert to dark blue). */
+  background: #fff;
   transform: translateY(100%);
   pointer-events: none;
   will-change: transform;
