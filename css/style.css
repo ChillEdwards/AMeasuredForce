@@ -256,6 +256,7 @@ html.inverted .case-video video,
 html.inverted .case-film-thumb img,
 html.inverted .menu-submenu-preview img,
 html.inverted .case-embed iframe,
+html.inverted .case-reels video,
 html.inverted .ai-works-card img { filter: invert(1) !important; }
 html.inverted .video-lightbox { filter: invert(1) !important; }
 
@@ -1449,6 +1450,28 @@ body.menu-open footer {
   height: auto;
   display: block;
   border-radius: 2px;
+}
+/* Row of vertical social reels (e.g. LuxxEV Dashies) — 4-up on desktop, 2-up on
+   narrow screens. */
+.case-reels {
+  max-width: 1100px;
+  margin: 3.5rem auto;
+  padding: 0 var(--pad);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+}
+.case-reels video {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  border-radius: 2px;
+  background: #000;
+}
+@media (max-width: 700px) {
+  .case-reels { grid-template-columns: repeat(2, 1fr); }
 }
 /* Inline embedded player (e.g. a YouTube spot) — responsive 16:9 box. */
 .case-embed {
