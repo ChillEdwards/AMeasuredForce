@@ -1039,10 +1039,9 @@ body.menu-open footer {
   text-shadow: 0 2px 20px rgba(0,0,0,0.6);
   transition: opacity 0.4s ease;
 }
-/* Hover: a bright frame (the card's transform is inline-driven, so use box-shadow,
-   not transform). Pairs with the brightened title + the cursor's ring + "View" label. */
+/* Hover: brighten the title only. Pairs with the cursor's ring + "View" label.
+   (No box-shadow frame — the bright border read as a glowing outline.) */
 .works-card:hover h3 { color: #fff; }
-.works-card:hover { box-shadow: 0 0 0 2px var(--ink); }
 
 /* ---- Brand Work cards on mobile ----
    Match the homepage / AI work cards: a normal vertical stack of 4:5 rounded
