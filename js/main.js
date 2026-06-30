@@ -1327,6 +1327,46 @@
     });
   }
 
+  /* ============ CASE-STUDY VIDEO LIGHTBOX ============ */
+
+  // SPA-safe wiring for the "Watch the film / spot / conversation" buttons and the
+  // film thumbnails. Each trigger carries data-video="<YouTube id>". This used to
+  // be an inline <script> at the bottom of each case page, which only runs on a
+  // hard load — so every play button was dead when you arrived via SPA navigation.
+  // Now it runs from bootPage() on load AND every nav; the lightbox (#videoLightbox)
+  // lives inside <main>, so it's re-queried/re-bound each time. Listeners use the
+  // page signal so teardownPage() cleans them up.
+  function initCaseVideo(root) {
+    const lightbox = root.querySelector('#videoLightbox');
+    const iframe   = root.querySelector('#lightboxVideo');
+    if (!lightbox || !iframe) return;            // not a case-study page
+    const closeBtn = root.querySelector('#lightboxClose');
+    const signal = pageSignal();
+
+    function openVideo(id, start) {
+      if (!id) return;
+      let src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+      if (start) src += '&start=' + start;   // optional data-start (seconds) — e.g. Obama panel
+      iframe.src = src;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeVideo() {
+      lightbox.classList.remove('active');
+      iframe.src = '';
+      document.body.style.overflow = '';
+    }
+
+    root.querySelectorAll('[data-video]').forEach((trigger) => {
+      trigger.addEventListener('click', () => openVideo(trigger.dataset.video, trigger.dataset.start), { signal });
+    });
+    if (closeBtn) closeBtn.addEventListener('click', closeVideo, { signal });
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeVideo(); }, { signal });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('active')) closeVideo();
+    }, { signal });
+  }
+
   /* ============ SMOOTH ANCHORS ============ */
 
   function initSmoothAnchors(root) {
@@ -1541,6 +1581,7 @@
     injectCardCaptions(mainEl);
     applySerifAI(mainEl);
     initCaseImages(mainEl);
+    initCaseVideo(mainEl);
     initSmoothAnchors(mainEl);
     initParallax(mainEl);
     initContactForm(mainEl);

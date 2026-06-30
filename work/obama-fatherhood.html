@@ -182,38 +182,5 @@
   <script src="../js/system-diagram.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/router.js"></script>
-  <script>
-    (function() {
-      const lightbox = document.getElementById('videoLightbox');
-      const closeBtn = document.getElementById('lightboxClose');
-      const iframe = document.getElementById('lightboxVideo');
-
-      function openVideo(id, start) {
-        let src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
-        if (start) src += '&start=' + start;
-        iframe.src = src;
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeLightbox() {
-        lightbox.classList.remove('active');
-        iframe.src = '';
-        document.body.style.overflow = '';
-      }
-
-      document.querySelectorAll('[data-video]').forEach((trigger) => {
-        trigger.addEventListener('click', () => openVideo(trigger.dataset.video, trigger.dataset.start));
-      });
-
-      closeBtn.addEventListener('click', closeLightbox);
-      lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) closeLightbox();
-      });
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
-      });
-    })();
-  </script>
 </body>
 </html>

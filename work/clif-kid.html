@@ -44,7 +44,7 @@
       </a>
       <h1 class="case-title">CLIF KID</h1>
       <p class="case-tagline">A cross-platform campaign combining athlete-led content and user-generated media to inspire children to embrace new experiences and outdoor activity.</p>
-      <button class="case-play-btn" id="playBtn" aria-label="Play video">
+      <button class="case-play-btn" data-video="SLl51d_PnaY" aria-label="Play video">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><polygon points="3,0 20,10 3,20" fill="currentColor"/></svg>
         <span>Watch The Spot</span>
       </button>
@@ -180,34 +180,5 @@
   <script src="../js/system-diagram.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/router.js"></script>
-  <script>
-    (function() {
-      const btn = document.getElementById('playBtn');
-      const lightbox = document.getElementById('videoLightbox');
-      const closeBtn = document.getElementById('lightboxClose');
-      const iframe = document.getElementById('lightboxVideo');
-      const videoUrl = 'https://www.youtube.com/embed/SLl51d_PnaY?autoplay=1&rel=0';
-
-      btn.addEventListener('click', () => {
-        iframe.src = videoUrl;
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-
-      function closeLightbox() {
-        lightbox.classList.remove('active');
-        iframe.src = '';
-        document.body.style.overflow = '';
-      }
-
-      closeBtn.addEventListener('click', closeLightbox);
-      lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) closeLightbox();
-      });
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
-      });
-    })();
-  </script>
 </body>
 </html>
