@@ -148,8 +148,10 @@ img { display: block; }
    mode colours (paper pill, ink text) so it rides the global html.inverted filter
    into the dark theme, exactly like the sculpture info card. Never intercepts taps. */
 .relief-hint {
-  position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 26px);
-  transform: translate(-50%, 10px);
+  /* Sits just below the "A Measured Force" header wordmark (top is refined in JS
+     to the wordmark's exact bottom; the value here is a pre-JS fallback). */
+  position: fixed; left: 50%; top: 56px;
+  transform: translate(-50%, -6px);
   background: rgba(241, 237, 231, 0.94);
   color: var(--ink);
   font-family: var(--font-sans);

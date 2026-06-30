@@ -327,6 +327,16 @@
     el.innerHTML = '<span>' + verb + ' a sculpture to explore</span>';
     document.body.appendChild(el);
 
+    // Anchor the pill just below the "A Measured Force" header wordmark (both
+    // breakpoints). Measure the wordmark's bottom so it tracks the header height.
+    const anchor = document.querySelector('.header-center-name');
+    function place() {
+      const r = anchor && anchor.getBoundingClientRect();
+      el.style.top = ((r && r.bottom ? r.bottom : 44) + 12) + 'px';
+    }
+    place();
+    window.addEventListener('resize', place, { passive: true });
+
     let shown = false, done = false, hideTimer = 0, offScroll = null;
     function show() {
       if (shown || done) return;
@@ -340,6 +350,7 @@
       done = true;
       clearTimeout(hideTimer);
       if (offScroll) offScroll();
+      window.removeEventListener('resize', place);
       el.classList.remove('visible');
       setTimeout(() => el.remove(), 600);
     }
