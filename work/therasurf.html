@@ -44,11 +44,24 @@
       </a>
       <h1 class="case-title">THERAsurf</h1>
       <p class="case-tagline">A website redesign for a surf-therapy nonprofit, built to inspire families to take part and move donors to give.</p>
-      <a class="case-play-btn" href="https://www.therasurf.org/" target="_blank" rel="noopener">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 14 L14 6 M7 6 H14 V13" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Explore Website</span>
-      </a>
+      <div class="case-links">
+        <a class="case-play-btn" href="https://www.therasurf.org/" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 14 L14 6 M7 6 H14 V13" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Explore Website</span>
+        </a>
+        <button class="case-play-btn" type="button" data-video-src="../assets/work/therasurf-spot.mp4" aria-label="Watch the spot">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="6,3 16,10 6,17" fill="currentColor"/></svg>
+          <span>Watch the Spot</span>
+        </button>
+      </div>
     </section>
+
+    <div class="video-lightbox" id="videoLightbox">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Close video">&times;</button>
+      <div class="lightbox-inner">
+        <video id="lightboxVideoFile" controls playsinline preload="metadata"></video>
+      </div>
+    </div>
 
     <section class="case-meta">
       <div class="case-meta-row">
@@ -65,10 +78,14 @@
       </div>
     </section>
 
-    <figure class="case-bleed scroll-reveal">
-      <img src="https://static.wixstatic.com/media/1f7c26_f10586a72d9541eaa93616084c133358~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg" alt="THERAsurf surf therapy">
-      <figcaption>Surf therapy for children in need</figcaption>
-    </figure>
+    <section class="case-video scroll-reveal">
+      <figure>
+        <video controls playsinline preload="metadata" poster="https://static.wixstatic.com/media/1f7c26_f10586a72d9541eaa93616084c133358~mv2.jpg/v1/fill/w_1600,h_900,al_c,q_85/image.jpg">
+          <source src="../assets/work/therasurf-spot.mp4" type="video/mp4">
+        </video>
+        <figcaption>Surf therapy for children in need</figcaption>
+      </figure>
+    </section>
 
     <section class="case-story">
       <article class="case-story-block scroll-reveal">
