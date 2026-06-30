@@ -533,7 +533,7 @@ body.menu-open .invert-dot {
   .menu-submenu-wrap { display: none; }
   /* Submenu is gone here — drop its reserved space (else the desktop padding-right
      shoves the nav off-canvas). Keep the items left-aligned, matching desktop. */
-  .menu-overlay-list { padding-right: 0; width: auto; align-items: flex-start; text-align: left; margin-inline: 0; }
+  .menu-overlay-list { padding-right: 0; width: auto; align-items: flex-start; text-align: left; margin-inline: 0; padding-left: 0.7rem; }
   .menu-overlay-list li.has-submenu { align-self: flex-start; }
   /* The sticky 3-column works-cycle frame is cramped at this width. */
   .works-cycle-frame { display: none; }
@@ -547,7 +547,7 @@ body.menu-open .invert-dot {
 }
 @media (pointer: coarse) {
   .menu-submenu-wrap { display: none; }
-  .menu-overlay-list { padding-right: 0; width: auto; align-items: flex-start; text-align: left; margin-inline: 0; }
+  .menu-overlay-list { padding-right: 0; width: auto; align-items: flex-start; text-align: left; margin-inline: 0; padding-left: 0.7rem; }
   .menu-overlay-list li.has-submenu { align-self: flex-start; }
   #shaderBg { transform: translateZ(0); will-change: transform; backface-visibility: hidden; }
 }
