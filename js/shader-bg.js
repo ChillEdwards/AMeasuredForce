@@ -63,10 +63,6 @@
         Math.abs(lightTarget.hemi - hemi.intensity) > 1e-3 ||
         Math.abs(lightTarget.cursorIntensity - cursorLight.intensity) > 1e-3 ||
         Math.abs(lightTarget.cursorDist - cursorLight.distance) > 1e-3) return true;
-    // Wall material color still easing (card-open darken / restore) → draw.
-    if (Math.abs(wallMat.color.r - wallColorTarget.r) > 1e-3 ||
-        Math.abs(wallMat.color.g - wallColorTarget.g) > 1e-3 ||
-        Math.abs(wallMat.color.b - wallColorTarget.b) > 1e-3) return true;
     return false;
   }
 
@@ -426,7 +422,7 @@
   const WANDER_AY = 0.8;        // vertical wander amplitude (scans the whole view)
   let lightNX = 0;              // eased horizontal NDC
   let lightNY = 0.8;            // eased vertical NDC — starts at the top (goat head)
-  let cardOpen = false;         // mobile info-card open → REVEAL lighting preset
+  let cardOpen = false;         // mobile info-card open → freeze the floating light + park render
   let wanderStart = performance.now() / 1000;  // wander clock origin (scans from load)
 
   // First-load HOME entrance (both breakpoints): hold the light DARK until the hero
@@ -451,15 +447,14 @@
   let holdHomeEmerge = HOME_ENTRANCE;
   window.addEventListener('amf:emerge-go', function () { holdHomeEmerge = false; wake(); });
 
-
   // "Lights off" mode — when the page is inverted, kill ambient/hemi so the
   // cursor becomes the only light source (flashlight in a dark room). The
   // cursor light's range is bumped so it still illuminates the reliefs clearly.
   // Lighting is now TARGET-based: refreshLightTarget() picks a preset and the
   // animate loop eases the live lights toward it (instant snap on desktop so
-  // the desktop inverted toggle is unchanged). The card-open REVEAL preset
-  // dissipates the spotlight and restores even ambient so the whole sculpture
-  // reads in place — even in inverted mode.
+  // the desktop inverted toggle is unchanged). Opening a sculpture's info card
+  // does NOT touch the lighting — the statue stays lit exactly as it was the
+  // instant before the tap; only the surrounding page blurs (see relief-info.js).
   const LIGHT_DEFAULTS = {
     ambient: ambient.intensity,
     hemi: hemi.intensity,
@@ -472,39 +467,19 @@
     cursorIntensity: LIGHT_DEFAULTS.cursorIntensity,
     cursorDist: LIGHT_DEFAULTS.cursorDist,
   };
-  // The wall plane's material color is the paper tone; normally it renders dark in
-  // inverted mode purely because ambient is held at 0.02. The card-open REVEAL
-  // preset below restores ambient to light the sculpture evenly — which would also
-  // light this full-viewport wall to bright paper, and since #shaderBg is counter-
-  // inverted that bright wall shows through as light-gray (the old "light mode leak").
-  // So while a card is open in inverted mode we darken the wall MATERIAL to black
-  // (ambient·black = black regardless of intensity); the reliefs keep their own color
-  // and stay lit. The animate loop eases wallMat.color toward this target on mobile.
-  const WALL_PAPER = new THREE.Color(0xf1ede7);
-  const wallColorTarget = WALL_PAPER.clone();
   function refreshLightTarget() {
     const inv = document.documentElement.classList.contains('inverted');
-    if (NARROW && cardOpen) {
-      // REVEAL: even fill, no hot-spot — works in inverted too (ambient back up).
-      lightTarget.ambient = LIGHT_DEFAULTS.ambient;
-      lightTarget.hemi = LIGHT_DEFAULTS.hemi;
-      lightTarget.cursorIntensity = 0;
-      lightTarget.cursorDist = inv ? 3.2 : LIGHT_DEFAULTS.cursorDist;
-      wallColorTarget.set(inv ? 0x000000 : 0xf1ede7);  // keep the wall dark behind the card in dark mode
-    } else if (inv) {
+    if (inv) {
       lightTarget.ambient = 0.02;
       lightTarget.hemi = 0.02;
       lightTarget.cursorIntensity = 1.1;
       lightTarget.cursorDist = 3.2;
-      wallColorTarget.copy(WALL_PAPER);
     } else {
       lightTarget.ambient = LIGHT_DEFAULTS.ambient;
       lightTarget.hemi = LIGHT_DEFAULTS.hemi;
       lightTarget.cursorIntensity = LIGHT_DEFAULTS.cursorIntensity;
       lightTarget.cursorDist = LIGHT_DEFAULTS.cursorDist;
-      wallColorTarget.copy(WALL_PAPER);
     }
-    if (prefersReducedMotion) wallMat.color.copy(wallColorTarget);  // no easing → snap
     wake();  // draw the transition frames (mobile may be paused)
   }
   // Class observer handles BOTH the inverted toggle and the mobile card
@@ -539,44 +514,6 @@
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
   }, { passive: true });
 
-  /* ---- Mobile device-tilt parallax ----
-     On touch there's no cursor, so the sculpture can feel inert. Tilting the
-     phone now rotates the in-view sculpture a few degrees — like turning a real
-     object in your hand — an Apple-style depth cue that signals "this is a thing
-     you can engage with." iOS 13+ requires a user gesture to grant motion access,
-     so we request it on the first tap. Applied in the animate loop; eased to
-     neutral while a card is open, and disabled on desktop / reduced motion.
-     NOTE: iOS only delivers deviceorientation over HTTPS — so this shows up on the
-     deployed (Railway) site, not the plain-http local preview. */
-  const TILT_MAX = 0.13;          // ~7.5° peak rotation
-  let tiltTX = 0, tiltTY = 0;     // sensor target, normalised to -1..1
-  let tiltCX = 0, tiltCY = 0;     // eased current rotation drivers
-  let tiltRef = null;             // neutral baseline captured on the first reading
-  let tiltOn = false;
-  let tiltRequested = false;
-  function onTilt(e) {
-    if (e.gamma == null || e.beta == null) return;
-    if (!tiltRef) tiltRef = { beta: e.beta, gamma: e.gamma };  // wherever they hold it = neutral
-    tiltTX = Math.max(-1, Math.min(1, (e.gamma - tiltRef.gamma) / 28));  // left-right
-    tiltTY = Math.max(-1, Math.min(1, (e.beta  - tiltRef.beta)  / 28));  // front-back
-  }
-  // Request motion access the first time a visitor TAPS A SCULPTURE — contextual,
-  // so the iOS permission prompt never feels random. Must be called synchronously
-  // inside the tap handler so iOS counts it as a user gesture. (No-op on desktop /
-  // reduced motion / unsupported; iOS additionally only delivers events over HTTPS.)
-  function enableTilt() {
-    if (tiltRequested || tiltOn || !NARROW || prefersReducedMotion) return;
-    const DOE = window.DeviceOrientationEvent;
-    if (!DOE) return;
-    tiltRequested = true;
-    if (typeof DOE.requestPermission === 'function') {        // iOS 13+: needs the gesture
-      DOE.requestPermission().then((s) => {
-        if (s === 'granted') { tiltOn = true; window.addEventListener('deviceorientation', onTilt); }
-      }).catch(() => {});
-    } else {                                                  // others: attach directly
-      tiltOn = true; window.addEventListener('deviceorientation', onTilt);
-    }
-  }
 
   /* ---- Relief picking (hover cursor + click-to-open info card) ---- */
   // A dedicated raycaster so relief picking never perturbs the cursor-light ray.
@@ -632,7 +569,6 @@
     const ndcY = -(e.clientY / window.innerHeight) * 2 + 1;
     const holder = pickRelief(ndcX, ndcY);
     if (!holder) return;
-    enableTilt();  // first sculpture tap → request iOS motion access (in-gesture)
     // Anchor the card to the click point (card opens to its left), not the
     // sculpture's center, so it lands where the user actually pointed.
     window.dispatchEvent(new CustomEvent('amf:relief-click', {
@@ -747,7 +683,6 @@
       hemi.intensity         += (lightTarget.hemi    - hemi.intensity)       * LK;
       cursorLight.intensity  += (cursorGoal          - cursorLight.intensity) * LK;
       cursorLight.distance   += (lightTarget.cursorDist - cursorLight.distance) * LK;
-      wallMat.color.lerp(wallColorTarget, LK);  // darken/restore the wall behind an open card
     } else {
       ambient.intensity = lightTarget.ambient;
       hemi.intensity = lightTarget.hemi;
@@ -846,19 +781,6 @@
           const eased = 1 - k * k * k; // easeOutCubic
           h.position.z = e.startZ + (e.targetZ - e.startZ) * eased;
         }
-      }
-    }
-
-    // Mobile device-tilt parallax — rotate the in-view sculptures toward the phone
-    // tilt (eased), settling to neutral while a card is open. No-op until the
-    // sensor is enabled (tiltCX/CY stay 0); desktop / reduced motion skip entirely.
-    if (NARROW && !prefersReducedMotion) {
-      const tgX = cardOpen ? 0 : tiltTX, tgY = cardOpen ? 0 : tiltTY;
-      tiltCX += (tgX - tiltCX) * 0.08;
-      tiltCY += (tgY - tiltCY) * 0.08;
-      for (let i = 0; i < interactiveReliefs.length; i++) {
-        interactiveReliefs[i].rotation.y =  tiltCX * TILT_MAX;
-        interactiveReliefs[i].rotation.x = -tiltCY * TILT_MAX;
       }
     }
 
