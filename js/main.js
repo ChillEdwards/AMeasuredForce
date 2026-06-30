@@ -294,10 +294,61 @@
       }
     });
 
-    // WebGL sculptures: deliberately do NOT grow the cursor. In dark mode the
-    // small cursor IS the warm WebGL glow on the statue — enlarging it would just
-    // cover that glow. The sculpture stays clickable (shader-bg dispatches
-    // amf:relief-click → the info card); the cursor simply stays its small self.
+    // WebGL sculptures: on hover, show the thin pulsing ring (no label) so the
+    // statue reads as clickable (it opens the info card). The ring's center is
+    // transparent, so the warm WebGL glow still shows through it. shader-bg.js
+    // raycasts the pointer against the reliefs and fires amf:relief-hover / -out
+    // (desktop only). Persistent listeners — bootCursor runs once.
+    window.addEventListener('amf:relief-hover', () => {
+      if (!cursorEl.classList.contains('hovering-work')) cursorEl.classList.add('hovering-relief');
+    });
+    window.addEventListener('amf:relief-out', () => cursorEl.classList.remove('hovering-relief'));
+  }
+
+  /* ============ MOBILE: one-time "tap a sculpture" coach hint ============
+     Mobile has no hover, so first-time visitors don't know the statues are
+     tappable. Apple-style: teach once, then never again. A small pill fades in
+     the first time a sculpture surfaces, then fades out after a few seconds or
+     the moment the visitor scrolls / taps a statue. Gated to one show per device
+     via localStorage. Desktop (which has the hover ring) and reduced-motion users
+     don't need it. */
+  let reliefHintBooted = false;
+  function bootReliefHint() {
+    if (reliefHintBooted) return;
+    reliefHintBooted = true;
+    if (!(window.AMFScroll && window.AMFScroll.isMobile())) return;   // mobile only
+    let seen = false;
+    try { seen = !!localStorage.getItem('amf_relief_hint_seen'); } catch (e) {}
+    if (seen) return;                                                 // already taught
+
+    const el = document.createElement('div');
+    el.className = 'relief-hint';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<span>Tap a sculpture to explore</span>';
+    document.body.appendChild(el);
+
+    let shown = false, done = false, hideTimer = 0, offScroll = null;
+    function show() {
+      if (shown || done) return;
+      shown = true;
+      try { localStorage.setItem('amf_relief_hint_seen', '1'); } catch (e) {}
+      requestAnimationFrame(() => el.classList.add('visible'));
+      hideTimer = setTimeout(hide, 4200);
+    }
+    function hide() {
+      if (done) return;
+      done = true;
+      clearTimeout(hideTimer);
+      if (offScroll) offScroll();
+      el.classList.remove('visible');
+      setTimeout(() => el.remove(), 600);
+    }
+    // Appear when the first sculpture surfaces; fall back to a timer if no relief.
+    window.addEventListener('amf:relief-emerged', show, { once: true });
+    setTimeout(show, 3800);
+    // Dismiss the moment they engage: tap a statue or scroll the page.
+    window.addEventListener('amf:relief-click', hide, { once: true });
+    if (window.AMFScroll) offScroll = window.AMFScroll.onScroll(hide, { passive: true });
   }
 
   /* ============ MENU OVERLAY (persistent) ============ */
@@ -1535,6 +1586,7 @@
 
   function bootOnce() {
     bootCursor();
+    bootReliefHint();
     bootMenu();
     bootInvert();
     bootHeaderScrollHide();

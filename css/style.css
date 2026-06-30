@@ -101,6 +101,16 @@ img { display: block; }
   animation: cursor-pulse 1.8s ease-in-out infinite;
 }
 .cursor.hovering .cursor-text { font-size: 0; }
+/* Over a WebGL sculpture: the same thin pulsing ring as links, signalling it's
+   clickable (opens the info card). Transparent center → the warm WebGL glow on
+   the statue still shows through. Driven by amf:relief-hover/-out (desktop only). */
+.cursor.hovering-relief {
+  width: 50px; height: 50px;
+  background: transparent;
+  border: 1.5px solid #fff;
+  animation: cursor-pulse 1.8s ease-in-out infinite;
+}
+.cursor.hovering-relief .cursor-text { font-size: 0; }
 /* Over a work image: a slightly larger ring + a "View" label so the affordance
    is unmistakable (the image itself brightens/zooms via its wrapper :hover). */
 .cursor.hovering-work {
@@ -115,6 +125,41 @@ img { display: block; }
   50%      { transform: translate(-50%, -50%) scale(1.08); }
 }
 @media (pointer: coarse) { .cursor { display: none; } }
+/* On non-touch the custom cursor IS the only pointer feedback, so never let an
+   element's `cursor: pointer` re-expose the native hand alongside the ring (it
+   showed through over the hamburger + pill buttons). Touch keeps native cursors
+   via the coarse override on body above. */
+@media not all and (pointer: coarse) {
+  /* !important so later `cursor: pointer` declarations can't win on source order
+     and re-expose the native hand. Keep this list in sync with the elements that
+     set `cursor: pointer` elsewhere (search the file for it). */
+  button, [role="button"], summary,
+  .menu-trigger, .invert-dot, .pill-btn, .studio-pill, .service-pill,
+  .works-card, .case-play-btn, .case-films-grid.is-single, .case-film {
+    cursor: none !important;
+  }
+}
+
+/* One-time mobile coach hint ("Tap a sculpture to explore"). Authored in light-
+   mode colours (paper pill, ink text) so it rides the global html.inverted filter
+   into the dark theme, exactly like the sculpture info card. Never intercepts taps. */
+.relief-hint {
+  position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 26px);
+  transform: translate(-50%, 10px);
+  background: rgba(241, 237, 231, 0.94);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.03em;
+  padding: 11px 18px; border-radius: 100px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none; z-index: 9000; white-space: nowrap;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.relief-hint.visible { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) {
+  .relief-hint { transition: opacity 0.2s ease; }
+}
 
 /* ============ HEADER ============ */
 .header {
@@ -213,7 +258,7 @@ html.inverted .video-lightbox { filter: invert(1) !important; }
 .menu-trigger {
   width: 26px; height: 26px;
   background: transparent;
-  border: none; padding: 0; cursor: pointer;
+  border: none; padding: 0; cursor: none;
   color: var(--ash);
   display: inline-flex; align-items: center; justify-content: center;
   flex-shrink: 0;
