@@ -1480,7 +1480,7 @@
       } catch (err) { ok = false; }
       if (ok) {
         // Persistent monochrome "confirmed" state — no revert.
-        btn.textContent = '✓  Thank you';
+        btn.textContent = 'Message Sent!';
         btn.classList.add('is-sent');
         contactForm.reset();   // hidden config fields keep their default values
       } else {

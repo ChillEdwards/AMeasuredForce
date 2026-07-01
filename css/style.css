@@ -1252,6 +1252,18 @@ body.menu-open footer {
 }
 .form-group input:focus,
 .form-group textarea:focus { border-color: var(--orange); }
+/* Chrome/Safari autofill: their pale-blue fill gets flipped to near-black by the
+   page's global invert. Keep the field transparent (the huge transition delay
+   stops the autofill background from ever painting) and force brand text colour. */
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus,
+.form-group input:-webkit-autofill:active,
+.form-group textarea:-webkit-autofill {
+  -webkit-text-fill-color: var(--white);
+  caret-color: var(--white);
+  transition: background-color 100000s ease-in-out 0s;
+}
 .form-group textarea {
   border: 1px solid var(--border-med);
   padding: 1rem; margin-top: 0.25rem;
