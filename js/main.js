@@ -1462,17 +1462,35 @@
   function initContactForm(root) {
     const contactForm = root.querySelector('#contactForm');
     if (!contactForm) return;
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = contactForm.querySelector('.form-submit');
       const orig = btn.textContent;
-      btn.textContent = 'Message Sent!';
-      btn.style.background = '#00C9DB';
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      let ok = false;
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(contactForm),
+        });
+        const data = await res.json();
+        ok = !!data.success;
+      } catch (err) { ok = false; }
+      if (ok) {
+        btn.textContent = 'Message Sent!';
+        btn.style.background = '#00C9DB';
+        contactForm.reset();   // hidden config fields keep their default values
+      } else {
+        btn.textContent = 'Something went wrong — try again';
+        btn.style.background = '#c0392b';
+      }
       setTimeout(() => {
         btn.textContent = orig;
         btn.style.background = '';
-        contactForm.reset();
-      }, 3000);
+        btn.disabled = false;
+      }, 3500);
     }, { signal: pageSignal() });
   }
 
