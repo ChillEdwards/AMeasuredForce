@@ -1479,18 +1479,18 @@
         ok = !!data.success;
       } catch (err) { ok = false; }
       if (ok) {
-        btn.textContent = 'Message Sent!';
-        btn.style.background = '#00C9DB';
+        // Persistent monochrome "confirmed" state — no revert.
+        btn.textContent = '✓  Thank you';
+        btn.classList.add('is-sent');
         contactForm.reset();   // hidden config fields keep their default values
       } else {
-        btn.textContent = 'Something went wrong — try again';
-        btn.style.background = '#c0392b';
+        // No red — just revert to an actionable button so they can retry.
+        btn.textContent = 'Didn’t send — try again';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.disabled = false;
+        }, 3500);
       }
-      setTimeout(() => {
-        btn.textContent = orig;
-        btn.style.background = '';
-        btn.disabled = false;
-      }, 3500);
     }, { signal: pageSignal() });
   }
 

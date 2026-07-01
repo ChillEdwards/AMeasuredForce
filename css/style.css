@@ -1264,7 +1264,15 @@ body.menu-open footer {
   font-family: var(--font-sans); font-size: 0.75rem;
   text-transform: uppercase; letter-spacing: 0.12em;
   font-weight: 500; cursor: none;
-  transition: background 0.3s, transform 0.3s;
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+/* Submitted state — monochrome "ghost/confirmed" look. Uses --ink (which the
+   global invert renders as light), so it shows as a light outline + light text
+   on the dark page: clearly "done," on-brand, no colour. */
+.form-submit.is-sent {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
 }
 .form-submit:hover { background: var(--ash); transform: translateY(-2px); }
 
