@@ -1287,6 +1287,15 @@ body.menu-open footer {
   box-shadow: inset 0 0 0 1px var(--ink);
 }
 
+/* ============ ERROR / 404 PAGE ============ */
+/* Button hugs its content (page-hero is a stretch flex column, which otherwise
+   makes the inline-block pill span full width). */
+.error-page .page-hero .pill-btn { align-self: flex-start; }
+/* Push the footer to the bottom of the viewport on this short page. */
+.error-page #scroll-root { min-height: 100vh; display: flex; flex-direction: column; }
+.error-page #scroll-root > main { flex: 1 0 auto; }
+.error-page #scroll-root > .footer { margin-top: auto; }
+
 /* ============ LEGAL / PRIVACY ============ */
 .legal { max-width: 760px; margin: 0 auto; padding: 1rem var(--pad) 7rem; }
 .legal-updated {
